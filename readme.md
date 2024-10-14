@@ -91,7 +91,7 @@ Alapa is designed for developers who are looking for a modern, intuitive, and fl
 
 ## Getting Started
 
-Follow these steps to get started with Alapa:
+Follow these steps to get started with Alapa using the [create-alapa-app](https://github.com/alapajs/create-alapa-app) command line tool.
 
 1. ### Install the Alapa starter application:
 
@@ -108,7 +108,7 @@ cd my-alapa-app
 3. ### Start the development server:
 
 ```bash
-npm start
+npm run dev
 ```
 
 4. Open http://localhost:3000 in your browser to view the application.
