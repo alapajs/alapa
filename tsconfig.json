@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "module": "commonjs",
+    "resolveJsonModule": true,
+    "outDir": "./dist",
+    "declaration": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "skipLibCheck": true
+  },
+  "exclude": [
+    "frontend/**/*.ts",
+    "migration/**/*.ts",
+    "migration-runner/**/*.ts",
+    "test/**/*.ts",
+    "dist/**/*.ts"
+  ]
+}
