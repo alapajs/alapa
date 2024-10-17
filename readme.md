@@ -91,7 +91,7 @@ Alapa is designed for developers who are looking for a modern, intuitive, and fl
 
 ## Getting Started
 
-Follow these steps to get started with Alapa using the [create-alapa-app](https://github.com/alapajs/create-alapa-app) command line tool.
+Follow these steps to get started with Alapa using the [create-alapa-app](https://github.com/alapajs/create-alapa-app#readme) command line tool.
 
 1. ### Install the Alapa starter application:
 

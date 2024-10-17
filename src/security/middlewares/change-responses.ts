@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response, NextFunction } from "express";
-import { GlobalConfig } from "../../shared/globals";
 import { ApiResponse } from "../../api/response/base";
 import { Auth } from "../auth";
 import { renderFile } from "../../view/extension/render/main";
@@ -11,30 +10,12 @@ export const changeResponses = (
   res: Response,
   next: NextFunction
 ) => {
-  const commonFileExtension = ["njk", "ejs", "html"];
-  if (Array.isArray(GlobalConfig.view.extensionWhitelist)) {
-    commonFileExtension.push(...GlobalConfig.view.extensionWhitelist);
-  }
-
   res.render = function (
     view: string,
     options?: object | { (err: Error, html: string): void },
     callback?: (err: Error | any, html: string) => void
   ) {
-    view = view.replace(/\./g, "/");
-    const viewList = view.split(".");
-    const ext = viewList[viewList.length - 1];
     let result: string;
-
-    if (
-      commonFileExtension.includes(ext) ||
-      commonFileExtension.includes(`.${ext}`)
-    ) {
-      viewList.pop();
-      view = `${viewList.join("/")}.${ext}`;
-    } else {
-      view += `.${GlobalConfig.view.extension || "html"}`;
-    }
     const context = res.locals;
     // If options is not a function, it's an object
     if (typeof options === "object" && typeof options !== "function") {

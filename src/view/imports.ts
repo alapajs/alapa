@@ -67,8 +67,9 @@ export class ImportParser {
             componentsAlias[parts.name] = parts.alias;
           }
         }
-        templatePath = PathResolver.dirname(templatePath);
-        const filePath = PathResolver.resolve(templatePath, fileName);
+        const filePath = PathResolver.resolve(fileName, {
+          currentPath: templatePath,
+        });
 
         // Check if the file is already being processed to prevent circular imports
         if (this.processedFiles.has(filePath)) {
