@@ -14,7 +14,6 @@ export * from "typeorm/decorator/columns/Column";
 export * from "typeorm/decorator/columns/CreateDateColumn";
 export * from "typeorm/decorator/columns/DeleteDateColumn";
 export * from "typeorm/decorator/columns/PrimaryGeneratedColumn";
-export * from "typeorm/decorator/columns/PrimaryColumn";
 export * from "typeorm/decorator/columns/UpdateDateColumn";
 export * from "typeorm/decorator/columns/VersionColumn";
 export * from "typeorm/decorator/columns/VirtualColumn";
