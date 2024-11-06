@@ -3,7 +3,7 @@ const { execSync } = require("node:child_process");
 const fs = require("fs");
 const path = require("path");
 
-const modulePath = path.resolve(__dirname, "node_modules", "alapa");
+const modulePath = path.resolve(__dirname);
 
 if (fs.existsSync("./src")) {
   try {
