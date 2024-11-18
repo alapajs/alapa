@@ -4,18 +4,18 @@ const fs = require("fs");
 const path = require("path");
 
 const modulePath = path.resolve(__dirname);
-
-if (fs.existsSync(path.resolve(modulePath, "src"))) {
-  try {
-    if (modulePath.includes("node_modules")) {
+try {
+  if (fs.existsSync(path.resolve(modulePath, "src"))) {
+    fs.writeFileSync("prebuild.log", path.resolve(modulePath, ".dev"));
+    if (!fs.existsSync(path.resolve(modulePath, ".dev"))) {
       execSync("npm run build");
       fs.rmSync("./src", { recursive: true });
       console.log("src directory deleted after build.");
     } else {
       console.log("src directory not deleted: package is linked.");
     }
-  } catch (error) {
-    fs.writeFileSync("prebuild.log", `${error}`);
-    console.error("Error during build:", error);
   }
+} catch (error) {
+  fs.writeFileSync("prebuild.log", `${error}`);
+  console.error("Error during build:", error);
 }

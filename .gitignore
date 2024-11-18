@@ -7,6 +7,7 @@ yarn-error.log
 logs/
 *.log
 *.log.*
+.dev
 
 # Dependency directories
 jspm_packages/
