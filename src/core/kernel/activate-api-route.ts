@@ -1,4 +1,4 @@
-import e from "express";
+import { Router as eRouter } from "express";
 
 import { apiDoc } from "../../api/doc-route";
 import { GlobalConfig } from "../../shared/globals";
@@ -7,9 +7,12 @@ import { Router } from "../routes";
 
 export const getApiRoutes = (config: Configuration) => {
   const route = new Router();
-  const doc = apiDoc() as e.Router[];
+  const doc = apiDoc();
+  const exRoute = eRouter();
 
-  route.use(config.api.docUrl, ...doc).name("api.doc");
+  exRoute.use(config.api.docUrl, ...doc);
+
+  route.use(exRoute).name("api.doc");
 
   const apiRoutes = GlobalConfig.server.apiRoutes;
   if (Array.isArray(apiRoutes)) {

@@ -10,6 +10,5 @@ interface IOpenApiDefinitionsPaths {
 export let openApiDefinitionsPaths: IOpenApiDefinitionsPaths = {};
 
 export const temporalCollections: {
-  objects: Array<string>;
   [key: string]: any;
-} = { objects: [] };
+} = {};

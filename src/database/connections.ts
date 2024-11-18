@@ -34,7 +34,7 @@ export async function updateDBConnection() {
   });
 
   await DatabaseConnection.initialize();
-  console.log("Database connection updated and initialized.");
+  // console.log("Database connection updated and initialized.");
 }
 
 export default DatabaseConnection;

@@ -39,7 +39,7 @@ export const changeResponses = (
 
   res.api = function <T>(response: ApiResponse<T>): Response {
     return this.status(
-      response.status === "success" ? 200 : response.code ?? 400
+      response.status === "success" ? 200 : response.code ?? 200
     ).json(response);
   };
   req.only = (...keys: string[]) => {

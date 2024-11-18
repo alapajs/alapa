@@ -4,7 +4,7 @@ import swaggerUi from "swagger-ui-express";
 import fs from "fs";
 import { Request, Response, NextFunction } from "express";
 import { Logger } from "../utils";
-import { generateOpenAPIFile } from "./generate";
+import { generateOpenAPIFile } from "./generate-doc";
 
 const noDocumentation = (req: Request, res: Response, next: NextFunction) => {
   res.send("No documentation");

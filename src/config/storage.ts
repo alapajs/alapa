@@ -11,4 +11,5 @@ export interface StorageConfiguration {
     endpoint?: string; // Custom S3 endpoint
   };
   maxFileSize?: number; // Maximum file size for uploads
+  tempDirectory?: string;
 }

@@ -5,11 +5,9 @@ const path = require("path");
 
 const modulePath = path.resolve(__dirname);
 
-if (fs.existsSync("./src")) {
+if (fs.existsSync(path.resolve(modulePath, "src"))) {
   try {
-    // Check if the module is a symlink
-    const stats = fs.lstatSync(modulePath);
-    if (!stats.isSymbolicLink()) {
+    if (modulePath.includes("node_modules")) {
       execSync("npm run build");
       fs.rmSync("./src", { recursive: true });
       console.log("src directory deleted after build.");

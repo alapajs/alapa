@@ -1,25 +1,10 @@
 import fs from "fs";
 import path from "path";
-import { GlobalConfig } from "../shared/globals";
-import {
-  openApiDefinitionsPaths,
-  temporalCollections,
-} from "./decorators/entry";
-import { Logger } from "../utils";
 
-function buildPaths() {
-  const collections = temporalCollections;
-  for (const endpoint of temporalCollections.objects) {
-    const route = collections["routes"][endpoint];
-    const method = collections["methods"][endpoint];
-    openApiDefinitionsPaths[route] = {};
-    openApiDefinitionsPaths[route][method] = {};
-    for (const key in collections) {
-      if (key == "objects" || key == "routes" || key == "methods") continue;
-      openApiDefinitionsPaths[route][method][key] = collections[key][endpoint];
-    }
-  }
-}
+import { buildPaths } from "./build-path";
+import { GlobalConfig } from "../../shared/globals";
+import { openApiDefinitionsPaths } from "../decorators/entry";
+import { Logger } from "../../utils";
 
 export function generateOpenAPIFile(): void {
   buildPaths();
@@ -35,6 +20,13 @@ export function generateOpenAPIFile(): void {
     openApiDefinitions = {
       openapi: "3.0.0",
       version: "1.0.0",
+      servers: [
+        {
+          url: "http://localhost:3000/api",
+          description: "Development Server server",
+        },
+      ],
+
       info: {
         title: "API Documentation",
         version: "1.0.0",
@@ -43,7 +35,6 @@ export function generateOpenAPIFile(): void {
       paths: openApiDefinitionsPaths,
     };
   } else if (!openApiDefinitions.paths) {
-    console.log("No Paths defined");
     openApiDefinitions.paths = openApiDefinitionsPaths;
   }
 

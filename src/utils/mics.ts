@@ -3,6 +3,8 @@ import crypto from "crypto";
 import * as fs from "fs";
 import * as path from "path";
 import { LogMessageType } from "./types";
+import yaml from "yaml";
+import { Logger } from "./logger";
 export const autoMd5 = () => {
   return md5(Math.random().toString() + Date.now().toString());
 };
@@ -61,4 +63,15 @@ export const toAbsolutePath = (...paths: string[]) => path.resolve(...paths);
 
 export const escapeRegex = (str: string) => {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+};
+
+export const loadYaml = (filePath: string) => {
+  try {
+    const content = fs.readFileSync(path.resolve(filePath), "utf8");
+    const doc = yaml.parse(content);
+    return doc;
+  } catch (e) {
+    Logger.error(e);
+    return null;
+  }
 };

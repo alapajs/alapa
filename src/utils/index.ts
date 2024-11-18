@@ -5,3 +5,5 @@ export * from "./string";
 export * from "./templates";
 export * from "./columns";
 export * from "./validation";
+export * from "./uploader";
+export * from "./media";

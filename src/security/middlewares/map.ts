@@ -6,7 +6,6 @@ import bodyParser from "body-parser";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const csrf = require("@dr.pogodin/csurf");
 import flash from "connect-flash";
-import { fileUpload } from "./file-upload";
 import { csrfErrorHandler } from "./csrf-error";
 import { sessionConfiguration } from "../session/configuration";
 import { manageCookiesSession } from "./manage-cookie-session";
@@ -16,6 +15,9 @@ import { changeMethod } from "./method";
 import { changeResponses } from "./change-responses";
 import { getApiRoutes } from "../../core/kernel/activate-api-route";
 import { Configuration } from "../../config";
+import fileUpload from "express-fileupload";
+import { getTempDirectory } from "../../utils/get-temp-dir";
+import { generalMiddleware } from "./general";
 
 export const activateGlobalMiddleware = (
   server: Express,
@@ -23,13 +25,14 @@ export const activateGlobalMiddleware = (
 ) => {
   const apiRoutes = getApiRoutes(config);
   const middlewares = [
+    generalMiddleware,
     bodyParser.urlencoded({ extended: false }),
     express.urlencoded({ extended: true }),
     express.static(config.view.staticFilesPath ?? "static"),
-    fileUpload,
     changeMethod,
     changeResponses,
     session(sessionConfiguration),
+    fileUpload({ useTempFiles: true, tempFileDir: getTempDirectory() }),
     cookieParser(),
     express.json(),
     manageCookiesSession,

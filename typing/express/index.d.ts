@@ -7,6 +7,12 @@ declare global {
   namespace Express {
     interface Request {
       authenticated: boolean;
+      files?: {
+        [fieldName: string]:
+          | Express.Multer.File
+          | Express.Multer.File[]
+          | undefined;
+      };
       getRoute: (
         name: string,
         ...param: (string | number | object)[]
