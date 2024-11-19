@@ -46,6 +46,7 @@ export const activateGlobalMiddleware = (
   ];
 
   middlewares.forEach((middleware) => {
+    server.set("trust proxy", true);
     server.use(middleware);
   });
 };

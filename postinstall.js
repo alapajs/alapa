@@ -6,8 +6,7 @@ const path = require("path");
 const modulePath = path.resolve(__dirname);
 try {
   if (fs.existsSync(path.resolve(modulePath, "src"))) {
-    fs.writeFileSync("prebuild.log", path.resolve(modulePath, ".dev"));
-    if (!fs.existsSync(path.resolve(modulePath, ".dev"))) {
+    if (!fs.existsSync(path.resolve(modulePath, ".local"))) {
       execSync("npm run build");
       fs.rmSync("./src", { recursive: true });
       console.log("src directory deleted after build.");
