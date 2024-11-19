@@ -7,8 +7,8 @@ import { buildRequestBody } from "./build-request-body";
 import { buildResponse } from "./build-response";
 
 export function buildPaths() {
-  const collections = temporalCollections["routes"];
-  const allGeneralTags = temporalCollections["generalTags"];
+  const collections = temporalCollections["routes"] ?? {};
+  const allGeneralTags = temporalCollections["generalTags"] ?? {};
   Object.keys(collections).forEach((key) => {
     const route = collections[key];
     openApiDefinitionsPaths[key] = {};
