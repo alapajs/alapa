@@ -3,7 +3,12 @@ import { md5, randomNumber, Logger } from "../../../utils";
 import { List } from "../../../interface";
 import { AnyObject, StringObject } from "../../../interface/object";
 import { ImportedModules, Modules, ParseResult } from "../../interface";
-import { attributeRegex, htmlTagsRegex, moduleRegex } from "../../regex/misc";
+import {
+  attributeRegex,
+  htmlInlineTagsRegex,
+  htmlTagsRegex,
+  moduleRegex,
+} from "../../regex/misc";
 import { ImportParser } from "../../imports";
 import { TemplateEngine } from "../../engine";
 import { PathResolver } from "../../path-resolver";
@@ -168,13 +173,27 @@ export class Component {
   }
 
   static parser(template: string, getAttribute: boolean = true): ParseResult[] {
-    return Array.from(template.matchAll(htmlTagsRegex)).map((match) => ({
-      name: match[1] ?? match[5],
+    const htmlTags = Array.from(template.matchAll(htmlTagsRegex)).map(
+      (match) => ({
+        name: match[1],
+        attributes: getAttribute
+          ? this.parserAtrAttributes(match[2] || "")
+          : {},
+        input: match[0],
+        content: match[3] ?? "",
+        attributeValue: match[2] ?? "",
+      })
+    );
+    const htmlInlineTags = Array.from(
+      template.matchAll(htmlInlineTagsRegex)
+    ).map((match) => ({
+      name: match[1],
       attributes: getAttribute ? this.parserAtrAttributes(match[2] || "") : {},
       input: match[0],
-      content: match[3] ?? "",
+      content: "",
       attributeValue: match[2] ?? "",
     }));
+    return htmlTags.concat(htmlInlineTags);
   }
 
   static parserAtrAttributes(template: string): StringObject {

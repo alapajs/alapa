@@ -18,6 +18,7 @@ import { Configuration } from "../../config";
 import fileUpload from "express-fileupload";
 import { getTempDirectory } from "../../utils/get-temp-dir";
 import { generalMiddleware } from "./general";
+import cors from "cors";
 
 export const activateGlobalMiddleware = (
   server: Express,
@@ -30,6 +31,7 @@ export const activateGlobalMiddleware = (
     express.urlencoded({ extended: true }),
     express.static(config.view.staticFilesPath ?? "static"),
     changeMethod,
+    cors(),
     changeResponses,
     session(sessionConfiguration),
     fileUpload({ useTempFiles: true, tempFileDir: getTempDirectory() }),

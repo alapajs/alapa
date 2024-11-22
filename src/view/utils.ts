@@ -1,10 +1,14 @@
-import { codeRegex, commentsRegex } from "./regex/misc";
+import { codeRegex, commentsRegex, templateCommentRegex } from "./regex/misc";
 
 export function removeCommentsFromCode(input: string): string {
   return input.replace(codeRegex, (match: string, codeBlock: string) => {
     const cleanedCode = codeBlock.replace(commentsRegex, "").trim();
     return `{% ${cleanedCode} %}`; // Reconstruct the matched string
   });
+}
+
+export function removeCommentsFromTemplate(input: string): string {
+  return input.replace(templateCommentRegex, "");
 }
 
 export const escapeCode = (template: string) => {

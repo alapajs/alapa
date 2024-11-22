@@ -2,8 +2,9 @@ import { escapeRegex } from "../../utils";
 
 export const attributeRegex = /([\w.-]+)=["']\s*(.*?)\s*["']/g;
 export const codeRegex = /\{%([\s\S]*?)%\}/g;
-export const htmlTagsRegex =
-  /<[xX]:(\w+)([^/>]*)>([\s\S]*?)<\/[xX]:(\1)>|<[xX]:([\w.-:]+)(\s+[^>]*)?\s*\/>/g;
+export const templateCommentRegex = /\{#([\s\S]*?)#\}/g;
+export const htmlTagsRegex = /<[xX]:(\w+)([^/>]*)>([\s\S]*?)<\/[xX]:(\1)>/g;
+export const htmlInlineTagsRegex = /<[xX]:([\w.-:]+)(\s+[^>]*)?\s*\/>/g;
 
 export const moduleRegex = (
   isDefault?: boolean | "all",

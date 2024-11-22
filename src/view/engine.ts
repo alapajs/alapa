@@ -3,12 +3,18 @@ import { Logger } from "../utils";
 import { Component } from "./extension/component/main";
 import { Include } from "./extension/include";
 import { outPutVariable } from "./output";
-import { codeRegex, importRegex, noCodeRegex } from "./regex/misc";
+import {
+  codeRegex,
+  importRegex,
+  noCodeRegex,
+  templateCommentRegex,
+} from "./regex/misc";
 import { escapeCode, escapeHTML, removeCommentsFromCode } from "./utils";
 import fs from "fs";
 
 export class TemplateEngine {
   static compile(template: string, context?: AnyObject) {
+    template = template.replace(templateCommentRegex, "");
     template = removeCommentsFromCode(template);
     template = Include.render(template);
     let outputOfTemplateEngine = "";
