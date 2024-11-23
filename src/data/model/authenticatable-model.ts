@@ -1,10 +1,8 @@
 import { CreateDateColumn, UpdateDateColumn } from "typeorm";
-import { NullColumn, PrimaryColumn } from "../../utils/columns";
+import { NullColumn } from "../../utils/columns";
 import { Model } from "../../models";
 
 export abstract class AuthenticatableModel extends Model {
-  @PrimaryColumn("increment")
-  id: string;
   @NullColumn()
   firstName: string;
 
