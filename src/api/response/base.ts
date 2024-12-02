@@ -49,4 +49,6 @@ export interface BaseApiResponse {
  *
  * @template T - The type of the data being returned in the response.
  */
-export type ApiResponse<T> = ApiErrorResponse | ApiSuccessResponse<T>;
+export type ApiResponse<T = undefined> =
+  | ApiErrorResponse
+  | ApiSuccessResponse<T>;

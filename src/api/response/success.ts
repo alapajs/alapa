@@ -5,7 +5,7 @@ import { BaseApiResponse } from "./base";
  *
  * @template T - The type of the data being returned in the response.
  */
-export interface ApiSuccessResponse<T> extends BaseApiResponse {
+export interface ApiSuccessResponse<T = undefined> extends BaseApiResponse {
   status: "success";
 
   /**

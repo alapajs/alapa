@@ -36,14 +36,14 @@ export class JoseJWT implements JWTService {
     };
   }
 
-  async verifyToken<P>(token: string): Promise<P | boolean> {
+  async verifyToken<P>(token: string): Promise<P | false> {
     const key = await this.generateKey();
     try {
       const result = await jose.JWS.createVerify(key).verify(token);
       return JSON.parse(result.payload.toString());
     } catch (error) {
       this.error = error;
-      return true;
+      return false;
     }
   }
 }

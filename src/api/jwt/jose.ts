@@ -23,7 +23,7 @@ export class JoseJWT implements JWTService {
     };
   }
 
-  async verifyToken<P>(token: string): Promise<P | boolean> {
+  async verifyToken<P>(token: string): Promise<P | false> {
     try {
       const { payload } = await jwtVerify(token, this.key);
       return payload as P;

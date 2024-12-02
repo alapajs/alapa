@@ -176,9 +176,7 @@ export class Component {
     const htmlTags = Array.from(template.matchAll(htmlTagsRegex)).map(
       (match) => ({
         name: match[1],
-        attributes: getAttribute
-          ? this.parserAtrAttributes(match[2] || "")
-          : {},
+        attributes: getAttribute ? this.parseAtrAttributes(match[2] || "") : {},
         input: match[0],
         content: match[3] ?? "",
         attributeValue: match[2] ?? "",
@@ -188,7 +186,7 @@ export class Component {
       template.matchAll(htmlInlineTagsRegex)
     ).map((match) => ({
       name: match[1],
-      attributes: getAttribute ? this.parserAtrAttributes(match[2] || "") : {},
+      attributes: getAttribute ? this.parseAtrAttributes(match[2] || "") : {},
       input: match[0],
       content: "",
       attributeValue: match[2] ?? "",
@@ -196,11 +194,11 @@ export class Component {
     return htmlTags.concat(htmlInlineTags);
   }
 
-  static parserAtrAttributes(template: string): StringObject {
+  static parseAtrAttributes(template: string): StringObject {
     const attributes: StringObject = {};
     const matches = template.matchAll(attributeRegex);
     for (const match of matches) {
-      attributes[match[1]] = match[2];
+      attributes[match[1]] = match[4] ?? match[1];
     }
     return attributes;
   }

@@ -1,6 +1,6 @@
 import { escapeRegex } from "../../utils";
 
-export const attributeRegex = /([\w.-]+)=["']\s*(.*?)\s*["']/g;
+export const attributeRegex = /([a-zA-Z][a-zA-Z\d\-_]*)(\s*=\s*("([^"]*)")?)?/g;
 export const codeRegex = /\{%([\s\S]*?)%\}/g;
 export const templateCommentRegex = /\{#([\s\S]*?)#\}/g;
 export const htmlTagsRegex = /<[xX]:(\w+)([^/>]*)>([\s\S]*?)<\/[xX]:(\1)>/g;

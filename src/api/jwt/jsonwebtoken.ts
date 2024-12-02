@@ -20,7 +20,7 @@ export class JoseJWT implements JWTService {
     };
   }
 
-  async verifyToken<P>(token: string): Promise<P | boolean> {
+  async verifyToken<P>(token: string): Promise<P | false> {
     try {
       return jwt.verify(token, this.key) as P;
     } catch (error) {

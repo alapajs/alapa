@@ -14,11 +14,12 @@ export class JWT {
       isoDate: jwt.expiresAt.toISOString(),
     };
   }
-  static async verifyToken<P>(token: string): Promise<P | boolean> {
+  static async verifyToken<P>(token: string): Promise<P | false> {
     const result = await this.jwt.verifyToken<P>(token);
     if (result === false) {
       this.error = this.jwt.error;
+      return false;
     }
-    return result;
+    return result as P;
   }
 }
