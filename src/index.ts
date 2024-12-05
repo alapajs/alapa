@@ -14,5 +14,6 @@ export * from "./controller";
 export * from "./controller/abstract";
 export * from "./models/index";
 // export * from "typeorm";
-
+export * from "./storage";
+export * from "./driver";
 export default alapa;
