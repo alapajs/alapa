@@ -1,6 +1,6 @@
 {
   "name": "alapa",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "A cutting-edge web development framework designed to revolutionize the way developers build modern web applications.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
