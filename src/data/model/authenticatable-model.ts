@@ -1,5 +1,5 @@
 import { CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm";
-import { NullColumn } from "../../utils/columns";
+import { NullColumn, TextColumn } from "../../utils/columns";
 import { Model } from "../../models";
 
 /**
@@ -362,6 +362,11 @@ export abstract class AuthenticatableModel extends Model {
    */
   @NullColumn()
   marketingOptIn: boolean;
+  /**
+   * Reason for blocking the user
+   */
+  @TextColumn()
+  blockReason: string;
 
   /**
    * Indicates whether the user is a VIP customer with special privileges or benefits.

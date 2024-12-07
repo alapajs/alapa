@@ -7,5 +7,5 @@ export interface AppData {
   app: express.Express;
 }
 export interface AlapaApp {
-  startServer: () => Promise<AppData>;
+  startServer: (host?: string, port?: number) => Promise<AppData>;
 }

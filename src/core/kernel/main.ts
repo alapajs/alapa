@@ -21,7 +21,13 @@ function alapa(configuration: Configuration): AlapaApp {
   activateRoutes(app);
   updateRouteList();
   return {
-    startServer: async () => {
+    startServer: async (userHost?: string, userPort?: number) => {
+      if (userHost) {
+        GlobalConfig.server.host = userHost;
+      }
+      if (userPort) {
+        GlobalConfig.server.port = userPort;
+      }
       await _setupDatabase();
       const { host, port } = await _startServer();
       return { server, app, host, port }; // Return the app, host, and port
