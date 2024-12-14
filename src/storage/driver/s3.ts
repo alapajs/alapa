@@ -1,9 +1,9 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import fs from "fs";
 import { IStorageDriverError, StorageDriver } from "./abstract";
-import { Logger } from "../utils";
-import { S3Configuration } from "../config/storage";
-import { GlobalConfig } from "../shared/globals";
+import { Logger } from "../../utils";
+import { S3Configuration } from "../../config/storage";
+import { GlobalConfig } from "../../shared/globals";
 
 export class S3Driver implements StorageDriver {
   error: IStorageDriverError | null;
@@ -29,7 +29,6 @@ export class S3Driver implements StorageDriver {
     filePath: string,
     key: string
   ): Promise<boolean | string> => {
-    Logger.info(this.config.endpoint);
     // Initialize the S3 client
     const s3Client = new S3Client({
       // endpoint: this.config.endpoint,

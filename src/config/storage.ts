@@ -1,4 +1,4 @@
-import { StorageDriver } from "../driver/abstract";
+import { StorageDriver } from "../storage/driver/abstract";
 
 export interface S3Configuration {
   /**

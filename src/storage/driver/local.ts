@@ -2,9 +2,9 @@
 import { StorageDriver, IStorageDriverError } from "./abstract";
 import * as fs from "fs";
 import * as path from "path";
-import { Logger } from "../utils";
-import { StorageConfiguration } from "../config";
-import { GlobalConfig } from "../shared/globals";
+import { Logger } from "../../utils";
+import { StorageConfiguration } from "../../config";
+import { GlobalConfig } from "../../shared/globals";
 
 export class LocalStorageDriver implements StorageDriver {
   name: string;

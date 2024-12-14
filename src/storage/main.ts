@@ -1,6 +1,6 @@
 import path from "path";
-import { StorageDriver } from "../driver/abstract";
-import { LocalStorageDriver } from "../driver/local";
+import { StorageDriver } from "./driver/abstract";
+import { LocalStorageDriver } from "./driver/local";
 import { GlobalConfig } from "../shared/globals";
 
 export class Storage {

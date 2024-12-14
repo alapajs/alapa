@@ -1,6 +1,7 @@
 import { AnyObject } from "../interface/object";
 import { Logger } from "../utils";
 import { Component } from "./extension/component/main";
+import { Container } from "./extension/container/main";
 import { Include } from "./extension/include";
 import { outPutVariable } from "./output";
 import {
@@ -11,23 +12,29 @@ import {
 } from "./regex/misc";
 import { escapeCode, escapeHTML, removeCommentsFromCode } from "./utils";
 import fs from "fs";
-
 export class TemplateEngine {
   static compile(template: string, context?: AnyObject) {
     template = template.replace(templateCommentRegex, "");
     template = removeCommentsFromCode(template);
     template = Include.render(template);
+    Container.compile(template);
+    template = Container.removeContainersFromTemplate(template);
     let outputOfTemplateEngine = "";
-
     function addOutPutToTemplateEngine(output: string = "") {
       outputOfTemplateEngine += output;
     }
+    function containers(key?: string) {
+      if (!key) return Container.get();
+      return Container.get().filter((k) => k.key == key);
+    }
+
     const getOutPutToTemplateEngine = () => outputOfTemplateEngine;
 
     context = context || {};
 
     context["addOutPutToTemplateEngine"] = addOutPutToTemplateEngine;
     context["getOutPutToTemplateEngine"] = getOutPutToTemplateEngine;
+    context["containers"] = containers;
     context["escapeHTML"] = escapeHTML;
     // Clean up the template
     template = template.replace(importRegex, "");
@@ -69,6 +76,7 @@ export class TemplateEngine {
   }
 
   static renderString(template: string, context?: object): string {
+    Container.clear();
     return this.compile(template, context);
   }
 

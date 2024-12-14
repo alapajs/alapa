@@ -15,6 +15,5 @@ export * from "./controller/abstract";
 export * from "./models/index";
 // export * from "typeorm";
 export * from "./storage";
-export * from "./driver";
 export * from "bignumber.js";
 export default alapa;
