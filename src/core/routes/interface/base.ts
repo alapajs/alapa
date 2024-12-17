@@ -2,38 +2,38 @@
 import { IRouter, Router } from "express";
 import { RequestHandler } from "./general";
 import { RouteChain } from "./route-chain";
-import { ResourceOptions } from "../handlers/extension";
+import { ResourcefulOptions } from "../handlers/extension";
 
 export interface BaseRouterInterface {
   resource: (
     path: string,
     controller: any,
-    option?: ResourceOptions
+    option?: ResourcefulOptions
   ) => RouteChain;
   restfulResource: (
     path: string,
     controller: any,
-    option?: ResourceOptions
+    option?: ResourcefulOptions
   ) => RouteChain;
 
   apiResource: (
     path: string,
     controller: any,
-    option?: ResourceOptions
+    option?: ResourcefulOptions
   ) => RouteChain;
   resources: (
     resources: { [route: string]: any },
-    option: ResourceOptions
+    option: ResourcefulOptions
   ) => RouteChain;
 
   restfulResources: (
     resources: { [route: string]: any },
-    option: ResourceOptions
+    option: ResourcefulOptions
   ) => RouteChain;
 
   apiResources: (
     resources: { [route: string]: any },
-    option: ResourceOptions
+    option: ResourcefulOptions
   ) => RouteChain;
 
   all: (path: string, ...handlers: RequestHandler[]) => RouteChain;

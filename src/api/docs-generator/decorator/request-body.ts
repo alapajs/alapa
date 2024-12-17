@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // request-body.ts
 import "reflect-metadata";
-import { temporalCollections } from "./entry";
+import { temporalCollections } from "../builder/entry";
 // import { METHOD_KEY, ROUTE_KEY } from "./keys";
 // import { openApiDefinitionsPaths } from "./entry"; // Ensure this file is correctly referenced
 

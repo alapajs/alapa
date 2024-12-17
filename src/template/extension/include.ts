@@ -1,5 +1,5 @@
 import { Logger } from "../../utils";
-import { TemplateEngine } from "../engine";
+import { TemplateEngine } from "../render";
 import { PathResolver } from "../path-resolver";
 import { codeRegex, includesRegex } from "../regex/misc";
 import { removeCommentsFromCode } from "../utils";

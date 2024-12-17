@@ -1,10 +1,15 @@
 import { OAS3Definition, OAS3Options } from "swagger-jsdoc";
 
 export interface APIConfiguration {
-  docUrl: string;
-  openApiOptions?: OAS3Options;
-  openApiDefinitions?: OAS3Definition;
-  openapiDefinitionFile?: string;
+  docs?: {
+    path?: string;
+    schemasDir?: string;
+    sync?: boolean;
+    openApiOptions?: OAS3Options;
+    openApiDefinitions?: OAS3Definition;
+    openapiDefinitionFile?: string;
+  };
+
   rateLimit?: {
     // API rate limiting configuration
     windowMs: number; // Time window in milliseconds

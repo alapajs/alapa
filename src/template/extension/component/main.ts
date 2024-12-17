@@ -10,7 +10,7 @@ import {
   moduleRegex,
 } from "../../regex/misc";
 import { ImportParser } from "../../imports";
-import { TemplateEngine } from "../../engine";
+import { TemplateEngine } from "../../render";
 import { PathResolver } from "../../path-resolver";
 
 export class Component {

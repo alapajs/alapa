@@ -1,1 +1,4 @@
-export { ResourceOptions, ResourceVerb } from "./resource";
+export {
+  ResourcefulOptions,
+  ResourcefulVerb,
+} from "../../interface/resourceful";

@@ -1,6 +1,6 @@
 import { BaseEntity, RemoveOptions, SaveOptions } from "typeorm";
 
-export class Model extends BaseEntity {
+export abstract class Model extends BaseEntity {
   async delete(options?: RemoveOptions) {
     this.remove(options);
   }

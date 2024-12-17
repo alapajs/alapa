@@ -1,4 +1,4 @@
-import { TemplateEngine } from "../../engine";
+import { TemplateEngine } from "../../render";
 import { PathResolver } from "../../path-resolver";
 import { containerRegex } from "../../regex/misc";
 export interface ContainerParseResult {

@@ -3,7 +3,7 @@ import { RequestHandler } from "../interface/general";
 import { Router as ExpressRouter } from "express";
 import { IRouter } from "../interface/router";
 import { Router } from ".";
-import { ResourceOptions } from "./extension/resource";
+import { ResourcefulOptions } from "../interface/resourceful";
 import { RoutesNames } from "../names";
 import { RouteChain } from "../interface/route-chain";
 import { StringObject } from "../../../interface/object";
@@ -38,30 +38,33 @@ export class RouteChainManger {
         pathOrHandler: string | RequestHandler | ExpressRouter | IRouter,
         ...handlers: RequestHandler[] | ExpressRouter[] | IRouter[]
       ) => this.router.use(pathOrHandler, ...handlers),
-      resource: (path: string, controller: any, option?: ResourceOptions) =>
+      resource: (path: string, controller: any, option?: ResourcefulOptions) =>
         this.router.resource(path, controller, option),
       // controller: (path: string, controller: any, option?: ResourceOptions) =>
       //   this.router.controller(path, controller, option),
       resources: (
         resources: { [route: string]: any },
-        option: ResourceOptions
+        option: ResourcefulOptions
       ) => this.router.resources(resources, option),
       restfulResources: (
         resources: { [route: string]: any },
-        option: ResourceOptions
+        option: ResourcefulOptions
       ) => this.router.restfulResources(resources, option),
 
       restfulResource: (
         path: string,
         controller: any,
-        option?: ResourceOptions
+        option?: ResourcefulOptions
       ) => this.router.restfulResource(path, controller, option),
-      apiResource: (path: string, controller: any, option?: ResourceOptions) =>
-        this.router.apiResource(path, controller, option),
+      apiResource: (
+        path: string,
+        controller: any,
+        option?: ResourcefulOptions
+      ) => this.router.apiResource(path, controller, option),
 
       apiResources: (
         resources: { [route: string]: any },
-        option: ResourceOptions
+        option: ResourcefulOptions
       ) => this.router.apiResources(resources, option),
 
       view: (path: string, view: string, data?: object) =>

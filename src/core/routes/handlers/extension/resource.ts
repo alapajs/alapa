@@ -1,95 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { AnyObject } from "../../../../interface/object";
+import { RequestHandler } from "../../interface/general";
+import { defaultVerb, ResourcefulOptions } from "../../interface/resourceful";
 import { IRouter } from "../../interface/router";
-
-/**
- * Defines the custom verb names for resourceful routes.
- */
-export interface ResourceVerb {
-  /**
-   * Name for the index route, typically used to retrieve a list of resources.
-   */
-  index?: string;
-
-  /**
-   * Name for the create route, typically used to display a form for creating a new resource.
-   */
-  create?: string;
-
-  /**
-   * Name for the store route, typically used to handle the submission of a new resource.
-   */
-  store?: string;
-
-  /**
-   * Name for the show route, typically used to retrieve and display a specific resource.
-   */
-  show?: string;
-
-  /**
-   * Name for the edit route, typically used to display a form for editing an existing resource.
-   */
-  edit?: string;
-
-  /**
-   * Name for the update route, typically used to handle the submission of changes to an existing resource.
-   */
-  update?: string;
-
-  /**
-   * Name for the delete route, typically used to remove a specific resource.
-   */
-  destroy?: string;
-}
-
-/**
- * Default verb names used for resourceful routes.
- */
-const defaultVerb: ResourceVerb = {
-  index: "index",
-  create: "create",
-  store: "store",
-  show: "show",
-  edit: "edit",
-  update: "update",
-  destroy: "destroy",
-};
-
-/**
- * Options for configuring resourceful routes.
- */
-export interface ResourceOptions {
-  /**
-   * Whether to change route names to use the provided verb names.
-   * Default is true.
-   */
-  changeNamesWithVerbs?: boolean;
-
-  /**
-   * Whether create route names.
-   * Default is true.
-   */
-  createNames?: boolean;
-
-  namePrefix?: string;
-
-  /**
-   * Specify which routes to include.
-   * Can be a single route name or an array of route names.
-   */
-  only?: string[] | string;
-
-  /**
-   * Specify which routes to exclude.
-   * Can be a single route name or an array of route names.
-   */
-  except?: string[] | string;
-
-  /**
-   * Custom verb names to use for the resourceful routes.
-   */
-  verb?: ResourceVerb;
-}
 
 /**
  * Cleans the provided path by removing double slashes.
@@ -98,6 +12,29 @@ export interface ResourceOptions {
  */
 const cleanPath = (path: string): string => {
   return path.replace(/\/+/g, "/"); // Ensures no double slashes
+};
+
+/**
+ * Helper function to create resourceful routes.
+ * This function handles the repetitive process of route creation.
+ */
+const createRoute = (
+  method: "get" | "post" | "put" | "patch" | "delete",
+  routePath: string,
+  controllerMethod: RequestHandler,
+  route: IRouter,
+  name: string,
+  createNames: boolean,
+  middleware: RequestHandler[] = []
+) => {
+  const routeHandler = route[method](
+    cleanPath(routePath),
+    ...middleware,
+    controllerMethod
+  );
+  if (createNames) {
+    routeHandler.name(name);
+  }
 };
 
 /**
@@ -112,28 +49,33 @@ export const makeResourcefulRoute = (
   path: string,
   controllerClass: any,
   route: IRouter,
-  options?: ResourceOptions
+  options?: ResourcefulOptions
 ) => {
   const controller = new controllerClass();
   options = options || {};
   if (controller.resourceOption) {
     options = { ...options, ...controller.resourceOption };
   }
-  if (options === undefined) {
+  if (!options) {
     options = {};
   }
   const cleanName = (name: string): string => {
-    return `${options.namePrefix || ""}${name.replace(/\/+/g, "")}`; // Ensures no double slashes
+    return `${options.namePrefix || ""}${name.replace(/\/+/g, "")}`;
   };
 
-  const verb = { ...defaultVerb, ...options.verb }; // Merge provided verbs with defaults
+  const verb = { ...defaultVerb, ...options.verb };
+  const middleware: AnyObject = {
+    ...controller.middleware,
+    ...options.middleware,
+  };
+
   const changeNamesWithVerbs =
     options.changeNamesWithVerbs !== undefined
       ? options.changeNamesWithVerbs
-      : true; // Default to true
+      : true;
 
   const createNames =
-    options.createNames !== undefined ? options.createNames : true; // Default to true
+    options.createNames !== undefined ? options.createNames : true;
 
   const only: string[] = Array.isArray(options.only)
     ? options.only
@@ -147,19 +89,55 @@ export const makeResourcefulRoute = (
     ? [options.except]
     : [];
 
+  /**
+   * Applies middleware before and after route handler.
+   * @param action - The action (index, create, etc.).
+   * @returns Middleware to apply for that action.
+   */
+  const applyMiddleware = (action: string) => {
+    let actionMiddleware = (middleware[action] || []) as
+      | RequestHandler
+      | RequestHandler[];
+    if (!Array.isArray(actionMiddleware)) {
+      actionMiddleware = [actionMiddleware];
+    }
+    let beforeMiddleware = (middleware.before || []) as
+      | RequestHandler
+      | RequestHandler[];
+    if (!Array.isArray(beforeMiddleware)) {
+      beforeMiddleware = [beforeMiddleware];
+    }
+    if (options.mergeMiddleware) {
+      beforeMiddleware = [...beforeMiddleware, ...actionMiddleware];
+    } else {
+      beforeMiddleware = [...actionMiddleware];
+    }
+    let afterMiddleware = (middleware.after || []) as
+      | RequestHandler
+      | RequestHandler[];
+    if (!Array.isArray(afterMiddleware)) {
+      afterMiddleware = [afterMiddleware];
+    }
+    return [...beforeMiddleware, ...afterMiddleware];
+  };
+
   // Index route
   if (
     !except.includes("index") &&
     (only.length === 0 || only.includes("index"))
   ) {
-    const indexRoute = route.get(cleanPath(`/${path}`), controller.index);
-    if (createNames) {
-      indexRoute.name(
-        cleanName(
-          changeNamesWithVerbs ? `${path}.${verb.index}` : `${path}.index`
-        )
-      );
-    }
+    const indexRouteName = cleanName(
+      changeNamesWithVerbs ? `${path}.${verb.index}` : `${path}.index`
+    );
+    createRoute(
+      "get",
+      `/${path}`,
+      controller.index,
+      route,
+      indexRouteName,
+      createNames,
+      applyMiddleware("index")
+    );
   }
 
   // Create route
@@ -167,17 +145,18 @@ export const makeResourcefulRoute = (
     !except.includes("create") &&
     (only.length === 0 || only.includes("create"))
   ) {
-    const createRoute = route.get(
-      cleanPath(`/${path}/${verb.create}`),
-      controller.create
+    const createRouteName = cleanName(
+      changeNamesWithVerbs ? `${path}.${verb.create}` : `${path}.create`
     );
-    if (createNames) {
-      createRoute.name(
-        cleanName(
-          changeNamesWithVerbs ? `${path}.${verb.create}` : `${path}.create`
-        )
-      );
-    }
+    createRoute(
+      "get",
+      `/${path}/${verb.create}`,
+      controller.create,
+      route,
+      createRouteName,
+      createNames,
+      applyMiddleware("create")
+    );
   }
 
   // Store route
@@ -185,14 +164,18 @@ export const makeResourcefulRoute = (
     !except.includes("store") &&
     (only.length === 0 || only.includes("store"))
   ) {
-    const storeRoute = route.post(cleanPath(`/${path}`), controller.store);
-    if (createNames) {
-      storeRoute.name(
-        cleanName(
-          changeNamesWithVerbs ? `${path}.${verb.store}` : `${path}.store`
-        )
-      );
-    }
+    const storeRouteName = cleanName(
+      changeNamesWithVerbs ? `${path}.${verb.store}` : `${path}.store`
+    );
+    createRoute(
+      "post",
+      `/${path}`,
+      controller.store,
+      route,
+      storeRouteName,
+      createNames,
+      applyMiddleware("store")
+    );
   }
 
   // Show route
@@ -200,14 +183,18 @@ export const makeResourcefulRoute = (
     !except.includes("show") &&
     (only.length === 0 || only.includes("show"))
   ) {
-    const showRoute = route.get(cleanPath(`/${path}/:id`), controller.show);
-    if (createNames) {
-      showRoute.name(
-        cleanName(
-          changeNamesWithVerbs ? `${path}.${verb.show}` : `${path}.show`
-        )
-      );
-    }
+    const showRouteName = cleanName(
+      changeNamesWithVerbs ? `${path}.${verb.show}` : `${path}.show`
+    );
+    createRoute(
+      "get",
+      `/${path}/:id`,
+      controller.show,
+      route,
+      showRouteName,
+      createNames,
+      applyMiddleware("show")
+    );
   }
 
   // Edit route
@@ -215,17 +202,18 @@ export const makeResourcefulRoute = (
     !except.includes("edit") &&
     (only.length === 0 || only.includes("edit"))
   ) {
-    const editRoute = route.get(
-      cleanPath(`/${path}/:id/${verb.edit}`),
-      controller.edit
+    const editRouteName = cleanName(
+      changeNamesWithVerbs ? `${path}.${verb.edit}` : `${path}.edit`
     );
-    if (createNames) {
-      editRoute.name(
-        cleanName(
-          changeNamesWithVerbs ? `${path}.${verb.edit}` : `${path}.edit`
-        )
-      );
-    }
+    createRoute(
+      "get",
+      `/${path}/:id/${verb.edit}`,
+      controller.edit,
+      route,
+      editRouteName,
+      createNames,
+      applyMiddleware("edit")
+    );
   }
 
   // Update routes
@@ -233,38 +221,45 @@ export const makeResourcefulRoute = (
     !except.includes("update") &&
     (only.length === 0 || only.includes("update"))
   ) {
-    const updateRoutePut = route.put(
-      cleanPath(`/${path}/:id`),
-      controller.update
+    const updateRouteName = cleanName(
+      changeNamesWithVerbs ? `${path}.${verb.update}` : `${path}.update`
     );
-    if (createNames) {
-      updateRoutePut.name(
-        cleanName(
-          changeNamesWithVerbs ? `${path}.${verb.update}` : `${path}.update`
-        )
-      );
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const updateRoutePatch = route.patch(
-      cleanPath(`/${path}/:id`),
-      controller.update
+    createRoute(
+      "put",
+      `/${path}/:id`,
+      controller.update,
+      route,
+      updateRouteName,
+      createNames,
+      applyMiddleware("update")
+    );
+    createRoute(
+      "patch",
+      `/${path}/:id`,
+      controller.update,
+      route,
+      updateRouteName,
+      createNames,
+      applyMiddleware("update")
     );
   }
 
+  // Destroy route
   if (
     !except.includes("destroy") &&
     (only.length === 0 || only.includes("destroy"))
   ) {
-    const editRoute = route.delete(
-      cleanPath(`/${path}/:id`),
-      controller.destroy
+    const destroyRouteName = cleanName(
+      changeNamesWithVerbs ? `${path}.${verb.destroy}` : `${path}.destroy`
     );
-    if (createNames) {
-      editRoute.name(
-        cleanName(
-          changeNamesWithVerbs ? `${path}.${verb.destroy}` : `${path}.destroy`
-        )
-      );
-    }
+    createRoute(
+      "delete",
+      `/${path}/:id`,
+      controller.destroy,
+      route,
+      destroyRouteName,
+      createNames,
+      applyMiddleware("destroy")
+    );
   }
 };

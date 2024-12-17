@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Router } from ".";
+import { ResourcefulOptions } from "../interface/resourceful";
 import { RouteChain } from "../interface/route-chain";
-import { makeResourcefulRoute, ResourceOptions } from "./extension/resource";
+import { makeResourcefulRoute } from "./extension/resource";
 
 export class ResourceRouteManager {
   private router: Router;
@@ -13,7 +14,7 @@ export class ResourceRouteManager {
   public resource(
     path: string,
     controller: any,
-    option?: ResourceOptions
+    option?: ResourcefulOptions
   ): RouteChain {
     makeResourcefulRoute(path, controller, this.router, option);
     return this.router.all("");
@@ -22,7 +23,7 @@ export class ResourceRouteManager {
   public restfulResource(
     path: string,
     controller: any,
-    options?: ResourceOptions
+    options?: ResourcefulOptions
   ): RouteChain {
     options = {
       createNames: false,
@@ -36,14 +37,14 @@ export class ResourceRouteManager {
   public apiResource(
     path: string,
     controller: any,
-    options?: ResourceOptions
+    options?: ResourcefulOptions
   ): RouteChain {
     return this.restfulResource(path, controller, options);
   }
 
   public resources(
     resources: { [route: string]: any },
-    options: ResourceOptions
+    options: ResourcefulOptions
   ): RouteChain {
     for (const [path, controller] of Object.entries(resources)) {
       this.resource(path, controller, options);
@@ -53,7 +54,7 @@ export class ResourceRouteManager {
 
   public restfulResources(
     resources: { [route: string]: any },
-    options: ResourceOptions
+    options: ResourcefulOptions
   ): RouteChain {
     options = {
       createNames: false,
@@ -66,7 +67,7 @@ export class ResourceRouteManager {
 
   public apiResources(
     resources: { [route: string]: any },
-    options: ResourceOptions
+    options: ResourcefulOptions
   ): RouteChain {
     return this.restfulResources(resources, options);
   }

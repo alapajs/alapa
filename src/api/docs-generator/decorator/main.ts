@@ -2,7 +2,7 @@
 
 import "dotenv/config";
 
-import { openApiDefinitionsPaths } from "./entry";
+import { openApiDefinitionsPaths } from "../builder/entry";
 
 export function OpenApi(name: string) {
   return function (target: any) {

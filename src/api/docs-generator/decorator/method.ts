@@ -2,10 +2,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import "reflect-metadata";
 
-import { temporalCollections } from "./entry";
+import { temporalCollections } from "../builder/entry";
 import { METHOD_KEY, ROUTE_KEY } from "./keys";
 import { json } from "body-parser";
-import { PathProperties } from "../../interface/open-api/response-body";
+import { PathProperties } from "../interface/path";
+
 type PropType<TObj, TProp extends keyof TObj> = TObj[TProp];
 
 export function OpenApiMethod(route: string, property: PathProperties) {

@@ -13,42 +13,47 @@ import { requestLoggerMiddleware } from "./request-logger";
 import { ServerContextMiddleware } from "./server-context";
 import { changeMethod } from "./method";
 import { changeResponses } from "./change-responses";
-import { getApiRoutes } from "../../core/kernel/activate-api-route";
 import { Configuration } from "../../config";
 import fileUpload from "express-fileupload";
 import { getTempDirectory } from "../../utils/get-temp-dir";
 import { generalMiddleware } from "./general";
 import cors from "cors";
+import { setViews } from "./set-view";
+import { apiRoutes } from "../../core/kernel/activate-api-route";
+import { activateDocsRoute } from "../../api/docs-generator/route";
 
-export const activateGlobalMiddleware = (
-  server: Express,
+export const activateGlobalMiddleware = async (
+  app: Express,
   config: Configuration
 ) => {
-  const apiRoutes = getApiRoutes(config);
+  // const apiRoutes = await getApiRoutes(config);
   const middlewares = [
+    changeResponses,
     generalMiddleware,
     bodyParser.urlencoded({ extended: false }),
     express.urlencoded({ extended: true }),
     express.static(config.view.staticFilesPath ?? "static"),
     changeMethod,
     cors(),
-    changeResponses,
+    apiRoutes(),
     session(sessionConfiguration),
     fileUpload({ useTempFiles: true, tempFileDir: getTempDirectory() }),
     cookieParser(),
     express.json(),
     manageCookiesSession,
-    apiRoutes,
     flash(),
     csrf({ cookie: process.env.NODE_ENV === "development" }),
     templateContextMiddleware,
     ServerContextMiddleware,
     csrfErrorHandler,
-    requestLoggerMiddleware,
   ];
-
+  setViews(app);
+  app.all("*", requestLoggerMiddleware);
   middlewares.forEach((middleware) => {
-    server.set("trust proxy", true);
-    server.use(middleware);
+    app.use(middleware);
   });
+  app.set("trust proxy", true);
+  activateDocsRoute(app);
+
+  // app.all("*", );
 };

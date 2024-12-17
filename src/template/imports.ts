@@ -1,7 +1,7 @@
 import { StringObject } from "../interface/object";
 import { ImportedModules } from "./interface";
 import { codeRegex, commentsRegex, importRegex } from "./regex/misc";
-import { TemplateEngine } from "./engine";
+import { TemplateEngine } from "./render";
 import { PathResolver } from "./path-resolver";
 
 export class ImportParser {

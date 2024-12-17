@@ -10,7 +10,7 @@ import { RouterOptions } from "express";
 import { MethodList } from "../interface/method";
 import { RouteChainManger } from "./chain";
 import { processHandlers } from "./processor";
-import { ResourceOptions } from "./extension/resource";
+import { ResourcefulOptions } from "../interface/resourceful";
 import { MiddlewareRouteHandler } from "./middleware";
 import { adjustNameWithPrefix } from "../utils";
 import { StringObject } from "../../../interface/object";
@@ -63,7 +63,7 @@ export class Router implements IRouter {
   public resource(
     path: string,
     controller: any,
-    option?: ResourceOptions
+    option?: ResourcefulOptions
   ): RouteChain {
     return this.resourceHandlers.resource(path, controller, option);
   }
@@ -71,7 +71,7 @@ export class Router implements IRouter {
   public restfulResource(
     path: string,
     controller: any,
-    option?: ResourceOptions
+    option?: ResourcefulOptions
   ): RouteChain {
     return this.resourceHandlers.restfulResource(path, controller, option);
   }
@@ -79,28 +79,28 @@ export class Router implements IRouter {
   public apiResource(
     path: string,
     controller: any,
-    option?: ResourceOptions
+    option?: ResourcefulOptions
   ): RouteChain {
     return this.resourceHandlers.apiResource(path, controller, option);
   }
 
   public resources(
     resources: { [route: string]: any },
-    options: ResourceOptions
+    options: ResourcefulOptions
   ): RouteChain {
     return this.resourceHandlers.resources(resources, options);
   }
 
   public restfulResources(
     resources: { [route: string]: any },
-    options: ResourceOptions
+    options: ResourcefulOptions
   ): RouteChain {
     return this.resourceHandlers.restfulResources(resources, options);
   }
 
   public apiResources(
     resources: { [route: string]: any },
-    options: ResourceOptions
+    options: ResourcefulOptions
   ): RouteChain {
     return this.resourceHandlers.apiResources(resources, options);
   }
