@@ -3,9 +3,10 @@ import { GlobalConfig } from "../../shared/globals";
 import http from "http";
 import express, { Express } from "express";
 import { Logger } from "../../utils";
-import kill from "kill-port";
 const app: Express = express();
+
 const server = http.createServer(app);
+
 export interface StartResponse {
   host?: string;
   port?: number;
@@ -14,7 +15,7 @@ export interface StartResponse {
 }
 
 export async function startServer(): Promise<StartResponse> {
-  const port = GlobalConfig.server.port;
+  let port = GlobalConfig.server.port;
   const host = GlobalConfig.server.host;
 
   process.on("uncaughtException", async (err: any) => {
@@ -22,14 +23,11 @@ export async function startServer(): Promise<StartResponse> {
     if (err) {
       if (err.code === "EADDRINUSE") {
         if (port) {
-          // console.log(`Port ${port} is in use, trying a different port...`);
+          Logger.info(`Port ${port} is in use, trying a different port...`);
+          port += 1;
           // // Attempt to listen on a new port (you can specify your logic)
           // server.listen(port + 1);
           try {
-            Logger.info("Killing port " + port);
-            await kill(port);
-            Logger.success(`Port ${port} closed`);
-            Logger.info("Releasing port " + port);
             setTimeout(async () => {
               const { host, port } = await startServer();
               return { host, port, server, app }; // Return values if restarted
@@ -57,12 +55,22 @@ export async function startServer(): Promise<StartResponse> {
   //   }
   // });
 
-  if (port && host) {
+  const updatePort = (
+    server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>
+  ) => {
+    const address = server?.address();
+    if (address && typeof address !== "string") {
+      port = address.port;
+    }
+  };
+
+  if (host && typeof port === "number") {
     return new Promise((resolve) => {
       server.listen(port, host, (err?: NodeJS.ErrnoException) => {
         if (err) {
           // handlerPortError(err, port);
         } else {
+          updatePort(server);
           Logger.info(`Server started at http://${host}:${port}`);
           resolve({ host, port, server, app });
         }
@@ -70,13 +78,14 @@ export async function startServer(): Promise<StartResponse> {
     });
   }
 
-  if (port) {
+  if (typeof port === "number") {
     return new Promise((resolve) => {
       server.listen(port, (err?: NodeJS.ErrnoException) => {
         if (err) {
           // handlerPortError(err, port);
         } else {
           Logger.info(`Server started at port ${port}`);
+          updatePort(server);
           resolve({ host: undefined, port, server, app });
         }
       });
@@ -89,7 +98,8 @@ export async function startServer(): Promise<StartResponse> {
         Logger.error(err);
       } else {
         Logger.info(`Server started`);
-        resolve({ host: undefined, port: 3000, server, app }); // Default host and port if none specified
+        updatePort(server);
+        resolve({ host: undefined, port: port, server, app }); // Default host and port if none specified
       }
     });
   });

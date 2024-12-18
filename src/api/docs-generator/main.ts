@@ -65,6 +65,7 @@ export async function generateOpenAPIFile(): Promise<void> {
 
 export const generateApiDocs = async (config?: Configuration) => {
   if (config) setGlobalConfig(config);
+  Logger.info("Generating API documentation...");
   await generateOpenAPIFile();
   Logger.success("API documentation generated successfully");
 };
