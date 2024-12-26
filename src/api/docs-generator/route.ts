@@ -2,14 +2,13 @@ import { GlobalConfig } from "../../shared/globals";
 import swaggerJsdoc, { OAS3Options } from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import fs from "fs";
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { Logger } from "../../utils";
 import { generateOpenAPIFile } from "./main";
 import { Express } from "express";
 
-const noDocumentation = (req: Request, res: Response, next: NextFunction) => {
-  res.send("No documentation");
-  next();
+const noDocumentation = (req: Request, res: Response) => {
+  return res.send("No documentation");
 };
 
 const getApiDefinition = async () => {
@@ -22,20 +21,18 @@ const getApiDefinition = async () => {
     options = apiConfig.openApiOptions;
   } else if (apiConfig?.openapiDefinitionFile) {
     try {
-      const swaggerDefinition = JSON.parse(
-        fs.readFileSync(
-          `${GlobalConfig.api.docs?.openapiDefinitionFile}`,
-          "utf8"
-        )
-      );
+      const docFile = `${GlobalConfig.api.docs?.openapiDefinitionFile}`;
+      if (!fs.existsSync(docFile)) {
+        return undefined;
+      }
+      const swaggerDefinition = JSON.parse(fs.readFileSync(docFile, "utf8"));
       options = {
         definition: swaggerDefinition, // Changed import to require
         apis: [], //
       };
     } catch (error) {
-      if (apiConfig?.sync === false) {
-        Logger.error(error);
-      }
+      Logger.error(`Error reading OpenAPI definition file: ${error}`);
+      return undefined;
     }
   } else if (apiConfig?.openApiDefinitions) {
     options = {

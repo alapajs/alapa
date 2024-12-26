@@ -3,6 +3,7 @@
 import * as express from "express";
 import { ApiResponse } from "../../src/api/response/base";
 import { LoginResponse } from "../../src/security/auth/main";
+import { AuthData } from "../../src/security/auth/data";
 declare global {
   namespace Express {
     interface Request {
@@ -19,6 +20,7 @@ declare global {
       ) => string;
       getUrl: (name: string, ...param: (string | number | object)[]) => string;
       csrfToken: () => string;
+      auth: AuthData;
       user: any;
       only: (...keys: string[]) => any;
       login: (user: any, remember: boolean = false) => Promise<LoginResponse>;

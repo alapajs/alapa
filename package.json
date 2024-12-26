@@ -1,9 +1,10 @@
 {
   "name": "alapa",
-  "version": "1.0.9",
+  "version": "0.0.1",
   "description": "A cutting-edge web development framework designed to revolutionize the way developers build modern web applications.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "repository": "https://github.com/alapajs/alapa/",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
@@ -16,8 +17,6 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.705.0",
     "@dr.pogodin/csurf": "^1.13.0",
-    "@types/express-fileupload": "^1.5.1",
-    "@types/js-yaml": "^4.0.9",
     "bignumber.js": "^9.1.2",
     "body-parser": "^1.20.2",
     "connect-flash": "^0.1.1",
@@ -74,7 +73,9 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.1.0",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^5.1.4",
+    "@types/express-fileupload": "^1.5.1",
+    "@types/js-yaml": "^4.0.9"
   },
   "files": [
     "dist/",

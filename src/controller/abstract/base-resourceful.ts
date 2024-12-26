@@ -3,8 +3,6 @@
 import { RequestHandler } from "express";
 import { Controller } from "..";
 import { ParsedQs } from "qs";
-import { ResourcefulOptions } from "../../core/routes";
-import { ResourcefulMiddleware } from "../../core/routes/interface/resourceful";
 
 /**
  * A callback type for handling HTTP requests in a resourceful controller.
@@ -68,13 +66,6 @@ export type RouteCallback = RequestHandler<
  * It provides a skeleton for CRUD operations, and each method must be implemented by subclasses.
  */
 export abstract class BaseResourcefulController extends Controller {
-  /**
-   *  {@link ResourceOptions} for this controller
-   */
-  public resourceOption?: ResourcefulOptions;
-
-  abstract middleware?: ResourcefulMiddleware;
-
   /**
    * Handles the request to list all resources.
    *
