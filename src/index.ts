@@ -5,6 +5,7 @@ export * from "./security";
 export * from "./utils";
 export * from "./shared";
 // export * from "./alias";
+export * from "tsyringe";
 export * from "./config";
 export * from "./data";
 export * from "./database";

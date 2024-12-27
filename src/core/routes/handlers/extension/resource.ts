@@ -4,6 +4,8 @@ import { AnyObject } from "../../../../interface/object";
 import { RequestHandler } from "../../interface/general";
 import { defaultVerb, ResourcefulOptions } from "../../interface/resourceful";
 import { IRouter } from "../../interface/router";
+import "reflect-metadata";
+import { container } from "tsyringe";
 
 /**
  * Cleans the provided path by removing double slashes.
@@ -51,7 +53,7 @@ export const makeResourcefulRoute = (
   route: IRouter,
   options?: ResourcefulOptions
 ) => {
-  const controller = new controllerClass();
+  const controller = container.resolve<any>(controllerClass);
   options = options || {};
   if (controller.resourceOption) {
     options = { ...options, ...controller.resourceOption };

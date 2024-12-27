@@ -1,3 +1,4 @@
+// import { passCSRF } from "../../security/middlewares/apis/csrf";
 import { GlobalConfig } from "../../shared/globals";
 import { Router } from "../routes";
 
@@ -6,11 +7,12 @@ export const apiRoutes = () => {
   const apiRoutes = GlobalConfig.server.apiRoutes;
   if (Array.isArray(apiRoutes)) {
     for (const route of apiRoutes) {
-      route.use("/api", route).name("api");
+      route.use("/api", route);
     }
   } else {
-    route.use("/api", apiRoutes).name("api");
+    route.use("/api", apiRoutes);
   }
+  // route.use("/api",passCSRF)
 
   return route.toExpressRoutes();
 };

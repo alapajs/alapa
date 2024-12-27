@@ -35,16 +35,18 @@ export const activateGlobalMiddleware = async (
     express.static(config.view.staticFilesPath ?? "static"),
     changeMethod,
     cors(),
+
     session(sessionConfiguration),
     fileUpload({ useTempFiles: true, tempFileDir: getTempDirectory() }),
     cookieParser(),
     express.json(),
     manageCookiesSession,
+    // apiRoutes(),
     flash(),
+    apiRoutes(),
     csrf({ cookie: process.env.NODE_ENV === "development" }),
     templateContextMiddleware,
     ServerContextMiddleware,
-    apiRoutes(),
     csrfErrorHandler,
   ];
   setViews(app);
