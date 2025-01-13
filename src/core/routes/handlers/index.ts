@@ -3,6 +3,7 @@ import { RequestHandler } from "../interface/general";
 import {
   Router as ExpressRouter,
   RequestHandler as ExpressRequestHandler,
+  ErrorRequestHandler,
 } from "express";
 import { RouteChain } from "../interface/route-chain";
 import { IRouter } from "../interface/router";
@@ -118,7 +119,7 @@ export class Router implements IRouter {
   public addExpressRoute(
     method: MethodList,
     path: string,
-    ...handlers: ExpressRequestHandler[]
+    ...handlers: (ExpressRequestHandler | ErrorRequestHandler)[]
   ) {
     this.expressRouter[method](path, ...handlers);
   }
@@ -146,8 +147,13 @@ export class Router implements IRouter {
   }
 
   public use(
-    pathOrHandler: string | RequestHandler | Router | IRouter,
-    ...handlers: RequestHandler[] | Router[] | IRouter[]
+    pathOrHandler:
+      | string
+      | RequestHandler
+      | ErrorRequestHandler
+      | Router
+      | IRouter,
+    ...handlers: RequestHandler[] | Router[] | IRouter[] | ErrorRequestHandler[]
   ): RouteChain {
     return this.processUse(pathOrHandler, ...handlers);
   }
@@ -157,8 +163,13 @@ export class Router implements IRouter {
   }
 
   protected processUse(
-    pathOrHandler: string | RequestHandler | Router | IRouter,
-    ...handlers: RequestHandler[] | Router[] | IRouter[]
+    pathOrHandler:
+      | string
+      | RequestHandler
+      | Router
+      | IRouter
+      | ErrorRequestHandler,
+    ...handlers: (RequestHandler | Router | IRouter | ErrorRequestHandler)[]
   ) {
     const result = this.middleware.processUse(pathOrHandler, ...handlers);
     const middleware: any[] = [];

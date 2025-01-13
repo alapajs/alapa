@@ -25,13 +25,3 @@ export const changeResponses = (
     await Auth.login(user, req, res, remember);
   next();
 };
-
-declare module "express" {
-  export interface Response {
-    render: (
-      view: string,
-      options?: object,
-      callback?: (err: Error, html: string) => void
-    ) => void;
-  }
-}

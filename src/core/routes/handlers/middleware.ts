@@ -1,22 +1,32 @@
 import { RequestHandler } from "../interface/general";
 import { IRouter } from "../interface/router";
 import { Router } from ".";
-import { Router as ExpressRouter } from "express";
+import { ErrorRequestHandler, Router as ExpressRouter } from "express";
 import { processHandlers } from "./processor";
 import { AliasList } from "../../../modules/alias";
 
 export class MiddlewareRouteHandler {
   public processUse(
-    pathOrHandler: string | RequestHandler | ExpressRouter | IRouter,
-    ...handlers: (RequestHandler | ExpressRouter | IRouter)[]
+    pathOrHandler:
+      | string
+      | RequestHandler
+      | ErrorRequestHandler
+      | ExpressRouter
+      | IRouter,
+    ...handlers: (
+      | RequestHandler
+      | ExpressRouter
+      | IRouter
+      | ErrorRequestHandler
+    )[]
   ) {
     const routers: IRouter[] = [];
-    const processed: RequestHandler[] = [];
+    const processed: (RequestHandler | ErrorRequestHandler)[] = [];
     let path: string | null = null;
 
     // Helper function to process handlers
     const handleHandler = (
-      handler: RequestHandler | ExpressRouter | IRouter
+      handler: RequestHandler | ExpressRouter | IRouter | ErrorRequestHandler
     ) => {
       if (handler instanceof Router) {
         routers.push(handler);

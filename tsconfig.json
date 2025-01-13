@@ -13,10 +13,5 @@
     "strictPropertyInitialization": false,
     "skipLibCheck": true
   },
-  "exclude": [
-    "frontend/**/*.ts",
-    "migration-runner/**/*.ts",
-    "test/**/*.ts",
-    "dist/**/*.ts"
-  ]
+  "exclude": ["frontend/**/*.ts", "test/**/*.ts", "dist/**/*.ts"]
 }

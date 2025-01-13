@@ -40,7 +40,7 @@ export const importRegex =
 
 export const commentsRegex = /\/\/.*|\/\*[^]*\*\//gm;
 
-export const noCodeRegex = /<no-code\s*>*\s*>\s*([\s\S]*?)<\/no-code>/g;
+export const noCodeRegex = /<no-code>([\s\S]*?)<\/no-code>/g;
 
 export const outputRegex = /(?!\\)(\{{2,3})([^\\%}]*?)(\}{2,3})(?!%)/g;
 export const includesRegex = /(include|require)\s?\s*\(?['"](.*?)['"]\)?;?/g;

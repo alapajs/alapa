@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { RequestHandler } from "../interface/general";
-import { Router as ExpressRouter } from "express";
+import { ErrorRequestHandler, Router as ExpressRouter } from "express";
 import { IRouter } from "../interface/router";
 import { Router } from ".";
 import { ResourcefulOptions } from "../interface/resourceful";
@@ -35,8 +35,17 @@ export class RouteChainManger {
       head: (path: string, ...handlers: RequestHandler[]) =>
         this.router["head"](path, ...handlers),
       use: (
-        pathOrHandler: string | RequestHandler | ExpressRouter | IRouter,
-        ...handlers: RequestHandler[] | ExpressRouter[] | IRouter[]
+        pathOrHandler:
+          | string
+          | RequestHandler
+          | ErrorRequestHandler
+          | ExpressRouter
+          | IRouter,
+        ...handlers:
+          | RequestHandler[]
+          | ErrorRequestHandler[]
+          | ExpressRouter[]
+          | IRouter[]
       ) => this.router.use(pathOrHandler, ...handlers),
       resource: (path: string, controller: any, option?: ResourcefulOptions) =>
         this.router.resource(path, controller, option),

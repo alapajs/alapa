@@ -33,6 +33,7 @@ export class TemplateEngine {
     context = context || {};
 
     context["addOutPutToTemplateEngine"] = addOutPutToTemplateEngine;
+    // context["echo"] = addOutPutToTemplateEngine;
     context["getOutPutToTemplateEngine"] = getOutPutToTemplateEngine;
     context["containers"] = containers;
     context["escapeHTML"] = escapeHTML;
@@ -43,16 +44,14 @@ export class TemplateEngine {
       return `</no-code>${codeBlock}<no-code>`;
     });
     template = `<no-code>${template}</no-code>`;
-
     // Escape HTML and prepare the output
     template = template.replace(noCodeRegex, (match, html) => {
       html = escapeCode(html);
-      return `;addOutPutToTemplateEngine(\`${html}\`);`;
+      return `; addOutPutToTemplateEngine(\`${html}\`); `;
     });
 
     // Prepare the function with the context directly accessible
     template = `${template} return getOutPutToTemplateEngine()`;
-
     const output = new Function(
       `return (function() {
                   for (const key in this) {
