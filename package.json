@@ -1,6 +1,6 @@
 {
   "name": "alapa",
-  "version": "0.0.2-0",
+  "version": "0.0.1",
   "description": "A cutting-edge web development framework designed to revolutionize the way developers build modern web applications.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -15,6 +15,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "rimraf -rf dist && tsc",
+    "publish:alpha": "npm version prerelease --preid=alpha && npm publish --tag alpha",
+    "publish:beta": "npm version prerelease --preid=beta && npm publish --tag beta",
+    "publish:latest": "npm version patch && npm publish --tag latest",
+    "test:unit": "jest",
     "type-generate": "tsc --project tsconfig-types.json",
     "build": "npm run tsc",
     "dev": "NODE_ENV=development nodemon --watch src --watch views, --watch typing -e \"*\" --delay 2.5 --exec 'npm run build'"
