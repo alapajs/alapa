@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Router } from ".";
+import { ControllerClass } from "../interface/controller";
 import { ResourcefulOptions } from "../interface/resourceful";
 import { RouteChain } from "../interface/route-chain";
 import { makeResourcefulRoute } from "./extension/resource";
@@ -13,7 +14,7 @@ export class ResourceRouteManager {
 
   public resource(
     path: string,
-    controller: any,
+    controller: ControllerClass,
     option?: ResourcefulOptions
   ): RouteChain {
     makeResourcefulRoute(path, controller, this.router, option);
@@ -22,7 +23,7 @@ export class ResourceRouteManager {
 
   public restfulResource(
     path: string,
-    controller: any,
+    controller: ControllerClass,
     options?: ResourcefulOptions
   ): RouteChain {
     options = {
@@ -36,7 +37,7 @@ export class ResourceRouteManager {
 
   public apiResource(
     path: string,
-    controller: any,
+    controller: ControllerClass,
     options?: ResourcefulOptions
   ): RouteChain {
     return this.restfulResource(path, controller, options);
@@ -53,7 +54,7 @@ export class ResourceRouteManager {
   }
 
   public restfulResources(
-    resources: { [route: string]: any },
+    resources: { [route: string]: ControllerClass },
     options: ResourcefulOptions
   ): RouteChain {
     options = {
@@ -66,7 +67,7 @@ export class ResourceRouteManager {
   }
 
   public apiResources(
-    resources: { [route: string]: any },
+    resources: { [route: string]: ControllerClass },
     options: ResourcefulOptions
   ): RouteChain {
     return this.restfulResources(resources, options);

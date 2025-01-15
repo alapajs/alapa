@@ -1,4 +1,4 @@
-import { RequestHandler } from "./general";
+import { IMiddlewareRouteHandler } from "./general";
 
 /**
  * Defines the custom verb names for resourceful routes.
@@ -49,48 +49,48 @@ export interface ResourcefulMiddleware {
   /**
    * Middleware function to be executed before the index action.
    */
-  index?: RequestHandler | RequestHandler[];
+  index?: IMiddlewareRouteHandler | IMiddlewareRouteHandler[];
 
   /**
    * Middleware function to be executed before the create action.
    */
-  create?: RequestHandler | RequestHandler[];
+  create?: IMiddlewareRouteHandler | IMiddlewareRouteHandler[];
 
   /**
    * Middleware function to be executed before the store action.
    */
-  store?: RequestHandler | RequestHandler[];
+  store?: IMiddlewareRouteHandler | IMiddlewareRouteHandler[];
 
   /**
    * Middleware function to be executed before the show action.
    */
-  show?: RequestHandler | RequestHandler[];
+  show?: IMiddlewareRouteHandler | IMiddlewareRouteHandler[];
 
   /**
    * Middleware function to be executed before the edit action.
    */
-  edit?: RequestHandler | RequestHandler[];
+  edit?: IMiddlewareRouteHandler | IMiddlewareRouteHandler[];
 
   /**
    * Middleware function to be executed before the update action.
    */
-  update?: RequestHandler | RequestHandler[];
+  update?: IMiddlewareRouteHandler | IMiddlewareRouteHandler[];
 
   /**
    * Middleware function to be executed before the destroy action.
    */
-  destroy?: RequestHandler | RequestHandler[];
+  destroy?: IMiddlewareRouteHandler | IMiddlewareRouteHandler[];
 
   /**
    * Middleware function to be executed before all actions.
    * Executed before any route handler is invoked.
    */
-  before?: RequestHandler | RequestHandler[];
+  before?: IMiddlewareRouteHandler | IMiddlewareRouteHandler[];
   /**
    * Middleware function to be executed after all actions.
    * Executed after a route handler has been invoked.
    */
-  after?: RequestHandler | RequestHandler[];
+  after?: IMiddlewareRouteHandler | IMiddlewareRouteHandler[];
 }
 
 /**

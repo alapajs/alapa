@@ -16,6 +16,8 @@ import { MiddlewareRouteHandler } from "./middleware";
 import { adjustNameWithPrefix } from "../utils";
 import { StringObject } from "../../../interface/object";
 import { ResourceRouteManager } from "./resource";
+import { ControllerClass, ControllerOptions } from "../interface/controller";
+import { ControllerHandler } from "./controller";
 
 export class Router implements IRouter {
   private routeChain: RouteChainManger;
@@ -23,6 +25,7 @@ export class Router implements IRouter {
   private routesNames: StringObject;
   private middleware: MiddlewareRouteHandler;
   private resourceHandlers: ResourceRouteManager;
+  private controllerHandler: ControllerHandler;
 
   constructor(options?: RouterOptions) {
     this.routesNames = {};
@@ -30,6 +33,7 @@ export class Router implements IRouter {
     this.routeChain = new RouteChainManger(this, this.routesNames);
     this.resourceHandlers = new ResourceRouteManager(this);
     this.middleware = new MiddlewareRouteHandler();
+    this.controllerHandler = new ControllerHandler(this);
   }
   public getNames = () => this.routesNames;
 
@@ -63,15 +67,23 @@ export class Router implements IRouter {
 
   public resource(
     path: string,
-    controller: any,
+    controller: ControllerClass,
     option?: ResourcefulOptions
   ): RouteChain {
     return this.resourceHandlers.resource(path, controller, option);
   }
 
+  public controller(
+    path: string | ControllerClass,
+    controller?: ControllerClass | ControllerOptions,
+    option?: ControllerOptions
+  ): RouteChain {
+    return this.controllerHandler.controller(path, controller, option);
+  }
+
   public restfulResource(
     path: string,
-    controller: any,
+    controller: ControllerClass,
     option?: ResourcefulOptions
   ): RouteChain {
     return this.resourceHandlers.restfulResource(path, controller, option);
@@ -79,28 +91,28 @@ export class Router implements IRouter {
 
   public apiResource(
     path: string,
-    controller: any,
+    controller: ControllerClass,
     option?: ResourcefulOptions
   ): RouteChain {
     return this.resourceHandlers.apiResource(path, controller, option);
   }
 
   public resources(
-    resources: { [route: string]: any },
+    resources: { [route: string]: ControllerClass },
     options: ResourcefulOptions
   ): RouteChain {
     return this.resourceHandlers.resources(resources, options);
   }
 
   public restfulResources(
-    resources: { [route: string]: any },
+    resources: { [route: string]: ControllerClass },
     options: ResourcefulOptions
   ): RouteChain {
     return this.resourceHandlers.restfulResources(resources, options);
   }
 
   public apiResources(
-    resources: { [route: string]: any },
+    resources: { [route: string]: ControllerClass },
     options: ResourcefulOptions
   ): RouteChain {
     return this.resourceHandlers.apiResources(resources, options);

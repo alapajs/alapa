@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { RequestHandler } from "../interface/general";
 import { ErrorRequestHandler, Router as ExpressRouter } from "express";
 import { IRouter } from "../interface/router";
@@ -7,6 +6,7 @@ import { ResourcefulOptions } from "../interface/resourceful";
 import { RoutesNames } from "../names";
 import { RouteChain } from "../interface/route-chain";
 import { StringObject } from "../../../interface/object";
+import { ControllerClass, ControllerOptions } from "../interface/controller";
 
 export class RouteChainManger {
   constructor(private router: Router, private routesNames: StringObject) {}
@@ -47,32 +47,40 @@ export class RouteChainManger {
           | ExpressRouter[]
           | IRouter[]
       ) => this.router.use(pathOrHandler, ...handlers),
-      resource: (path: string, controller: any, option?: ResourcefulOptions) =>
-        this.router.resource(path, controller, option),
+      resource: (
+        path: string,
+        controller: ControllerClass,
+        option?: ResourcefulOptions
+      ) => this.router.resource(path, controller, option),
       // controller: (path: string, controller: any, option?: ResourceOptions) =>
       //   this.router.controller(path, controller, option),
       resources: (
-        resources: { [route: string]: any },
+        resources: { [route: string]: ControllerClass },
         option: ResourcefulOptions
       ) => this.router.resources(resources, option),
       restfulResources: (
-        resources: { [route: string]: any },
+        resources: { [route: string]: ControllerClass },
         option: ResourcefulOptions
       ) => this.router.restfulResources(resources, option),
 
       restfulResource: (
         path: string,
-        controller: any,
+        controller: ControllerClass,
         option?: ResourcefulOptions
       ) => this.router.restfulResource(path, controller, option),
       apiResource: (
         path: string,
-        controller: any,
+        controller: ControllerClass,
         option?: ResourcefulOptions
       ) => this.router.apiResource(path, controller, option),
+      controller: (
+        path: string | ControllerClass,
+        controller?: ControllerClass,
+        option?: ControllerOptions
+      ) => this.router.controller(path, controller, option),
 
       apiResources: (
-        resources: { [route: string]: any },
+        resources: { [route: string]: ControllerClass },
         option: ResourcefulOptions
       ) => this.router.apiResources(resources, option),
 

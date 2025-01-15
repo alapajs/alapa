@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { RequestHandler as ExpressRequestHandler } from "express";
+import {
+  ErrorRequestHandler,
+  RequestHandler as ExpressRequestHandler,
+} from "express";
 import { ParsedQs } from "qs";
 export type RequestHandler =
   | ExpressRequestHandler<
@@ -12,3 +15,5 @@ export type RequestHandler =
     >
   | string
   | [any, string];
+
+export type IMiddlewareRouteHandler = RequestHandler | ErrorRequestHandler;

@@ -104,7 +104,7 @@ export const loadYaml = (filePath: string) => {
  * // Returns 0
  * NumberOnly('');
  */
-export function toNumberOnly(value: any): number {
+export function NumberOnly(value: any): number {
   // Handle cases where value is null, undefined, or an empty string
   if (value === null || value === undefined || value === "") return 0;
 
@@ -132,4 +132,33 @@ export function toNumberOnly(value: any): number {
 
   // If the result is NaN (invalid number), return 0
   return isNaN(result) ? 0 : result;
+}
+
+export const toNumberOnly = NumberOnly;
+
+export function isClass(obj: any) {
+  const isCtorClass =
+    obj.constructor && obj.constructor.toString().substring(0, 5) === "class";
+  if (obj.prototype === undefined) {
+    return isCtorClass;
+  }
+  const isPrototypeCtorClass =
+    obj.prototype.constructor &&
+    obj.prototype.constructor.toString &&
+    obj.prototype.constructor.toString().substring(0, 5) === "class";
+  return isCtorClass || isPrototypeCtorClass;
+}
+
+export function normalizeURLPath(url: string): string {
+  url = url.replaceAll("//", "/").replace(/\/$/, "");
+  return url.toLowerCase();
+}
+
+export function getClassName(target: any): string {
+  const classConstructor = target.constructor;
+  if (classConstructor.name !== "Function") {
+    return classConstructor.name;
+  } else {
+    return target.name;
+  }
 }
