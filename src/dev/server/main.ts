@@ -24,7 +24,7 @@ export const startDevServer = () => {
     socket.join("refresh");
 
     socket.on("changes", () => {
-      console.log("Client requesting refresh");
+      // console.log("Client requesting refresh");
       io.to("refresh").emit("refresh", "Refreshing browser(s) now...");
     });
 

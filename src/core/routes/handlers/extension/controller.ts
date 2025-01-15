@@ -45,11 +45,13 @@ export class ControllerRoutes {
       this.controller = container.resolve<any>(path);
       this.controllerClass = path;
     }
-    if (!this.controller && isClass(controllerClass)) {
-      this.controller = container.resolve<any>(controllerClass);
-      this.controllerClass = controllerClass;
-    } else {
-      throw new Error("Invalid controller");
+    if (!this.controller) {
+      if (isClass(controllerClass)) {
+        this.controller = container.resolve<any>(controllerClass);
+        this.controllerClass = controllerClass;
+      } else {
+        throw new Error("Invalid controller");
+      }
     }
     this.route = route;
     this.options = options;
@@ -76,7 +78,8 @@ export class ControllerRoutes {
       const routeName = this.generateRouteName(names);
       const params = Reflect.getMetadata("params", controller, name) || [];
       const methodPath = this.getMethodPaths(names, params);
-      const routePath = normalizeURLPath(`/${path}/${methodPath}`);
+      const routePath = "/" + normalizeURLPath(`/${path}/${methodPath}`);
+
       route[verb](routePath, controller[name].bind(controller)).name(routeName);
     }
   }

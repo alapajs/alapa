@@ -1,3 +1,5 @@
+import { Options } from "normalize-url";
+
 export interface SecurityConfiguration {
   csrfTokenName?: string; // Name of CSRF token in requests
   xssProtection?: boolean; // Enable or disable XSS protection
@@ -9,5 +11,9 @@ export interface SecurityConfiguration {
     windowMs: number; // Time window in milliseconds
     max: number; // Maximum number of requests in the window
     whitelist?: string[]; // IPs to whitelist from rate limiting
+  };
+  url?: {
+    normalize?: boolean;
+    normalizeOptions?: Options;
   };
 }

@@ -150,7 +150,7 @@ export function isClass(obj: any) {
 }
 
 export function normalizeURLPath(url: string): string {
-  url = url.replaceAll("//", "/").replace(/\/$/, "");
+  url = url.replace(/\/+/g, "/").replace(/^\/|\/$/g, "");
   return url.toLowerCase();
 }
 

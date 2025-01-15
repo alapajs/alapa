@@ -3,7 +3,7 @@ import { IRouter, Router } from "express";
 import { RequestHandler } from "./general";
 import { RouteChain } from "./route-chain";
 import { ResourcefulOptions } from "../handlers/extension";
-import { ControllerClass, ControllerOptions } from "./controller";
+import { ControllerClass, IControllerHandler } from "./controller";
 
 /**
  * BaseRouterInterface
@@ -11,7 +11,7 @@ import { ControllerClass, ControllerOptions } from "./controller";
  * This interface defines methods for routing and handling resources in a web application,
  * providing methods for setting up routes with controllers, resources, and various HTTP methods.
  */
-export interface BaseRouterInterface {
+export interface BaseRouterInterface extends IControllerHandler {
   /**
    * resource
    *
@@ -26,7 +26,7 @@ export interface BaseRouterInterface {
    */
   resource: (
     path: string,
-    controller: any,
+    controller: ControllerClass,
     option?: ResourcefulOptions
   ) => RouteChain;
 
@@ -44,7 +44,7 @@ export interface BaseRouterInterface {
    */
   restfulResource: (
     path: string,
-    controller: any,
+    controller: ControllerClass,
     option?: ResourcefulOptions
   ) => RouteChain;
 
@@ -62,7 +62,7 @@ export interface BaseRouterInterface {
    */
   apiResource: (
     path: string,
-    controller: any,
+    controller: ControllerClass,
     option?: ResourcefulOptions
   ) => RouteChain;
 
@@ -126,11 +126,6 @@ export interface BaseRouterInterface {
    *
    * @returns A `RouteChain` instance for further chaining of route configuration.
    */
-  controller: (
-    path: string | any,
-    controller: ControllerClass | ControllerOptions,
-    option?: ControllerOptions
-  ) => RouteChain;
 
   /**
    * all

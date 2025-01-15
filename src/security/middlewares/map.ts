@@ -21,6 +21,7 @@ import cors from "cors";
 import { renderTemplate } from "./render-template";
 import { apiRoutes } from "../../core/kernel/activate-api-route";
 import { activateDocsRoute } from "../../api/docs-generator/route";
+import { normalizePath } from "./normalize-path";
 
 export const activateGlobalMiddleware = async (
   app: Express,
@@ -28,6 +29,7 @@ export const activateGlobalMiddleware = async (
 ) => {
   const middlewares = [
     renderTemplate,
+    normalizePath,
     changeResponses,
     generalMiddleware,
     bodyParser.urlencoded({ extended: false }),

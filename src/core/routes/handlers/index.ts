@@ -18,6 +18,7 @@ import { StringObject } from "../../../interface/object";
 import { ResourceRouteManager } from "./resource";
 import { ControllerClass, ControllerOptions } from "../interface/controller";
 import { ControllerHandler } from "./controller";
+import { normalizeURLPath } from "../../../utils";
 
 export class Router implements IRouter {
   private routeChain: RouteChainManger;
@@ -25,7 +26,7 @@ export class Router implements IRouter {
   private routesNames: StringObject;
   private middleware: MiddlewareRouteHandler;
   private resourceHandlers: ResourceRouteManager;
-  private controllerHandler: ControllerHandler;
+  private controllerHandler: ControllerHandler = new ControllerHandler();
 
   constructor(options?: RouterOptions) {
     this.routesNames = {};
@@ -33,7 +34,7 @@ export class Router implements IRouter {
     this.routeChain = new RouteChainManger(this, this.routesNames);
     this.resourceHandlers = new ResourceRouteManager(this);
     this.middleware = new MiddlewareRouteHandler();
-    this.controllerHandler = new ControllerHandler(this);
+    this.controllerHandler.addRout(this);
   }
   public getNames = () => this.routesNames;
 
@@ -73,12 +74,31 @@ export class Router implements IRouter {
     return this.resourceHandlers.resource(path, controller, option);
   }
 
-  public controller(
-    path: string | ControllerClass,
-    controller?: ControllerClass | ControllerOptions,
+  controller(
+    path: string,
+    controller: ControllerClass,
     option?: ControllerOptions
+  ): RouteChain;
+
+  // The second method overload
+  controller(
+    controller: ControllerClass,
+    option: ControllerOptions
+  ): RouteChain;
+
+  // The third method overload
+  controller(controller: ControllerClass): RouteChain;
+
+  public controller(
+    pathOrController: string | ControllerClass,
+    controller?: ControllerClass | ControllerOptions,
+    option?: ControllerOptions | ControllerClass
   ): RouteChain {
-    return this.controllerHandler.controller(path, controller, option);
+    return this.controllerHandler.controller(
+      pathOrController,
+      controller,
+      option
+    );
   }
 
   public restfulResource(
@@ -133,6 +153,7 @@ export class Router implements IRouter {
     path: string,
     ...handlers: (ExpressRequestHandler | ErrorRequestHandler)[]
   ) {
+    path = "/" + normalizeURLPath(path);
     this.expressRouter[method](path, ...handlers);
   }
 
