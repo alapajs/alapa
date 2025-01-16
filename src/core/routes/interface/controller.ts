@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IMiddlewareRouteHandler } from "./general";
+import { Middleware } from "./general";
 import { RouteChain } from "./route-chain";
 
 export interface ControllerOptions {
-  middlewareAll?: IMiddlewareRouteHandler[];
-  middleware?: { [methodName: string]: IMiddlewareRouteHandler[] };
+  middlewareAll?: Middleware[];
+  middleware?: { [methodName: string]: Middleware[] };
   namePrefix?: string;
 }
 

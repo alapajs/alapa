@@ -4,6 +4,7 @@ import { Router } from ".";
 import { ErrorRequestHandler, Router as ExpressRouter } from "express";
 import { processHandlers } from "./processor";
 import { AliasList } from "../../../modules/alias";
+import { SingleControllerClassHandler } from "./extension/single-controller";
 
 export class MiddlewareRouteHandler {
   public processUse(

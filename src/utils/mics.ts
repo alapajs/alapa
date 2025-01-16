@@ -154,11 +154,19 @@ export function normalizeURLPath(url: string): string {
   return url.toLowerCase();
 }
 
-export function getClassName(target: any): string {
-  const classConstructor = target.constructor;
+export function cleanPath(url: string): string {
+  url = url.replace(/\/+/g, "/").replace(/^\/|\/$/g, "");
+  return url.toLowerCase();
+}
+
+export function getClassName(obj: any): string {
+  if (!isClass(obj)) {
+    throw new Error("The provided object is not a class.");
+  }
+  const classConstructor = obj.constructor;
   if (classConstructor.name !== "Function") {
     return classConstructor.name;
   } else {
-    return target.name;
+    return obj.name;
   }
 }

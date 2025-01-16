@@ -3,7 +3,7 @@ import { Router } from ".";
 import { ControllerClass } from "../interface/controller";
 import { ResourcefulOptions } from "../interface/resourceful";
 import { RouteChain } from "../interface/route-chain";
-import { makeResourcefulRoute } from "./extension/resource";
+import { ResourcefulRoute } from "./extension/resource";
 
 export class ResourceRouteManager {
   private router: Router;
@@ -17,7 +17,7 @@ export class ResourceRouteManager {
     controller: ControllerClass,
     option?: ResourcefulOptions
   ): RouteChain {
-    makeResourcefulRoute(path, controller, this.router, option);
+    new ResourcefulRoute(path, controller, this.router, option);
     return this.router.all("");
   }
 

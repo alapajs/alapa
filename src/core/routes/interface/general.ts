@@ -16,4 +16,4 @@ export type RequestHandler =
   | string
   | [any, string];
 
-export type IMiddlewareRouteHandler = RequestHandler | ErrorRequestHandler;
+export type Middleware = RequestHandler | ErrorRequestHandler;

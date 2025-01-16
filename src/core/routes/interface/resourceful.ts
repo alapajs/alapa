@@ -1,4 +1,4 @@
-import { IMiddlewareRouteHandler } from "./general";
+import { Middleware } from "./general";
 
 /**
  * Defines the custom verb names for resourceful routes.
@@ -49,48 +49,48 @@ export interface ResourcefulMiddleware {
   /**
    * Middleware function to be executed before the index action.
    */
-  index?: IMiddlewareRouteHandler | IMiddlewareRouteHandler[];
+  index?: Middleware | Middleware[];
 
   /**
    * Middleware function to be executed before the create action.
    */
-  create?: IMiddlewareRouteHandler | IMiddlewareRouteHandler[];
+  create?: Middleware | Middleware[];
 
   /**
    * Middleware function to be executed before the store action.
    */
-  store?: IMiddlewareRouteHandler | IMiddlewareRouteHandler[];
+  store?: Middleware | Middleware[];
 
   /**
    * Middleware function to be executed before the show action.
    */
-  show?: IMiddlewareRouteHandler | IMiddlewareRouteHandler[];
+  show?: Middleware | Middleware[];
 
   /**
    * Middleware function to be executed before the edit action.
    */
-  edit?: IMiddlewareRouteHandler | IMiddlewareRouteHandler[];
+  edit?: Middleware | Middleware[];
 
   /**
    * Middleware function to be executed before the update action.
    */
-  update?: IMiddlewareRouteHandler | IMiddlewareRouteHandler[];
+  update?: Middleware | Middleware[];
 
   /**
    * Middleware function to be executed before the destroy action.
    */
-  destroy?: IMiddlewareRouteHandler | IMiddlewareRouteHandler[];
+  destroy?: Middleware | Middleware[];
 
   /**
    * Middleware function to be executed before all actions.
    * Executed before any route handler is invoked.
    */
-  before?: IMiddlewareRouteHandler | IMiddlewareRouteHandler[];
+  before?: Middleware | Middleware[];
   /**
    * Middleware function to be executed after all actions.
    * Executed after a route handler has been invoked.
    */
-  after?: IMiddlewareRouteHandler | IMiddlewareRouteHandler[];
+  after?: Middleware | Middleware[];
 }
 
 /**
@@ -157,4 +157,109 @@ export interface ResourcefulOptions {
    * Default is `false`.
    */
   mergeMiddleware?: boolean; // Defaults to false
+}
+
+/**
+ * Enum representing the different resourceful actions for a controller.
+ *
+ * This enum is used to define the standard CRUD operations (and their variants)
+ * for a resource in a RESTful API. It helps ensure consistency across your
+ * routes and actions by using predefined string constants rather than magic strings.
+ *
+ * Each action corresponds to a typical HTTP operation:
+ *
+ * - `INDEX`: Represents listing all resources (e.g., `GET /`).
+ * - `CREATE`: Represents showing the form to create a new resource (e.g., `GET /create`).
+ * - `STORE`: Represents the action of creating a new resource (e.g., `POST /`).
+ * - `SHOW`: Represents viewing a single resource by its ID (e.g., `GET /:id`).
+ * - `EDIT`: Represents showing the form to edit an existing resource (e.g., `GET /:id/edit`).
+ * - `UPDATE`: Represents updating an existing resource (e.g., `PUT /:id` or `PATCH /:id`).
+ * - `DESTROY`: Represents deleting a resource (e.g., `DELETE /:id`).
+ *
+ * By using this enum, you can maintain consistency and avoid errors due to hardcoding action names as strings.
+ */
+export enum ResourceActionEnum {
+  /**
+   * `INDEX` action represents listing all resources of a given type.
+   *
+   * Typically used for displaying a collection of resources (e.g., `GET /resources`).
+   * This is where you would retrieve a paginated or filtered list of resources.
+   *
+   * **Use Case**:
+   * - Displaying a list of all blog posts.
+   * - Fetching all users from a user management system.
+   */
+  INDEX = "index",
+
+  /**
+   * `CREATE` action represents showing the form or interface to create a new resource.
+   *
+   * This is commonly used for rendering a form where the user can input data to create a new resource.
+   * This action usually maps to a `GET` request to show a creation interface, such as a form or template.
+   *
+   * **Use Case**:
+   * - Displaying the "New Post" form on a blog platform.
+   * - Showing the "Add New User" form in an admin panel.
+   */
+  CREATE = "create",
+
+  /**
+   * `STORE` action represents creating a new resource from the submitted data.
+   *
+   * This action handles the actual process of storing the newly created resource to a database.
+   * It is typically associated with a `POST` request to store the resource.
+   *
+   * **Use Case**:
+   * - Saving a new blog post to the database after submitting the form.
+   * - Storing a new user after filling out the registration form.
+   */
+  STORE = "store",
+
+  /**
+   * `SHOW` action represents displaying a single resource by its ID.
+   *
+   * This is used for retrieving and displaying a specific resource's details, often identified by its `id`.
+   * Typically corresponds to a `GET` request with a parameter (e.g., `GET /:id`).
+   *
+   * **Use Case**:
+   * - Viewing the details of a single blog post.
+   * - Fetching and displaying a user's profile information.
+   */
+  SHOW = "show",
+
+  /**
+   * `EDIT` action represents showing the form or interface to edit an existing resource.
+   *
+   * This is typically used for displaying an edit form where the user can update an existing resource.
+   * It corresponds to a `GET` request with the resource ID to fetch and pre-fill the form with current data.
+   *
+   * **Use Case**:
+   * - Showing the "Edit Post" form on a blog platform with pre-filled content.
+   * - Displaying the "Edit User" form in an admin panel for updating user information.
+   */
+  EDIT = "edit",
+
+  /**
+   * `UPDATE` action represents the process of updating an existing resource.
+   *
+   * This action is used for applying changes to a resource. It typically maps to a `PUT` or `PATCH` request
+   * to update the resource on the server with the new data.
+   *
+   * **Use Case**:
+   * - Updating the content of a blog post after editing it.
+   * - Changing a user's password or email address.
+   */
+  UPDATE = "update",
+
+  /**
+   * `DESTROY` action represents deleting a resource.
+   *
+   * This is used for removing a resource permanently. Typically maps to a `DELETE` request, where the
+   * resource is identified by its `id`.
+   *
+   * **Use Case**:
+   * - Deleting a blog post after an admin or the author decides to remove it.
+   * - Removing a user from the system (e.g., "Delete User" functionality).
+   */
+  DESTROY = "destroy",
 }
