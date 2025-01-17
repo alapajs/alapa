@@ -2,9 +2,9 @@
 import { AnyObject } from "../../../../interface/object";
 import { cleanPath, isClass } from "../../../../utils";
 import { ControllerClass } from "../../interface/controller";
+import { RequestHandler } from "../../interface/handler";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const inflect = require("i")();
-import { RequestHandler } from "../../interface/general";
 import {
   defaultVerb,
   ResourcefulOptions,

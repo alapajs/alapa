@@ -170,3 +170,8 @@ export function getClassName(obj: any): string {
     return obj.name;
   }
 }
+
+export const isControllerString = (str: string): boolean => {
+  if (str.includes("@")) return true;
+  return false;
+};

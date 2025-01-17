@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Middleware } from "./general";
+import { Middleware } from "./handler";
 import { RouteChain } from "./route-chain";
 
 export interface ControllerOptions {

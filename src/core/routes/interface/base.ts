@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IRouter, Router } from "express";
-import { RequestHandler } from "./general";
 import { RouteChain } from "./route-chain";
 import { ResourcefulOptions } from "../handlers/extension";
 import { ControllerClass, IControllerHandler } from "./controller";
+import { RequestHandler } from "./handler";
 
 /**
  * BaseRouterInterface
@@ -64,54 +63,6 @@ export interface BaseRouterInterface extends IControllerHandler {
     path: string,
     controller: ControllerClass,
     option?: ResourcefulOptions
-  ) => RouteChain;
-
-  /**
-   * resources
-   *
-   * Defines multiple routes for a set of resources. Each route can be mapped to a controller for handling
-   * specific HTTP methods for that resource.
-   *
-   * @param resources - An object where keys are routes and values are the controllers for those routes.
-   * @param option - Configuration options for the resources.
-   *
-   * @returns A `RouteChain` instance for further chaining of route configuration.
-   */
-  resources: (
-    resources: { [route: string]: any },
-    option: ResourcefulOptions
-  ) => RouteChain;
-
-  /**
-   * restfulResources
-   *
-   * Similar to `resources`, but specifically for handling RESTful resources, associating each route
-   * with its corresponding controller and optionally configuring the resource handling.
-   *
-   * @param resources - An object where keys are routes and values are the controllers for those routes.
-   * @param option - Configuration options for the RESTful resources.
-   *
-   * @returns A `RouteChain` instance for further chaining of route configuration.
-   */
-  restfulResources: (
-    resources: { [route: string]: any },
-    option: ResourcefulOptions
-  ) => RouteChain;
-
-  /**
-   * apiResources
-   *
-   * Defines multiple API-specific resource routes, where each resource route is linked to a controller.
-   * This is used to manage API routes following a resourceful convention.
-   *
-   * @param resources - An object where keys are API routes and values are the controllers for those routes.
-   * @param option - Configuration options for the API resources.
-   *
-   * @returns A `RouteChain` instance for further chaining of route configuration.
-   */
-  apiResources: (
-    resources: { [route: string]: any },
-    option: ResourcefulOptions
   ) => RouteChain;
 
   /**

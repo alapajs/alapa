@@ -1,39 +1,41 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { RequestHandler } from "../interface/general";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Router as ExpressRouter,
   RequestHandler as ExpressRequestHandler,
-  ErrorRequestHandler,
 } from "express";
 import { RouteChain } from "../interface/route-chain";
 import { IRouter } from "../interface/router";
 import { RouterOptions } from "express";
 import { MethodList } from "../interface/method";
 import { RouteChainManger } from "./chain";
-import { processHandlers } from "./processor";
 import { ResourcefulOptions } from "../interface/resourceful";
-import { MiddlewareRouteHandler } from "./middleware";
 import { adjustNameWithPrefix } from "../utils";
 import { StringObject } from "../../../interface/object";
 import { ResourceRouteManager } from "./resource";
 import { ControllerClass, ControllerOptions } from "../interface/controller";
 import { ControllerHandler } from "./controller";
-import { normalizeURLPath } from "../../../utils";
+import { isControllerString, Logger, normalizeURLPath } from "../../../utils";
+import {
+  BasicRequestHandler,
+  ErrorRequestHandler,
+  Middleware,
+  RequestHandler,
+} from "../interface/handler";
+import { RouteFilter } from "./filter";
 
 export class Router implements IRouter {
   private routeChain: RouteChainManger;
   private expressRouter: ExpressRouter;
   private routesNames: StringObject;
-  private middleware: MiddlewareRouteHandler;
   private resourceHandlers: ResourceRouteManager;
   private controllerHandler: ControllerHandler = new ControllerHandler();
+  private filter = new RouteFilter();
 
   constructor(options?: RouterOptions) {
     this.routesNames = {};
     this.expressRouter = ExpressRouter(options);
     this.routeChain = new RouteChainManger(this, this.routesNames);
     this.resourceHandlers = new ResourceRouteManager(this);
-    this.middleware = new MiddlewareRouteHandler();
     this.controllerHandler.addRout(this);
   }
   public getNames = () => this.routesNames;
@@ -117,28 +119,6 @@ export class Router implements IRouter {
     return this.resourceHandlers.apiResource(path, controller, option);
   }
 
-  public resources(
-    resources: { [route: string]: ControllerClass },
-    options: ResourcefulOptions
-  ): RouteChain {
-    return this.resourceHandlers.resources(resources, options);
-  }
-
-  public restfulResources(
-    resources: { [route: string]: ControllerClass },
-    options: ResourcefulOptions
-  ): RouteChain {
-    return this.resourceHandlers.restfulResources(resources, options);
-  }
-
-  public apiResources(
-    resources: { [route: string]: ControllerClass },
-    options: ResourcefulOptions
-  ): RouteChain {
-    return this.resourceHandlers.apiResources(resources, options);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public view(path: string, view: string, data?: object): RouteChain {
     // return this.processView(path, view, data);]
     return this.get(path, view);
@@ -154,6 +134,10 @@ export class Router implements IRouter {
     ...handlers: (ExpressRequestHandler | ErrorRequestHandler)[]
   ) {
     path = "/" + normalizeURLPath(path);
+    if (handlers.length == 0) {
+      console.log("No handlers at", path);
+      return null;
+    }
     this.expressRouter[method](path, ...handlers);
   }
 
@@ -162,8 +146,13 @@ export class Router implements IRouter {
     path: string,
     ...handlers: RequestHandler[]
   ) {
-    const proceedHandler = processHandlers(...handlers);
-    this.addExpressRoute(method, path, ...proceedHandler);
+    const proceedHandler = this.filter.handlers(...handlers);
+    if (proceedHandler.routers.length > 0) {
+      throw new Error(
+        `Router Class cannot be assigned to ${method} method at ${path} user middleware instead to process Router`
+      );
+    }
+    this.addExpressRoute(method, path, ...proceedHandler.processed);
   }
 
   private getRoutes(): ExpressRouter {
@@ -179,15 +168,7 @@ export class Router implements IRouter {
     return this.routeChain.getChain(path);
   }
 
-  public use(
-    pathOrHandler:
-      | string
-      | RequestHandler
-      | ErrorRequestHandler
-      | Router
-      | IRouter,
-    ...handlers: RequestHandler[] | Router[] | IRouter[] | ErrorRequestHandler[]
-  ): RouteChain {
+  public use(pathOrHandler: Middleware, ...handlers: Middleware[]): RouteChain {
     return this.processUse(pathOrHandler, ...handlers);
   }
 
@@ -195,30 +176,39 @@ export class Router implements IRouter {
     return this.addMethod("all", path, ...handlers);
   }
 
-  protected processUse(
-    pathOrHandler:
-      | string
-      | RequestHandler
-      | Router
-      | IRouter
-      | ErrorRequestHandler,
-    ...handlers: (RequestHandler | Router | IRouter | ErrorRequestHandler)[]
-  ) {
-    const result = this.middleware.processUse(pathOrHandler, ...handlers);
-    const middleware: any[] = [];
-    if (result.processed.length > 0) {
-      middleware.push(...result.processed);
+  protected processUse(pathOrHandler: Middleware, ...handlers: Middleware[]) {
+    let path = null;
+    if (typeof pathOrHandler === "string") {
+      if (isControllerString(pathOrHandler)) {
+        handlers.push(pathOrHandler);
+      }
+      path = pathOrHandler;
+    } else {
+      handlers.push(pathOrHandler);
     }
-    for (const route of result.routers) {
-      if (result.path) {
-        adjustNameWithPrefix(result.path, route);
+    const filter = this.filter.middlewares(...handlers);
+    const middleware: (BasicRequestHandler | ErrorRequestHandler)[] = [];
+    if (filter.processed.length > 0) {
+      middleware.push(...filter.processed);
+    }
+    for (const route of filter.routers) {
+      if (path) {
+        adjustNameWithPrefix(path, route);
       }
       middleware.push(route.toExpressRoutes());
     }
-    if (result.path) {
-      this.expressRouter.use(result.path, middleware);
+    if (path) {
+      try {
+        this.expressRouter.use(path, middleware);
+      } catch (e) {
+        throw new Error(`${e}`);
+      }
     } else {
-      this.expressRouter.use(middleware);
+      try {
+        this.expressRouter.use(middleware);
+      } catch (e) {
+        throw new Error(`${e}`);
+      }
     }
     return this.all("");
   }

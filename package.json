@@ -15,10 +15,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
-    "publish:alpha": "npm version prerelease --preid=alpha && npm publish --tag alpha",
-    "publish:beta": "npm version prerelease --preid=beta && npm publish --tag beta",
+    "publish:alpha": "run npm build && npm version prerelease --preid=alpha && npm publish --tag alpha",
+    "publish:beta": "run npm build &&  npm version prerelease --preid=beta && npm publish --tag beta",
     "patch": "npm version patch",
     "major": "npm version major",
+    "pack": "npm run build && npm pack",
     "publish:latest": "npm publish --tag latest",
     "test:unit": "jest",
     "type-generate": "tsc --project tsconfig-types.json",

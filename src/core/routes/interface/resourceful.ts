@@ -1,4 +1,4 @@
-import { Middleware } from "./general";
+import { Middleware } from "./handler";
 
 /**
  * Defines the custom verb names for resourceful routes.

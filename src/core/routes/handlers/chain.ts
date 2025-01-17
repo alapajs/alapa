@@ -1,5 +1,3 @@
-import { RequestHandler } from "../interface/general";
-import { ErrorRequestHandler, Router as ExpressRouter } from "express";
 import { IRouter } from "../interface/router";
 import { Router } from ".";
 import { ResourcefulOptions } from "../interface/resourceful";
@@ -7,6 +5,7 @@ import { RoutesNames } from "../names";
 import { RouteChain } from "../interface/route-chain";
 import { StringObject } from "../../../interface/object";
 import { ControllerClass, ControllerOptions } from "../interface/controller";
+import { RequestHandler } from "../interface/handler";
 
 export class RouteChainManger {
   constructor(private router: Router, private routesNames: StringObject) {}
@@ -35,17 +34,8 @@ export class RouteChainManger {
       head: (path: string, ...handlers: RequestHandler[]) =>
         this.router["head"](path, ...handlers),
       use: (
-        pathOrHandler:
-          | string
-          | RequestHandler
-          | ErrorRequestHandler
-          | ExpressRouter
-          | IRouter,
-        ...handlers:
-          | RequestHandler[]
-          | ErrorRequestHandler[]
-          | ExpressRouter[]
-          | IRouter[]
+        pathOrHandler: string | RequestHandler | IRouter,
+        ...handlers: RequestHandler[] | IRouter[]
       ) => this.router.use(pathOrHandler, ...handlers),
       resource: (
         path: string,
@@ -54,14 +44,6 @@ export class RouteChainManger {
       ) => this.router.resource(path, controller, option),
       // controller: (path: string, controller: any, option?: ResourceOptions) =>
       //   this.router.controller(path, controller, option),
-      resources: (
-        resources: { [route: string]: ControllerClass },
-        option: ResourcefulOptions
-      ) => this.router.resources(resources, option),
-      restfulResources: (
-        resources: { [route: string]: ControllerClass },
-        option: ResourcefulOptions
-      ) => this.router.restfulResources(resources, option),
 
       restfulResource: (
         path: string,
@@ -78,11 +60,6 @@ export class RouteChainManger {
         controller?: ControllerClass,
         option?: ControllerOptions
       ) => this.router.controller(path, controller, option),
-
-      apiResources: (
-        resources: { [route: string]: ControllerClass },
-        option: ResourcefulOptions
-      ) => this.router.apiResources(resources, option),
 
       view: (path: string, view: string, data?: object) =>
         this.router.view(path, view, data),

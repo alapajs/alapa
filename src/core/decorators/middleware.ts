@@ -1,6 +1,6 @@
 import { getClassName } from "../../utils";
-import { Middleware } from "../routes";
 import { ControllerClass } from "../routes/interface/controller";
+import { Middleware } from "../routes/interface/handler";
 
 export function Middlewares(handler: Middleware, ...rest: Middleware[]) {
   return function (target: ControllerClass, methodName: string) {

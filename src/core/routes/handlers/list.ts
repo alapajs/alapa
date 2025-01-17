@@ -3,8 +3,8 @@ import { Router } from "express";
 import { RoutesNames } from "../names";
 import { List } from "../../../interface/class/list";
 import { Map } from "../../../interface/class/map";
-import { RequestHandler } from "../interface/general";
 import { IRouter } from "../interface/router";
+import { RequestHandler } from "../interface/handler";
 
 interface IRoutes {
   name: string;

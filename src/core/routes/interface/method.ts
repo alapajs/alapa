@@ -1,4 +1,4 @@
-import { RequestHandler } from "./general";
+import { RequestHandler } from "./handler";
 import { RouteChain } from "./route-chain";
 export type MethodList =
   | "all"

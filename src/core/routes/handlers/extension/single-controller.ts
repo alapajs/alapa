@@ -3,8 +3,11 @@ import "reflect-metadata";
 import { container } from "tsyringe";
 import { ControllerClass } from "../../interface/controller";
 import { getClassName, isClass } from "../../../../utils";
-import { RequestHandler } from "../../interface";
 import path from "path";
+import {
+  BasicRequestHandler,
+  ErrorRequestHandler,
+} from "../../interface/handler";
 
 export class SingleControllerClassHandler {
   static parseRouteHandlerFromArray(handle: [ControllerClass, string]) {
@@ -56,7 +59,7 @@ export class SingleControllerClassHandler {
   static parse(
     classController: ControllerClass,
     method: string
-  ): RequestHandler {
+  ): BasicRequestHandler | ErrorRequestHandler {
     if (!isClass(classController)) {
       throw new Error(`${typeof classController} is not a valid class`);
     }
