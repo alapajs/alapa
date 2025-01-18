@@ -42,8 +42,6 @@ export class RouteChainManger {
         controller: ControllerClass,
         option?: ResourcefulOptions
       ) => this.router.resource(path, controller, option),
-      // controller: (path: string, controller: any, option?: ResourceOptions) =>
-      //   this.router.controller(path, controller, option),
 
       restfulResource: (
         path: string,
