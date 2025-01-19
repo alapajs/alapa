@@ -36,6 +36,10 @@ const LoggerFunction = (
     [LOG_LEVEL.ERROR]: colors.ERROR,
     [LOG_LEVEL.SUCCESS]: colors.SUCCESS,
   };
+  for (const i in message) {
+    message[i] =
+      typeof message[i] === "object" ? JSON.stringify(message[i]) : message[i];
+  }
 
   if (settings?.noConsole !== true) {
     const logMessage = settings?.noColor

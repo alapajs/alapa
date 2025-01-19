@@ -9,6 +9,8 @@ import {
   normalizeURLPath,
 } from "../../../../utils/mics";
 import { HTTP_METHODS } from "../../../../shared";
+import { ControllerDocGenerator } from "./controller-utils";
+import { OpenApiEntry } from "../../../../api";
 const excludedMethods = [
   "constructor",
   "hasOwnProperty",
@@ -30,10 +32,23 @@ export class ControllerRoutes {
   private className = "";
   private route: IRouter;
   private path: string = "";
+  private docPrefix: string;
   private controller: any;
   private verbs: string[] = Object.keys(HTTP_METHODS);
+  private controllerDoc: ControllerDocGenerator;
 
   constructor(
+    route: IRouter,
+    path: string | ControllerClass,
+    controllerClass?: ControllerClass,
+    options?: ControllerOptions
+  ) {
+    this.buildData(route, path, controllerClass, options);
+    this.getMethods();
+    this.addRoutes();
+  }
+
+  buildData(
     route: IRouter,
     path: string | ControllerClass,
     controllerClass?: ControllerClass,
@@ -55,10 +70,24 @@ export class ControllerRoutes {
     }
     this.route = route;
     this.options = options;
-    this.getMethods();
-    this.addRoutes();
+    this.className = getClassName(this.controllerClass);
+    this.docPrefix =
+      this.controller.docPrefix || this.controllerClass.docPrefix;
+    this.controllerDoc = new ControllerDocGenerator({
+      defaultTag: this.className,
+      docPrefix: this.docPrefix,
+    });
   }
-
+  generateDoc(path: string, name: string, verb: string) {
+    const operation = OpenApiEntry.getOperationItem(this.controller, name);
+    const methodItem = OpenApiEntry.getMethodItem(this.controller, name);
+    if (methodItem) {
+      this.controllerDoc.generateMethod(path, methodItem);
+    }
+    if (operation) {
+      this.controllerDoc.generateOperation(path, verb, operation);
+    }
+  }
   private addRoutes() {
     if (!this.methods.length) {
       this.getMethods();
@@ -79,7 +108,7 @@ export class ControllerRoutes {
       const params = Reflect.getMetadata("params", controller, name) || [];
       const methodPath = this.getMethodPaths(names, params);
       const routePath = "/" + normalizeURLPath(`/${path}/${methodPath}`);
-
+      this.generateDoc(routePath, name, verb);
       route[verb](routePath, controller[name].bind(controller)).name(routeName);
     }
   }

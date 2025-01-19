@@ -19,9 +19,6 @@ export function buildPaths() {
       if (!openApiDefinitionsPaths[key][method]["operationId"]) {
         openApiDefinitionsPaths[key][method]["operationId"] = operationId;
       }
-      if (data["tags"] && Array.isArray(data["tags"])) {
-        openApiDefinitionsPaths[key][method]["tags"] = data["tags"];
-      }
     });
   });
 }

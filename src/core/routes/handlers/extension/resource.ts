@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AnyObject } from "../../../../interface/object";
-import { cleanPath, isClass } from "../../../../utils";
+import { cleanPath, getClassName, isClass } from "../../../../utils";
 import { ControllerClass } from "../../interface/controller";
 import { RequestHandler } from "../../interface/handler";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -13,6 +13,8 @@ import {
 import { IRouter } from "../../interface/router";
 import "reflect-metadata";
 import { container } from "tsyringe";
+import { ControllerDocGenerator } from "./controller-utils";
+import { OpenApiEntry } from "../../../../api";
 
 interface ResourcefulActions {
   name: string;
@@ -32,6 +34,9 @@ export class ResourcefulRoute {
   private except: string[] = [];
   private controller: ControllerClass;
   private path: string;
+  private controllerDoc: ControllerDocGenerator;
+  private className: string;
+  private docPrefix: string;
 
   constructor(
     path: string,
@@ -56,6 +61,14 @@ export class ResourcefulRoute {
     return name.toLowerCase();
   }
 
+  generateDoc(name: string, method: string) {
+    const path = this.getRoutePath(name);
+    const operation = OpenApiEntry.getOperationItem(this.controller, name);
+    const methodItem = OpenApiEntry.getMethodItem(this.controller, name);
+    this.controllerDoc.generateMethod(path, methodItem);
+    this.controllerDoc.generateOperation(path, method, operation);
+  }
+
   private createRoute(action: ResourcefulActions) {
     const { name } = action;
     if (this.isInclude(name)) {
@@ -63,7 +76,7 @@ export class ResourcefulRoute {
       const path = this.getRoutePath(name);
       const controllerMethod = this.controller[name].bind(this.controller);
       const methods = this.getMethods(action.method);
-      // console.log(name, path);
+      this.generateDoc(name, methods[0]);
       for (const method of methods) {
         if (middleware.before.length > 0) {
           this.router.use(path, ...middleware.before);
@@ -122,7 +135,6 @@ export class ResourcefulRoute {
 
   getParam(name: string): string {
     const params = Reflect.getMetadata("params", this.controller, name) || [];
-    // console.log(params);
     if (!params.length) return "";
     const result = [];
     for (const param of params) {
@@ -180,6 +192,13 @@ export class ResourcefulRoute {
     if (!this.controller) {
       throw new Error("Controller instance could not be created.");
     }
+    this.docPrefix =
+      this.controller.docPrefix || this.controllerClass.docPrefix;
+    this.className = getClassName(this.controllerClass);
+    this.controllerDoc = new ControllerDocGenerator({
+      defaultTag: this.className,
+      docPrefix: this.docPrefix,
+    });
 
     this.options = { ...this.options, ...this.controller.resourceOption };
     this.changeNamesWithVerbs =

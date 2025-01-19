@@ -13,7 +13,7 @@ export class ViewHandler {
     return res.render(this.view, this.context);
   }
   add(path: string, view: string, context?: AnyObject) {
-    const viewPath = GlobalConfig.view.dir || "views";
+    // const viewPath = GlobalConfig.view.dir || "views";
     // const file = path.resolve(viewPath,view)
     this.view = view;
     this.context = context;

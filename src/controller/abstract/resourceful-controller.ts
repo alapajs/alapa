@@ -1,4 +1,5 @@
-import { BaseResourcefulController, RouteCallback } from "./base-resourceful";
+import { BasicRequestHandler } from "../../core/routes";
+import { BaseResourcefulController } from "./base-resourceful";
 
 /**
  * @abstract
@@ -14,7 +15,7 @@ export abstract class ResourcefulController extends BaseResourcefulController {
    * @param res - The HTTP response object used to send a response.
    * @param next - The next middleware function in the stack (optional).
    */
-  abstract create: RouteCallback;
+  abstract create: BasicRequestHandler;
 
   /**
    * Handles the request to display a form for editing a specific resource.
@@ -23,5 +24,5 @@ export abstract class ResourcefulController extends BaseResourcefulController {
    * @param res - The HTTP response object used to send a response.
    * @param next - The next middleware function in the stack (optional).
    */
-  abstract edit: RouteCallback;
+  abstract edit: BasicRequestHandler;
 }
