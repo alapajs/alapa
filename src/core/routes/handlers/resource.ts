@@ -4,12 +4,14 @@ import { ControllerClass } from "../interface/controller";
 import { ResourcefulOptions } from "../interface/resourceful";
 import { RouteChain } from "../interface/route-chain";
 import { ResourcefulRoute } from "./extension/resource";
+import { RouterUtils } from "./utils";
 
 export class ResourceRouteManager {
   private router: Router;
-
+  private utils: RouterUtils;
   constructor(router: Router) {
     this.router = router;
+    this.utils = new RouterUtils(router);
   }
 
   public resource(
@@ -18,7 +20,7 @@ export class ResourceRouteManager {
     option?: ResourcefulOptions
   ): RouteChain {
     new ResourcefulRoute(path, controller, this.router, option);
-    return this.router.all("");
+    return this.utils.addFakeMethod();
   }
 
   public restfulResource(
@@ -50,7 +52,7 @@ export class ResourceRouteManager {
     for (const [path, controller] of Object.entries(resources)) {
       this.resource(path, controller, options);
     }
-    return this.router.all("");
+    return this.utils.addFakeMethod();
   }
 
   public restfulResources(

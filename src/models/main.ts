@@ -1,11 +1,8 @@
-import { BaseEntity, RemoveOptions, SaveOptions } from "typeorm";
+import { BaseEntity } from "typeorm";
 
 export abstract class Model extends BaseEntity {
-  async delete(options?: RemoveOptions) {
-    this.remove(options);
-  }
-
-  async softDelete(options: SaveOptions) {
-    this.softRemove(options);
+  static queryBuilder(alias: string) {
+    // `this` here refers to the constructor of the class (e.g., Model or its subclasses)
+    return BaseEntity.getRepository().createQueryBuilder(alias);
   }
 }

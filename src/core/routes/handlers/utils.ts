@@ -24,7 +24,7 @@ export class RouterUtils {
   public expressRouter: ExpressRouter;
   public filter = new RouteFilter();
 
-  constructor(private router: Router, options?: RouterOptions) {
+  constructor(router: Router, options?: RouterOptions) {
     this.expressRouter = ExpressRouter(options);
     this.routesNames = {};
     this.routeChain = new RouteChainManger(router, this.routesNames);
@@ -55,6 +55,10 @@ export class RouterUtils {
 
   getRoutes(): ExpressRouter {
     return this.expressRouter;
+  }
+
+  addFakeMethod() {
+    return this.addMethod(false, "");
   }
 
   addMethod(

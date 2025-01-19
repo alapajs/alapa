@@ -1,8 +1,5 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { RequestHandler } from "express";
 import { Controller } from "..";
-import { ParsedQs } from "qs";
+import { BasicRequestHandler } from "../../core/routes";
 
 /**
  * A callback type for handling HTTP requests in a resourceful controller.
@@ -51,14 +48,6 @@ import { ParsedQs } from "qs";
 //   (req: Request, res: Response, next: NextFunction, status: number): void; // Four parameters with next and status
 // }
 
-export type RouteCallback = RequestHandler<
-  {},
-  any,
-  any,
-  ParsedQs,
-  Record<string, any>
->;
-
 /**
  * @abstract
  * The `ResourcefulController` class is an abstract base class designed to define
@@ -73,7 +62,7 @@ export abstract class BaseResourcefulController extends Controller {
    * @param res - The HTTP response object used to send a response.
    * @param next - The next middleware function in the stack (optional).
    */
-  abstract index: RouteCallback;
+  abstract index: BasicRequestHandler;
 
   /**
    * Handles the request to retrieve a specific resource by ID.
@@ -82,7 +71,7 @@ export abstract class BaseResourcefulController extends Controller {
    * @param res - The HTTP response object used to send a response.
    * @param next - The next middleware function in the stack (optional).
    */
-  abstract show: RouteCallback;
+  abstract show: BasicRequestHandler;
 
   /**
    * Handles the request to store a newly created resource.
@@ -91,7 +80,7 @@ export abstract class BaseResourcefulController extends Controller {
    * @param res - The HTTP response object used to send a response.
    * @param next - The next middleware function in the stack (optional).
    */
-  abstract store: RouteCallback;
+  abstract store: BasicRequestHandler;
 
   /**
    * Handles the request to update a specific resource.
@@ -100,7 +89,7 @@ export abstract class BaseResourcefulController extends Controller {
    * @param res - The HTTP response object used to send a response.
    * @param next - The next middleware function in the stack (optional).
    */
-  abstract update: RouteCallback;
+  abstract update: BasicRequestHandler;
 
   /**
    * Handles the request to delete a specific resource.
@@ -109,5 +98,5 @@ export abstract class BaseResourcefulController extends Controller {
    * @param res - The HTTP response object used to send a response.
    * @param next - The next middleware function in the stack (optional).
    */
-  abstract destroy: RouteCallback;
+  abstract destroy: BasicRequestHandler;
 }

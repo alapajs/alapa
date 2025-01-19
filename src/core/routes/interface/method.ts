@@ -8,6 +8,7 @@ export type MethodList =
   | "delete"
   | "patch"
   | "options"
+  | "use"
   | "head";
 
 export interface IRouteMethod {

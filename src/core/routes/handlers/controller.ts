@@ -7,6 +7,7 @@ import { RouteChain } from "../interface";
 import { Router } from ".";
 import { ControllerRoutes } from "./extension/controller";
 import { isClass } from "../../../utils";
+import { RouterUtils } from "./utils";
 export class ControllerHandler implements IControllerHandler {
   private router: Router;
 
@@ -54,6 +55,7 @@ export class ControllerHandler implements IControllerHandler {
       new ControllerRoutes(this.router, pathOrController);
     }
 
-    return this.router.all("");
+    const utils = new RouterUtils(this.router);
+    return utils.addMethod(false, "");
   }
 }

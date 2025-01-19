@@ -1,42 +1,63 @@
-import { IRouter } from "../interface/router";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Router } from ".";
 import { ResourcefulOptions } from "../interface/resourceful";
 import { RoutesNames } from "../names";
 import { RouteChain } from "../interface/route-chain";
 import { StringObject } from "../../../interface/object";
 import { ControllerClass, ControllerOptions } from "../interface/controller";
-import { RequestHandler } from "../interface/handler";
+import { Middleware, RequestHandler } from "../interface/handler";
 
 export class RouteChainManger {
   constructor(private router: Router, private routesNames: StringObject) {}
+
+  private addToMethod(
+    method: string,
+    path: string,
+    ...handlers: RequestHandler[]
+  ) {
+    return (this.router as any)[method](path, ...handlers) as RouteChain;
+  }
+
   public getChain(path: string): RouteChain {
     const routeChain: RouteChain = {
       name: (routeName: string) => {
         this.routesNames[routeName] = path;
         RoutesNames[routeName] = path;
-        // addToRouteList(path, method, routeName, ...handlers);
         return routeChain;
       },
+
       all: (path: string, ...handlers: RequestHandler[]) =>
-        this.router.all(path, ...handlers),
+        this.addToMethod("all", path, ...handlers),
+
       get: (path: string, ...handlers: RequestHandler[]) =>
-        this.router.get(path, ...handlers),
+        this.addToMethod("get", path, ...handlers),
+
       post: (path: string, ...handlers: RequestHandler[]) =>
-        this.router.post(path, ...handlers),
+        this.addToMethod("post", path, ...handlers),
+
       put: (path: string, ...handlers: RequestHandler[]) =>
-        this.router.put(path, ...handlers),
+        this.addToMethod("put", path, ...handlers),
+
       delete: (path: string, ...handlers: RequestHandler[]) =>
-        this.router.delete(path, ...handlers),
+        this.addToMethod("delete", path, ...handlers),
+
       patch: (path: string, ...handlers: RequestHandler[]) =>
-        this.router.patch(path, ...handlers),
+        this.addToMethod("patch", path, ...handlers),
+
       options: (path: string, ...handlers: RequestHandler[]) =>
-        this.router.options(path, ...handlers),
+        this.addToMethod("options", path, ...handlers),
+
       head: (path: string, ...handlers: RequestHandler[]) =>
-        this.router["head"](path, ...handlers),
-      use: (
-        pathOrHandler: string | RequestHandler | IRouter,
-        ...handlers: RequestHandler[] | IRouter[]
-      ) => this.router.use(pathOrHandler, ...handlers),
+        this.addToMethod("head", path, ...handlers),
+
+      use: (pathOrHandler: Middleware | string, ...handlers: Middleware[]) => {
+        if (typeof pathOrHandler === "string") {
+          return this.router.use(pathOrHandler, ...handlers);
+        } else {
+          return this.router.use(pathOrHandler);
+        }
+      },
+
       resource: (
         path: string,
         controller: ControllerClass,
@@ -48,11 +69,13 @@ export class RouteChainManger {
         controller: ControllerClass,
         option?: ResourcefulOptions
       ) => this.router.restfulResource(path, controller, option),
+
       apiResource: (
         path: string,
         controller: ControllerClass,
         option?: ResourcefulOptions
       ) => this.router.apiResource(path, controller, option),
+
       controller: (
         path: string | ControllerClass,
         controller?: ControllerClass,
@@ -60,8 +83,9 @@ export class RouteChainManger {
       ) => this.router.controller(path, controller, option),
 
       view: (path: string, view: string, data?: object) =>
-        this.router.view(path, view, data),
+        this.router.view(path, view, data!),
     };
+
     return routeChain;
   }
 }
