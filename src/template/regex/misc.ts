@@ -6,6 +6,7 @@ export const templateCommentRegex = /\{#([\s\S]*?)#\}/g;
 export const htmlTagsRegex = /<[xX]:(\w+)([^/>]*)>([\s\S]*?)<\/[xX]:(\1)>/g;
 export const htmlInlineTagsRegex = /<[xX]:([\w.-:]+)(\s+[^>]*)?\s*\/>/g;
 export const containerRegex = /<[Pp]ush\b([\s\S]*?)>([\s\S]*?)<\/[Pp]ush>/g;
+export const stackRegex = /<stack(\s+[^/>]*)?\s*\/?>/g;
 
 export const moduleRegex = (
   isDefault?: boolean | "all",

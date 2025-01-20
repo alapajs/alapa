@@ -4,6 +4,7 @@ export interface APIConfiguration {
   docs?: {
     path?: string;
     schemasDir?: string;
+    defaultPathPrefix?: string;
     sync?: boolean;
     openApiOptions?: OAS3Options;
     openApiDefinitions?: OAS3Definition;

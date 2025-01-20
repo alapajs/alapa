@@ -5,6 +5,8 @@ export * from "./session";
 export * from "redis";
 export * from "./utils";
 export * from "./shared";
+export * from "./modules";
+export * from "./services";
 // export * from "./alias";
 export * from "tsyringe";
 export * from "./config";

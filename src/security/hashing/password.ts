@@ -1,17 +1,20 @@
-import passwordHash from "password-hash";
+import bcrypt from "bcrypt";
 
 export class HashPassword {
   // Encrypt the password by hashing it with a salt using bcrypt
-  public static async encrypt(password: string): Promise<string> {
-    return passwordHash.generate(password);
+  public static async encrypt(
+    password: string | Buffer,
+    saltOrRounds: string | number = 10
+  ): Promise<string> {
+    return bcrypt.hashSync(password, saltOrRounds);
   }
 
   // Verify that the password matches the hashed password
   public static async verify(
-    password: string,
+    password: string | Buffer,
     hashedPassword: string
   ): Promise<boolean> {
-    return passwordHash.verify(password, hashedPassword);
+    return bcrypt.compareSync(password, hashedPassword);
   }
 
   // Hash the password (alias for encrypt)

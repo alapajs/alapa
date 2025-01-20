@@ -114,7 +114,8 @@ export class ResourcefulRoute {
   }
 
   private pathFormat(): ResourcefulVerb {
-    const id = inflect.singularize(this.path);
+    const firstWord = this.path.match(/^\w+/)?.[0] || "id";
+    const id = inflect.singularize(firstWord);
     return {
       index: "/",
       create: `/${this.verbs.create}`,

@@ -27,11 +27,9 @@ export class OpenApiEntry {
       temporalCollections["routes"][path] = {};
     }
 
-    temporalCollections["routes"][path] = item;
-
     Object.keys(item).forEach((key) => {
       if (!temporalCollections["routes"][path][key]) {
-        temporalCollections["routes"][path][key] = {};
+        temporalCollections["routes"][path][key] = item[key];
       }
       if (!temporalCollections["routes"][path][key]["tags"]) {
         temporalCollections["routes"][path][key]["tags"] = [defaultTag];

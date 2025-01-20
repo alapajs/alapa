@@ -9,7 +9,7 @@ export class ControllerDocGenerator {
   private docPrefix?: string;
   constructor(properties: DocProperties) {
     this.defaultTag = properties.defaultTag;
-    this.docPrefix = properties.docPrefix;
+    this.docPrefix = properties.docPrefix || process.env.DEFAULT_PATH_PREFIX;
   }
 
   getDocPath(path: string): string {

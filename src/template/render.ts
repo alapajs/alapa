@@ -17,17 +17,10 @@ export class TemplateEngine {
     template = template.replace(templateCommentRegex, "");
     template = removeCommentsFromCode(template);
     template = Include.render(template);
-    Container.compile(template);
-    template = Container.removeContainersFromTemplate(template);
     let outputOfTemplateEngine = "";
     function addOutPutToTemplateEngine(output: string = "") {
       outputOfTemplateEngine += output;
     }
-    function containers(key?: string) {
-      if (!key) return Container.get();
-      return Container.get().filter((k) => k.key == key);
-    }
-
     const getOutPutToTemplateEngine = () => outputOfTemplateEngine;
 
     context = context || {};
@@ -35,7 +28,6 @@ export class TemplateEngine {
     context["addOutPutToTemplateEngine"] = addOutPutToTemplateEngine;
     // context["echo"] = addOutPutToTemplateEngine;
     context["getOutPutToTemplateEngine"] = getOutPutToTemplateEngine;
-    context["containers"] = containers;
     context["escapeHTML"] = escapeHTML;
     // Clean up the template
     template = template.replace(importRegex, "");
@@ -75,8 +67,9 @@ export class TemplateEngine {
   }
 
   static renderString(template: string, context?: object): string {
-    Container.clear();
-    return this.compile(template, context);
+    template = this.compile(template, context) || "";
+    template = Container.render(template);
+    return template;
   }
 
   static getTemplate(templatePath: string): string {

@@ -280,7 +280,7 @@ export class Component {
 
     const key = md5(randomNumber());
     (global as any)["component" + key] = context;
-    const code = `{% (function () { %}
+    const code = `{% try{console.log(service)}catch(e){} (function () { %}
 {% const ${propsName}  = {...component${key},...(component${key}['attributes'])} %}
 {% delete global["component${key}"]; %}
 {% const content = ${propsName}['content'] %}
