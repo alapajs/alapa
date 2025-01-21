@@ -15,8 +15,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
-    "publish:alpha": "run npm build && npm version prerelease --preid=alpha && npm publish --tag alpha",
-    "publish:beta": "run npm build &&  npm version prerelease --preid=beta && npm publish --tag beta",
+    "build:wait": "npm run build && sleep 5",
+    "publish:alpha": "npm run build npm version prerelease --preid=alpha && npm publish --tag alpha",
+    "publish:beta": "npm run build && npm version prerelease --preid=beta && npm publish --tag beta",
     "patch": "npm version patch",
     "major": "npm version major",
     "pack": "npm run build && npm pack",
