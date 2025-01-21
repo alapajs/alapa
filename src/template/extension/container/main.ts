@@ -29,7 +29,6 @@ export class Container {
       }
       key = key.trim();
       containers = containers.filter((c) => c.key === key);
-      console.log(containers);
       if (containers.length === 0) {
         return "";
       }
