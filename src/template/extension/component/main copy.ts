@@ -5,6 +5,7 @@ import {
   attributeRegex,
   htmlInlineTagsRegex,
   htmlTagsRegex,
+  renderRegex,
 } from "../../regex/misc";
 import { TemplateEngine } from "../../render";
 import { PathResolver } from "../../path-resolver";
@@ -62,7 +63,8 @@ export class Component {
     this.context = context || {};
 
     const components = this.parser(template);
-    return this.preCompile(template, components);
+    const code = this.preCompile(template, components);
+    return TemplateEngine.compile(code, this.context);
   }
 
   compileFile(templatePath: string, context?: AnyObject): string {
@@ -78,14 +80,24 @@ export class Component {
       const module = this.modules[name];
 
       if (module) {
-        const compiled = this.compileComponent(
+        let compiled = this.compileComponent(
           module.content,
           attributes,
           content,
           attributeValue,
           module.propsName
         );
-        template = template.replace(input, compiled.trim());
+        compiled = compiled.replace(renderRegex, (match, key) => {
+          key = `${key.trim()}`;
+          let value = attributes[key];
+          if (key === "content") {
+            value = content;
+          }
+          //value = this.preCompile(value, components);
+          return value;
+        });
+        // let result = compiled.replace
+        template = template.replace(input, compiled);
       } else {
         Logger.error(`Component '${name}' not found`);
       }
@@ -108,9 +120,8 @@ export class Component {
     localContext["attributes"] = attributes;
 
     // Merge local context into global context
-    const componentContext = { ...this.context, ...localContext };
 
-    let compiled = this.engine(content, propsName, componentContext);
+    let compiled = this.engine(content, propsName, localContext);
     const parsedComponents = this.parser(compiled.trim());
 
     if (parsedComponents.length > 0) {
@@ -123,19 +134,20 @@ export class Component {
   private engine(
     component: string,
     propsName: string,
-    context: AnyObject
+    localContext: AnyObject
   ): string {
+    propsName = propsName || "props";
     const key = md5(randomNumber());
-    (global as any)[`component${key}`] = context;
+    (global as any)[`component${key}`] = localContext;
 
     const code = `{% (function () { %}
 {% const ${propsName} = { ...component${key}, ...(component${key}['attributes']) }; %}
-{% delete global["component${key}"]; %}
 {% const content = ${propsName}['content']; %}
 {% const stringAttribute = ${propsName}['stringAttribute']; %}
 {% const attributes = ${propsName}['attributes']; %}
 ${component}
+{% delete global["component${key}"]; %}
 {% }()) %}`;
-    return TemplateEngine.compile(code, this.context);
+    return code;
   }
 }

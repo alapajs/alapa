@@ -1,6 +1,6 @@
 import { StringObject } from "../interface/object";
 
-export interface Modules {
+export interface IComponent {
   [key: string]: {
     name: string;
     alias: string;

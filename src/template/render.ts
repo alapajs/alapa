@@ -29,6 +29,7 @@ export class TemplateEngine {
     // context["echo"] = addOutPutToTemplateEngine;
     context["getOutPutToTemplateEngine"] = getOutPutToTemplateEngine;
     context["escapeHTML"] = escapeHTML;
+    context["locals"] = {};
     // Clean up the template
     template = template.replace(importRegex, "");
     template = outPutVariable(template);
@@ -69,6 +70,7 @@ export class TemplateEngine {
   static renderString(template: string, context?: object): string {
     template = this.compile(template, context) || "";
     template = Container.render(template);
+
     return template;
   }
 
@@ -78,7 +80,7 @@ export class TemplateEngine {
   }
 
   static renderFile(templatePath: string, context?: AnyObject): string {
-    const template = Component.compileFile(templatePath, context);
+    const template = new Component().compileFile(templatePath, context);
     return this.renderString(template, context);
   }
 }
