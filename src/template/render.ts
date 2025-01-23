@@ -4,7 +4,11 @@ import { Component } from "./extension/component/main";
 import { Container } from "./extension/container/main";
 import { Include } from "./extension/include";
 import { outPutVariable } from "./output";
+import { Buffer } from "node:buffer";
+import minifyHtml from "@minify-html/node";
+import { html } from "js-beautify";
 import {
+  clearRegex,
   codeRegex,
   importRegex,
   noCodeRegex,
@@ -12,6 +16,8 @@ import {
 } from "./regex/misc";
 import { escapeCode, escapeHTML, removeCommentsFromCode } from "./utils";
 import fs from "fs";
+import { EVN } from "../shared";
+import { GlobalConfig } from "../shared/globals";
 export class TemplateEngine {
   static compile(template: string, context?: AnyObject) {
     template = template.replace(templateCommentRegex, "");
@@ -64,14 +70,13 @@ export class TemplateEngine {
         return "";
       }
     });
-    return output !== undefined ? output : "";
+    return output !== undefined ? output.trim() : "";
   }
 
   static renderString(template: string, context?: object): string {
     template = this.compile(template, context) || "";
     template = Container.render(template);
-
-    return template;
+    return this.format(template);
   }
 
   static getTemplate(templatePath: string): string {
@@ -79,8 +84,35 @@ export class TemplateEngine {
     return template;
   }
 
+  static format(template: string): string {
+    template = template.replace(clearRegex, "");
+    if (GlobalConfig.view.templateEngine?.formatOutput === false) {
+      return template;
+    }
+
+    if (EVN == "production") {
+      template = minifyHtml.minify(Buffer.from(template), {}).toString();
+    }
+    if (EVN == "development") {
+      template = html(template, {
+        indent_size: 2, // Use 2 spaces for indentation
+        indent_char: " ", // Use spaces for indentation
+        max_preserve_newlines: 0, // Allow at most 1 line break between tags
+        preserve_newlines: true, // Keep new lines where appropriate
+        wrap_line_length: 0, // Do not wrap lines by default
+        indent_inner_html: true, // Indent inner HTML elements
+        // space_after_anon_function: true, // Add space after anonymous functions
+        end_with_newline: true, // Ensure the output ends with a newline
+        unformatted: ["pre", "code"], // Keep 'pre' and 'code' tags unformatted (optional)
+        // Add other properties based on your needs
+      });
+    }
+    return template;
+  }
+
   static renderFile(templatePath: string, context?: AnyObject): string {
-    const template = new Component().compileFile(templatePath, context);
-    return this.renderString(template, context);
+    const component = new Component();
+    const [template, componentsContext] = component.compileFile(templatePath);
+    return this.renderString(template, { ...context, ...componentsContext });
   }
 }

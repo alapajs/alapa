@@ -9,6 +9,7 @@ export const htmlInlineTagsRegex = /<[xX]:([\w.-:]+)(\s+[^>]*)?\s*\/>/g;
 export const containerRegex = /<[Pp]ush\b([\s\S]*?)>([\s\S]*?)<\/[Pp]ush>/g;
 export const stackRegex = /<[Ss]tack(\s+[^/>]*)?\s*\/?>/g;
 export const renderRegex = /<[Rr]ender(\s+[^/>]*)?\s*\/?>/g;
+export const clearRegex = /[\s\S]?<clear>[\s\S]*?<\/clear>/g;
 
 export const moduleRegex = (
   isDefault?: boolean | "all",

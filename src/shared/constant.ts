@@ -20,6 +20,13 @@ export const enum STATUS {
   SUCCESS = "success",
 }
 
+export const EVN =
+  process.env.NODE_ENV == "production" ||
+  process.env.APP_ENV == "production" ||
+  process.env.DEBUG == "false"
+    ? "production"
+    : "development";
+
 /**
  * HTTP_METHODS
  *

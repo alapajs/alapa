@@ -1,16 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AnyObject, StringObject } from "../../../interface/object";
 import { IComponent, ParseResult } from "../../interface";
 import {
   attributeRegex,
   htmlInlineTagsRegex,
   htmlTagsRegex,
+  renderRegex,
 } from "../../regex/misc";
 import { TemplateEngine } from "../../render";
 import { PathResolver } from "../../path-resolver";
 import { Logger, md5, randomNumber } from "../../../utils";
 import { ComponentModules } from "./components";
-
 export class Component {
   private modules: IComponent = {};
   private context: AnyObject = {};
@@ -52,45 +51,65 @@ export class Component {
     return attributes;
   }
 
-  compileString(
-    template: string,
-    context?: AnyObject,
-    basePath?: string
-  ): string {
+  compileString(template: string, basePath?: string): [string, AnyObject] {
     const componentModules = new ComponentModules(basePath);
     this.modules = componentModules.getComponents(template, basePath);
-    this.context = context || {};
 
     const components = this.parser(template);
-    return this.preCompile(template, components);
+    const code = this.preCompile(template, components);
+    return [code, this.context];
   }
 
-  compileFile(templatePath: string, context?: AnyObject): string {
+  compileFile(templatePath: string): [string, AnyObject] {
     const resolvedPath = PathResolver.resolve(templatePath);
     const template = TemplateEngine.getTemplate(resolvedPath);
 
-    return this.compileString(template, context, resolvedPath);
+    return this.compileString(template, resolvedPath);
   }
 
   private preCompile(template: string, components: ParseResult[]): string {
-    for (const component of components) {
-      const { name, attributes, content, input, attributeValue } = component;
+    const stack: ParseResult[] = [...components];
+    let modifiedTemplate = template;
+
+    while (stack.length > 0) {
+      const component = stack.pop();
+      const { name, attributes, content, input, attributeValue } = component!;
       const module = this.modules[name];
 
       if (module) {
-        const compiled = this.compileComponent(
+        let compiled = this.compileComponent(
           module.content,
           attributes,
           content,
           attributeValue,
           module.propsName
         );
-        template = template.replace(input, compiled.trim());
+        compiled = compiled.replace(renderRegex, (match, key) => {
+          key = `${key.trim()}`;
+          let value = attributes[key];
+          if (key === "content") {
+            value = content;
+          }
+          if (
+            htmlInlineTagsRegex.test(value) ||
+            htmlInlineTagsRegex.test(value)
+          ) {
+            // Handle inline tags
+            stack.push(...this.parser(value)); // If needed to handle deeper nesting
+          }
+          return value;
+        });
+        modifiedTemplate = modifiedTemplate.replace(input, compiled);
+
+        // Add newly parsed components to stack if needed
+        const parsedComponents = this.parser(compiled.trim());
+        stack.push(...parsedComponents);
       } else {
         Logger.error(`Component '${name}' not found`);
       }
     }
-    return template;
+
+    return modifiedTemplate;
   }
 
   private compileComponent(
@@ -107,35 +126,64 @@ export class Component {
     };
     localContext["attributes"] = attributes;
 
-    // Merge local context into global context
-    const componentContext = { ...this.context, ...localContext };
-
-    let compiled = this.engine(content, propsName, componentContext);
+    let compiled = this.engine(content, propsName, localContext);
     const parsedComponents = this.parser(compiled.trim());
 
     if (parsedComponents.length > 0) {
+      // Using preCompile in the iterative way
       compiled = this.preCompile(compiled.trim(), parsedComponents);
     }
 
     return compiled;
   }
 
+  private setDynamicParams(
+    context: AnyObject,
+    propsNameKey: string
+  ): [string, AnyObject] {
+    let code = "";
+    const attributes = context.attributes;
+    Object.keys(context).forEach((key) => {
+      key = key.trim();
+      if (key.startsWith(":")) {
+        const newKey = key.substring(1);
+        const keyName = attributes[key];
+        code = `
+         pre_${propsNameKey}['attributes']['${newKey}'] =  ${keyName};
+         pre_${propsNameKey}['${newKey}'] =  ${keyName};
+        `;
+        delete attributes[key];
+        delete context[key];
+      }
+      context.attributes = attributes;
+    });
+    if (code.length > 0) {
+      code = `{%
+      pre_${propsNameKey}['attributes']={}; 
+      (()=>{${code}})(); %}`;
+    }
+    return [code, context];
+  }
   private engine(
     component: string,
     propsName: string,
-    context: AnyObject
+    localContext: AnyObject
   ): string {
-    const key = md5(randomNumber());
-    (global as any)[`component${key}`] = context;
-
-    const code = `{% (function () { %}
-{% const ${propsName} = { ...component${key}, ...(component${key}['attributes']) }; %}
-{% delete global["component${key}"]; %}
+    propsName = propsName || "props";
+    const key = "props_" + md5(randomNumber() + randomNumber());
+    const [paramsCode, context] = this.setDynamicParams(localContext, key);
+    this.context[key] = context;
+    this.context[`pre_${key}`] = {};
+    const code = `<clear>
+${paramsCode}
+{% (function () { %}
+{% var currentComponentID = '${key}';  %}
+{% const ${propsName} = {...${key},...(${key}['attributes']),...pre_${key}}; %}
 {% const content = ${propsName}['content']; %}
 {% const stringAttribute = ${propsName}['stringAttribute']; %}
 {% const attributes = ${propsName}['attributes']; %}
-${component}
+</clear>${component}
 {% }()) %}`;
-    return TemplateEngine.compile(code, this.context);
+    return code;
   }
 }
