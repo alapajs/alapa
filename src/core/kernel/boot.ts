@@ -6,9 +6,11 @@ import { Logger } from "../../utils";
 import { updateRouteList } from "../routes/handlers/list";
 import { activateRoutes } from "./activate-routes";
 import { refreshBrowsers } from "../../dev";
+import { TemplatePlugin } from "../../template/plugins/main";
 
 export async function boot(configuration: Configuration) {
   const config = configuration;
+  TemplatePlugin.buildPlugins();
   setGlobalConfig(config);
 }
 

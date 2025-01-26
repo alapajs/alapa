@@ -19,6 +19,45 @@ export const enum STATUS {
   INFO = "info",
   SUCCESS = "success",
 }
+const jsFiles = ["js"];
+const tsFiles = ["ts"];
+const getExt = (filename: string) => {
+  const parts = filename.split(".");
+  return parts[parts.length - 1];
+};
+const currentFile = __filename;
+
+export const RUNTIME_ENVIRONMENT = jsFiles.includes(getExt(currentFile))
+  ? "javascript"
+  : tsFiles.includes(getExt(currentFile))
+    ? "typescript"
+    : "unknown";
+
+export const SELF_ASSIGNED_ATTRIBUTES = [
+  "checked",
+  "disabled",
+  "readonly",
+  "required",
+  "autofocus",
+  "multiple",
+  "selected",
+  "hidden",
+  "autoplay",
+  "controls",
+  "loop",
+  "novalidate",
+  "reversed",
+  "open",
+  "scoped",
+  "async",
+  "defer",
+  "formnovalidate",
+  "ismap",
+  "draggable",
+  "spellcheck",
+  "contenteditable",
+  "translate",
+];
 
 export const EVN =
   process.env.NODE_ENV == "production" ||

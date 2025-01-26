@@ -6,6 +6,8 @@ import * as path from "path";
 import { LogMessageType } from "./types";
 import yaml from "yaml";
 import { Logger } from "./logger";
+import { SELF_ASSIGNED_ATTRIBUTES } from "../shared";
+import { AnyObject } from "../interface";
 export const randomMd5 = () => {
   return md5(Math.random().toString() + Date.now().toString());
 };
@@ -175,3 +177,40 @@ export const isControllerString = (str: string): boolean => {
   if (str.includes("@")) return true;
   return false;
 };
+
+export function objectToHtmlAttributes(
+  attributes: AnyObject,
+  ...ignores: string[]
+): string {
+  return Object.entries(attributes)
+    .map(([key, value]) => {
+      if (ignores.includes(key)) return ""; // Skip ignored attributes
+
+      // Handle Boolean attributes
+      if (
+        (value === true || value === "true" || key === value || key === "on") &&
+        SELF_ASSIGNED_ATTRIBUTES.includes(key)
+      ) {
+        return ` ${key}`; // Handle attributes like "checked", "required"
+      }
+
+      // Handle falsy values for Boolean attributes (e.g., "checked", "disabled")
+      if (
+        (value === false ||
+          value === "false" ||
+          value === 0 ||
+          value.toString().trim() === "") &&
+        SELF_ASSIGNED_ATTRIBUTES.includes(key)
+      ) {
+        return ""; // Don't include Boolean attributes with "false" value
+      }
+
+      // Handle attributes with other values
+      if (value != null) {
+        return ` ${key}="${value}"`; // Default case for attributes with values
+      }
+
+      return ""; // Don't add attributes with undefined or null values
+    })
+    .join("");
+}

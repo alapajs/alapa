@@ -1,7 +1,8 @@
 export interface ViewConfiguration {
   dir: string;
-  staticFilesPath?: string;
   extensions?: string | string[];
+  staticFilesPath?: string;
+  plugins?: string[];
   templateEngine?: {
     formatOutput?: boolean;
   };

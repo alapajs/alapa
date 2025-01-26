@@ -1,5 +1,5 @@
 import { AnyObject } from "../interface/object";
-import { Logger } from "../utils";
+import { Logger, objectToHtmlAttributes } from "../utils";
 import { Component } from "./extension/component/main";
 import { Container } from "./extension/container/main";
 import { Include } from "./extension/include";
@@ -18,6 +18,7 @@ import { escapeCode, escapeHTML, removeCommentsFromCode } from "./utils";
 import fs from "fs";
 import { EVN } from "../shared";
 import { GlobalConfig } from "../shared/globals";
+import { TemplatePlugin } from "./plugins/main";
 export class TemplateEngine {
   static compile(template: string, context?: AnyObject) {
     template = template.replace(templateCommentRegex, "");
@@ -28,10 +29,9 @@ export class TemplateEngine {
       outputOfTemplateEngine += output;
     }
     const getOutPutToTemplateEngine = () => outputOfTemplateEngine;
-
     context = context || {};
-
     context["addOutPutToTemplateEngine"] = addOutPutToTemplateEngine;
+    context["objectToHtmlAttributes"] = objectToHtmlAttributes;
     // context["echo"] = addOutPutToTemplateEngine;
     context["getOutPutToTemplateEngine"] = getOutPutToTemplateEngine;
     context["escapeHTML"] = escapeHTML;
@@ -48,6 +48,9 @@ export class TemplateEngine {
       html = escapeCode(html);
       return `; addOutPutToTemplateEngine(\`${html}\`); `;
     });
+
+    const plugins = TemplatePlugin.getPlugins();
+    context = { ...plugins, ...context };
 
     // Prepare the function with the context directly accessible
     template = `${template} return getOutPutToTemplateEngine()`;

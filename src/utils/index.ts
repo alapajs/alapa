@@ -7,4 +7,5 @@ export * from "./columns";
 export * from "./validation";
 export * from "./uploader";
 export * from "./media";
+export * from "./value-assertions";
 export * as dotenv from "dotenv";
