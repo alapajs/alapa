@@ -50,7 +50,7 @@ export class PathResolver {
   protected static updateRoot(defaultExtension: string): void {
     this.rootDir = this.replaceSeparator(
       this.removeSlashFromTheEnd(
-        path.resolve(GlobalConfig.view.dir || defaultExtension)
+        path.resolve(GlobalConfig.templateEngine.viewDir || defaultExtension)
       )
     );
   }
@@ -103,7 +103,7 @@ export class PathResolver {
     ext = this.removeEXTDot(ext);
     const commonFileExtension = ["html"];
     const extensions: string | string[] | undefined =
-      GlobalConfig.view.extensions;
+      GlobalConfig.templateEngine.fileExtensions;
 
     if (Array.isArray(extensions)) {
       commonFileExtension.push(...extensions);

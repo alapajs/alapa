@@ -34,7 +34,7 @@ export const activateGlobalMiddleware = async (
     generalMiddleware,
     bodyParser.urlencoded({ extended: false }),
     express.urlencoded({ extended: true }),
-    express.static(config.view.staticFilesPath ?? "static"),
+    express.static(config.templateEngine.staticFilesPath ?? "static"),
     changeMethod,
     cors(),
     session(sessionConfiguration()),

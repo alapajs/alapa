@@ -8,7 +8,8 @@ logs/
 *.log
 *.log.*
 .local
-alapa-*-alpha.1.tgz
+alapa-*-alpha.*.tgz
+alapa-*-beta.*.tgz
 
 # Dependency directories
 jspm_packages/

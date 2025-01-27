@@ -16,12 +16,15 @@ export class LocalStorageDriver implements StorageDriver {
   constructor(absolutePathPath?: string, absoluteURL?: string) {
     this.name = "local";
     this.config = GlobalConfig?.storage;
-    this.staticFilePath = GlobalConfig?.view?.staticFilesPath || "static";
+    this.staticFilePath =
+      GlobalConfig?.templateEngine?.staticFilesPath || "static";
     this.absolutePathPath = this.config?.local?.path || "uploads";
     this.absolutePathPath =
       absolutePathPath || path.join(this.staticFilePath, this.absolutePathPath);
     this.absoluteURL =
-      absoluteURL || this.config?.local?.url || "http://localhost:3000";
+      absoluteURL ||
+      this.config?.local?.url ||
+      `http://localhost:${process.env.PORT || 3000}`;
   }
   absolutePath: string;
 

@@ -12,7 +12,7 @@ export { QueueConfiguration } from "./queue";
 export { SecurityConfiguration } from "./security";
 export { SessionConfiguration } from "./session";
 export { StorageConfiguration } from "./storage";
-export { ViewConfiguration } from "./view";
+export { TemplateEngineConfiguration } from "./template-engine";
 export * from "./auth";
 export * from "./main";
 export * from "./server";

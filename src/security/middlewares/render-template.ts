@@ -9,14 +9,16 @@ export const renderTemplate = (
   next: NextFunction
 ) => {
   res.render = (view: string, options?: AnyObject) => {
+    const templateEngineFileExtension =
+      GlobalConfig.templateEngine.fileExtensions;
     //  console.log(viewList);
     try {
       const commonFileExtension = ["html"];
-      if (Array.isArray(GlobalConfig.view.extensions)) {
-        commonFileExtension.push(...GlobalConfig.view.extensions);
+      if (Array.isArray(templateEngineFileExtension)) {
+        commonFileExtension.push(...templateEngineFileExtension);
       } else {
         commonFileExtension.push(
-          ...(GlobalConfig.view.extensions || "").split(",")
+          ...(templateEngineFileExtension || "").split(",")
         );
       }
       const viewList = view.split(".");

@@ -16,11 +16,11 @@ import { SecurityConfiguration } from "./security";
 import { ServerConfiguration } from "./server";
 import { SessionConfiguration } from "./session";
 import { StorageConfiguration } from "./storage";
-import { ViewConfiguration } from "./view";
+import { TemplateEngineConfiguration } from "./template-engine";
 
 export interface Configuration {
   server: ServerConfiguration;
-  view: ViewConfiguration;
+  templateEngine: TemplateEngineConfiguration;
   database: DatabaseConfiguration;
   logger: LoggerConfiguration;
   email?: EmailConfiguration;
