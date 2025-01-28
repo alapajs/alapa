@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Index, BaseEntity } from "typeorm";
+import { Entity, PrimaryColumn, Index, BaseEntity, Column } from "typeorm";
 import { NullColumn, TextColumn } from "../../utils";
 
 @Entity("sessions")
@@ -11,5 +11,6 @@ export class SessionDatabase extends BaseEntity {
 
   @Index()
   @NullColumn()
-  expiredAt: number;
+  @Column("bigint", { nullable: true })
+  expiredAt: number; // Make sure to use a type that matches your timestamp needs
 }

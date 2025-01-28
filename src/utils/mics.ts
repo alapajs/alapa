@@ -199,7 +199,7 @@ export function objectToHtmlAttributes(
         (value === false ||
           value === "false" ||
           value === 0 ||
-          value.toString().trim() === "") &&
+          value?.toString().trim() === "") &&
         SELF_ASSIGNED_ATTRIBUTES.includes(key)
       ) {
         return ""; // Don't include Boolean attributes with "false" value

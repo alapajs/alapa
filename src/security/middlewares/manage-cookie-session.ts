@@ -10,8 +10,8 @@ export const manageCookiesSession = async (
   next: NextFunction
 ) => {
   try {
-    if (req.cookies["app-session"]) {
-      const id = Encryption.decrypt(req.cookies["app-session"]);
+    if (req.cookies["alapa-session"]) {
+      const id = Encryption.decrypt(req.cookies["alapa-session"]);
       const session = await SessionDatabase.findOneBy({
         id: id ?? req.cookies["app-session"],
       });
@@ -24,20 +24,22 @@ export const manageCookiesSession = async (
         }
       }
     }
-    SessionDatabase.createQueryBuilder()
+    SessionDatabase.getRepository()
+      .createQueryBuilder()
       .delete()
       .where("expiredAt < :now", { now: Date.now() })
       .execute()
       .catch((err: any) => Logger.error(err));
     const cookieExpires = new Date(60 * 60 * 60 * 24 * 360000 + Date.now()); //one year
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    res.cookie("-session", Encryption.encrypt(req.sessionID)),
+    res.cookie("alapa-session", Encryption.encrypt(req.sessionID)),
       {
         expires: cookieExpires,
         httpOnly: true,
       };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e: unknown) {
-    console.log(e);
+    // console.log(e);
   }
   next();
 };

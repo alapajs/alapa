@@ -18,9 +18,7 @@ export class DatabaseSessionStore extends session.Store {
     callback: (err: any, session?: session.SessionData | null) => void
   ): Promise<void> {
     try {
-      const session = await SessionDatabase.findOne({
-        where: { id: sid },
-      });
+      const session = await SessionDatabase.findOneBy({ id: sid });
       if (session) {
         if (this.isExpired(session.expiredAt)) {
           await session.remove();
