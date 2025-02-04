@@ -1,9 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { IRouter } from "../interface";
 import { Request, Response } from "../../http";
 import { AnyObject } from "../../../interface";
-import { GlobalConfig } from "../../../shared/globals";
-import { TemplateEngine } from "../../../utils";
 
 export class ViewHandler {
   private view: string;

@@ -137,6 +137,42 @@ export class Component {
     return compiled;
   }
 
+  private spreadAttribute(
+    context: AnyObject,
+    propsNameKey: string
+  ): [string, AnyObject] {
+    let code = "";
+    Object.keys(context).forEach((key) => {
+      key = key.trim();
+      if (key.startsWith("...")) {
+        const newKey = key.substring(3);
+        code += `
+        Object.keys(spread_attributes_${propsNameKey}).forEach((key) => {
+        if (key.startsWith(":") || key.startsWith("@")) {
+            const newKey = key.substring(1);
+            const keyValue = eval(spread_attributes_${propsNameKey}[key]);
+            delete spread_attributes_${propsNameKey}[key];
+            delete spread_${propsNameKey}[key];
+            spread_attributes_${propsNameKey}[newKey] = keyValue;
+            spread_${propsNameKey}[newKey] = keyValue;
+        }
+        });
+        if(typeof ${newKey} !== "object"){
+           throw new Error("The value of the spread attribute must be an object. Please ensure that the attribute ${newKey} is an object.");
+        }
+         spread_attributes_${propsNameKey} = {...spread_attributes_${propsNameKey},...${newKey}};
+         spread_${propsNameKey} = {...spread_${propsNameKey},...${newKey}};
+         `;
+
+        delete context[key];
+      }
+    });
+    if (code.length > 0) {
+      code = `{% (()=>{${code}})(); %}`;
+    }
+    return [code, context];
+  }
+
   private setDynamicParams(
     context: AnyObject,
     propsNameKey: string
@@ -145,18 +181,14 @@ export class Component {
     const attributes = context.attributes || {};
     Object.keys(context).forEach((key) => {
       key = key.trim();
-      if (key.startsWith(":")) {
+      if (key.startsWith(":") || key.startsWith("@")) {
         const newKey = key.substring(1);
+
         const keyValue = attributes[key];
         code += `
          pre_attributes_${propsNameKey}['${newKey}'] =  ${keyValue};
          pre_${propsNameKey}['${newKey}'] =  ${keyValue};
         `;
-        if (newKey === "content") {
-          code += `
-          pre_${propsNameKey}['content'] =  ${keyValue};;
-          `;
-        }
         delete attributes[key];
         delete context[key];
       }
@@ -175,16 +207,20 @@ export class Component {
   ): string {
     propsName = propsName || "props";
     const key = "props_" + md5(randomNumber() + randomNumber());
-    const [paramsCode, context] = this.setDynamicParams(localContext, key);
+    const [spreadCode, spreadContext] = this.spreadAttribute(localContext, key);
+    const [paramsCode, context] = this.setDynamicParams(spreadContext, key);
     this.context[key] = context;
     this.context[`pre_${key}`] = {};
     this.context[`pre_attributes_${key}`] = {};
+    this.context[`spread_attributes_${key}`] = {};
+    this.context[`spread_${key}`] = {};
 
     const code = `<clear>
+${spreadCode}
 ${paramsCode}
 {% (function () { %}
-{% const ${propsName} = {...${key},...pre_${key}} %}
-{% ${propsName}['attributes']  =  {...(${propsName}['attributes']),...pre_attributes_${key}}; %}
+{% const ${propsName} = {...spread_${key},...${key},...pre_${key}} %}
+{% ${propsName}['attributes']  =  {...spread_attributes_${key},...(${propsName}['attributes']),...pre_attributes_${key}}; %}
 {% ${propsName}['stringAttribute'] = objectToHtmlAttributes(${propsName}['attributes']) %}
 {% const content = ${propsName}['content']; %}
 {% const stringAttribute = ${propsName}['stringAttribute']; %}

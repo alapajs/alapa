@@ -69,4 +69,7 @@ export interface MethodHandlers {
 
   use(middleware: RequestHandler): RouteChain;
   use(path: string, ...handlers: RequestHandler[]): RouteChain;
+
+  middleware(middleware: RequestHandler): RouteChain;
+  middleware(path: string, ...handlers: RequestHandler[]): RouteChain;
 }

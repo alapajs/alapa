@@ -151,6 +151,15 @@ export class Router implements IRouter {
     return this.utils.use(pathOrHandler, ...handlers);
   }
 
+  middleware(middleware: Middleware): RouteChain;
+  middleware(path: string, ...handlers: Middleware[]): RouteChain;
+  public middleware(
+    pathOrHandler: Middleware,
+    ...handlers: Middleware[]
+  ): RouteChain {
+    return this.utils.use(pathOrHandler, ...handlers);
+  }
+
   all(path: string, handler: RequestHandler): RouteChain;
   all(
     path: string,

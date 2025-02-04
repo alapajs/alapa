@@ -8,7 +8,10 @@ import { ControllerClass, ControllerOptions } from "../interface/controller";
 import { Middleware, RequestHandler } from "../interface/handler";
 
 export class RouteChainManger {
-  constructor(private router: Router, private routesNames: StringObject) {}
+  constructor(
+    private router: Router,
+    private routesNames: StringObject
+  ) {}
 
   private addToMethod(
     method: string,
@@ -55,6 +58,17 @@ export class RouteChainManger {
           return this.router.use(pathOrHandler, ...handlers);
         } else {
           return this.router.use(pathOrHandler);
+        }
+      },
+
+      middleware: (
+        pathOrHandler: Middleware | string,
+        ...handlers: Middleware[]
+      ) => {
+        if (typeof pathOrHandler === "string") {
+          return this.router.middleware(pathOrHandler, ...handlers);
+        } else {
+          return this.router.middleware(pathOrHandler);
         }
       },
 

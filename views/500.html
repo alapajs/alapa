@@ -1,112 +1,116 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{{ title }}</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f8d7da;
-                color: #721c24;
-                margin: 0;
-                padding: 0 20px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-            }
-            .container {
-                background-color: #fff;
-                border: 1px solid #f5c6cb;
-                color: #a71d2a;
-                border-radius: 5px;
-                padding: 20px;
-                max-width: 800px;
-                width: 100%;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            }
-            h1 {
-                color: #a71d2a;
-                font-size: 24px;
-                margin-bottom: 10px;
-            }
-            pre {
-                background-color: #f1f1f1;
-                border: 1px solid #e2e2e2;
-                border-radius: 5px;
-                padding: 15px;
-                overflow-x: auto;
-                color: #a71d2a !important;
-                font-family: monospace;
-                white-space: pre-wrap;
-                word-wrap: break-word;
-            }
-            a {
-                color: #a71d2a !important;
-                text-decoration: none;
-            }
-            a:hover {
-                text-decoration: underline;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1 class="error">{{ title }}</h1>
-            <pre>{{ error | safe }}</pre>
-        </div>
-        <script>
-            function escapeRegExp(string) {
-                return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ title }}</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f8d7da;
+        color: #721c24;
+        margin: 0;
+        padding: 0 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .container {
+        background-color: #fff;
+        border: 1px solid #f5c6cb;
+        color: #a71d2a;
+        border-radius: 5px;
+        padding: 20px;
+        max-width: 800px;
+        width: 100%;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #a71d2a;
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+      pre {
+        background-color: #f1f1f1;
+        border: 1px solid #e2e2e2;
+        border-radius: 5px;
+        padding: 15px;
+        overflow-x: auto;
+        color: #a71d2a !important;
+        font-family: monospace;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+      a {
+        color: #a71d2a !important;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="error">{{ title }}</h1>
+      <pre>{{ error | safe }}</pre>
+    </div>
+    <script>
+      function escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      }
 
-            function replacePathsWithLinks(text) { // Regex patterns for UNIX and Windows paths
-                const unixPathPattern = /\/home\/[^\s]+/g;
-                const windowsPathPattern = /[A-Z]:\\[^\s]+/g;
+      function replacePathsWithLinks(text) {
+        // Regex patterns for UNIX and Windows paths
+        const unixPathPattern = /\/home\/[^\s]+/g;
+        const windowsPathPattern = /[A-Z]:\\[^\s]+/g;
 
-                // Replace UNIX paths
-                text = text.replace(unixPathPattern, (match) => {
-                    return `<a href="#" onclick="openFileInEditor('${
-                        escapeRegExp(match)
-                    }')" class="path">${match}</a>`;
-                });
+        // Replace UNIX paths
+        text = text.replace(unixPathPattern, (match) => {
+          return `<a href="#" onclick="openFileInEditor('${escapeRegExp(
+            match
+          )}')" class="path">${match}</a>`;
+        });
 
-                // Replace Windows paths
-                text = text.replace(windowsPathPattern, (match) => {
-                    return `<a href="vscode://file/${
-                        escapeRegExp(match)
-                            .replace(/\\/g, '/')
-                            .replace(/^[A-Z]:/, '')
-                            .replace("\)", "")
-                            .replace("\\\.", ".")
-                    }" class="path">${match}</a>`;
-                });
+        // Replace Windows paths
+        text = text.replace(windowsPathPattern, (match) => {
+          return `<a href="vscode://file/${escapeRegExp(match)
+            .replace(/\\/g, "/")
+            .replace(/^[A-Z]:/, "")
+            .replace("\)", "")
+            .replace("\\\.", ".")}" class="path">${match}</a>`;
+        });
 
-                return text;
-            }
+        return text;
+      }
 
-            document.addEventListener('DOMContentLoaded', () => {
-                const errorMessageElement = document.querySelector('pre');
-                errorMessageElement.innerHTML = replacePathsWithLinks(errorMessageElement.textContent);
-            });
-            function openFileInEditor(filePath) {
-                var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function () {
-                    if (this.readyState == 4 && this.status == 200) {
-                        console.log(this.responseText);
-                    } else if (this.readyState == 4 && this.status != 200) {
-                        console.error('Error:', this.responseText);
-                    }
-                };
-                xhttp.open("POST", "{{ host }}/open-file-in-editor", true);
-                xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      document.addEventListener("DOMContentLoaded", () => {
+        const errorMessageElement = document.querySelector("pre");
+        errorMessageElement.innerHTML = replacePathsWithLinks(
+          errorMessageElement.textContent
+        );
+      });
+      function openFileInEditor(filePath) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+          if (this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+          } else if (this.readyState == 4 && this.status != 200) {
+            console.error("Error:", this.responseText);
+          }
+        };
+        xhttp.open("POST", "{{ host }}/open-file-in-editor", true);
+        xhttp.setRequestHeader(
+          "Content-Type",
+          "application/json;charset=UTF-8"
+        );
 
-                // Send data as JSON
-                var data = JSON.stringify({filePath: filePath});
-                xhttp.setRequestHeader("CSRF-Token", "{{ csrfToken }}");
-                xhttp.send(data);
-            }
-        </script>
-    </body>
+        // Send data as JSON
+        var data = JSON.stringify({ filePath: filePath });
+        xhttp.setRequestHeader("CSRF-Token", "{{ csrfToken }}");
+        xhttp.send(data);
+      }
+    </script>
+  </body>
 </html>

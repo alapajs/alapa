@@ -2,6 +2,7 @@
 import { Request, Response, NextFunction } from "express";
 import { ApiResponse } from "../../api/response/base";
 import { Auth } from "../auth";
+import { navigatorChainFunction } from "./navigate/main";
 // Middleware to override res.render
 export const changeResponses = (
   req: Request,
@@ -10,7 +11,7 @@ export const changeResponses = (
 ) => {
   res.api = function <T>(response: ApiResponse<T>): Response {
     return this.status(
-      response.status === "success" ? 200 : response.code ?? 200
+      response.status === "success" ? 200 : (response.code ?? 200)
     ).json(response);
   };
   req.only = (...keys: string[]) => {
@@ -23,5 +24,8 @@ export const changeResponses = (
 
   req.login = async (user: any, remember: boolean = false) =>
     await Auth.login(user, req, res, remember);
+
+  res.navigate = navigatorChainFunction(req, res); // Create the chain
+
   next();
 };

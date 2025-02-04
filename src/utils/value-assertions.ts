@@ -264,3 +264,13 @@ export const isValidJSON = (value: any): boolean => {
     return false;
   }
 };
+
+/**
+ * Checks if the value is a valid Identifier.
+ *
+ * @param value - The value to check.
+ * @returns `true` if the value is a valid Identifier, `false` otherwise.
+ */
+export const isIdentifier = (value: string): boolean => {
+  return /^[$A-Za-z_][0-9A-Za-z_$]*$/.test(value);
+};

@@ -5,6 +5,7 @@ import { ApiResponse } from "../../src/api/response/base";
 import { LoginResponse } from "../../src/security/auth/main";
 import { AuthData } from "../../src/security/auth/data";
 import session from "express-session";
+import { NavigatorChain } from "../../src/security/middlewares/navigate/interface";
 export interface SessionData {
   [key: string]: any;
   cookie: Cookie;
@@ -54,6 +55,7 @@ declare global {
     }
     interface Response {
       api<T>(response: ApiResponse<T>): any;
+      navigate: NavigatorChain;
     }
   }
 }

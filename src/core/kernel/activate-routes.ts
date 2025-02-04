@@ -29,6 +29,6 @@ export const activateRoutes = (server: Express) => {
       host: `${req.protocol}://${req.get("host")}`,
     };
     Logger.error(err.stack); // Log the error stack to the console
-    res.status(500).send(data); // Render the 500 error page
+    return res.status(500).send(data); // Render the 500 error page
   });
 };
