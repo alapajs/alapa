@@ -14,4 +14,10 @@ export const miscPlugin: ITemplatePlugin[] = [
     author: "Alapajs",
     modulePath: path.join(utilsPath, "value-assertions.js"),
   },
+
+  {
+    defaultName: "StringsUtils",
+    author: "Alapajs",
+    modulePath: path.join(utilsPath, "string.js"),
+  },
 ];

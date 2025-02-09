@@ -1,12 +1,13 @@
 import { escapeRegex } from "../../utils";
 
 export const attributeRegex: RegExp =
-  /([.:]{0,3}[a-zA-Z][a-zA-Z\d\-_]*)(\s*=\s*("([^"]*)")?)?/g;
+  /([.:@]{0,3}[a-zA-Z][a-zA-Z\d\-_]*)(\s*=\s*("([^"]*)")?)?/g;
 export const codeRegex = /\{%([\s\S]*?)%\}/g;
 export const templateCommentRegex = /\{#([\s\S]*?)#\}/g;
 export const htmlTagsRegex = /<[xX]:(\w+)([^>]*)>([\s\S]*?)<\/[xX]:(\1)>/g;
 export const htmlInlineTagsRegex = /<[xX]:([\w.-:]+)(\s+[^>]*)?\s*\/>/g;
-export const containerRegex = /<[Pp]ush\b([\s\S]*?)>([\s\S]*?)<\/[Pp]ush>/g;
+export const containerRegex =
+  /<[Pp]ush\b([\s\S]*?)>([\s\S]*)<\/[Pp]ush[\s\S]*>/g;
 export const stackRegex = /<[Ss]tack(\s+[^/>]*)?\s*\/?>/g;
 export const renderRegex = /<[Rr]ender(\s+[^/>]*)?\s*\/?>/g;
 export const clearRegex = /[\s\S]?<clear>[\s\S]*?<\/clear>/g;

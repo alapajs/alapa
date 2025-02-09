@@ -8,7 +8,7 @@ export type HttpClientMethods = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 export type HttpClientRequestOptions<D = any> = AxiosRequestConfig<D>;
 
 // Define the structure of the response from HttpClient
-interface HttpClientResponse<R = any> {
+export interface HttpClientResponse<R = any> {
   code: number;
   status: string;
   data: R;

@@ -115,7 +115,7 @@ export class ResourcefulRoute {
 
   private pathFormat(): ResourcefulVerb {
     const firstWord = this.path.match(/^\w+/)?.[0] || "id";
-    const id = inflect.singularize(firstWord);
+    const id = this.options?.paramNames || inflect.singularize(firstWord);
     return {
       index: "/",
       create: `/${this.verbs.create}`,
@@ -221,8 +221,8 @@ export class ResourcefulRoute {
     this.only = Array.isArray(this.options?.only)
       ? this.options?.only
       : typeof this.options?.only === "string"
-      ? [this.options.only]
-      : [];
+        ? [this.options.only]
+        : [];
 
     if (
       this.options?.except &&
@@ -234,8 +234,8 @@ export class ResourcefulRoute {
     this.except = Array.isArray(this.options?.except)
       ? this.options.except
       : typeof this.options?.except === "string"
-      ? [this.options.except]
-      : [];
+        ? [this.options.except]
+        : [];
   }
 
   buildVerbs() {

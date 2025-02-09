@@ -118,6 +118,10 @@ export interface ResourcefulOptions {
    */
   changeNamesWithVerbs?: boolean;
 
+  paramNames?: string;
+
+  docPrefix?: string;
+
   /**
    * Whether to create route names for create actions.
    * Default is true.

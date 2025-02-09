@@ -1,5 +1,6 @@
 import { AnyObject, StringObject } from "../../../interface/object";
 import { IComponent, ParseResult } from "../../interface";
+// import fs from "fs";
 import {
   attributeRegex,
   htmlInlineTagsRegex,
@@ -57,6 +58,7 @@ export class Component {
     this.modules = componentModules.getComponents(template, basePath);
     const components = this.parser(template);
     const code = this.preCompile(template, components);
+    // fs.writeFileSync("template.html", code);
     return [code, this.context];
   }
 
@@ -147,23 +149,12 @@ export class Component {
       if (key.startsWith("...")) {
         const newKey = key.substring(3);
         code += `
-        Object.keys(spread_attributes_${propsNameKey}).forEach((key) => {
-        if (key.startsWith(":") || key.startsWith("@")) {
-            const newKey = key.substring(1);
-            const keyValue = eval(spread_attributes_${propsNameKey}[key]);
-            delete spread_attributes_${propsNameKey}[key];
-            delete spread_${propsNameKey}[key];
-            spread_attributes_${propsNameKey}[newKey] = keyValue;
-            spread_${propsNameKey}[newKey] = keyValue;
-        }
-        });
         if(typeof ${newKey} !== "object"){
            throw new Error("The value of the spread attribute must be an object. Please ensure that the attribute ${newKey} is an object.");
         }
          spread_attributes_${propsNameKey} = {...spread_attributes_${propsNameKey},...${newKey}};
          spread_${propsNameKey} = {...spread_${propsNameKey},...${newKey}};
          `;
-
         delete context[key];
       }
     });

@@ -6,6 +6,7 @@ export interface ControllerOptions {
   middlewareAll?: Middleware[];
   middleware?: { [methodName: string]: Middleware[] };
   namePrefix?: string;
+  docPrefix?: string;
 }
 
 export type ControllerClass = any;
