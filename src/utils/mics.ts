@@ -153,12 +153,12 @@ export function isClass(obj: any) {
 
 export function normalizeURLPath(url: string): string {
   url = url.replace(/\/+/g, "/").replace(/^\/|\/$/g, "");
-  return url.toLowerCase();
+  return url;
 }
 
 export function cleanPath(url: string): string {
   url = url.replace(/\/+/g, "/").replace(/^\/|\/$/g, "");
-  return url.toLowerCase();
+  return url;
 }
 
 export function getClassName(obj: any): string {

@@ -13,7 +13,7 @@ import {
 import { IRouter } from "../../interface/router";
 import "reflect-metadata";
 import { container } from "tsyringe";
-import { ControllerDocGenerator } from "./controller-utils";
+import { ControllerDocGenerator } from "./controller-docs";
 import { OpenApiEntry } from "../../../../api";
 
 interface ResourcefulActions {

@@ -9,7 +9,7 @@ import {
   normalizeURLPath,
 } from "../../../../utils/mics";
 import { HTTP_METHODS } from "../../../../shared";
-import { ControllerDocGenerator } from "./controller-utils";
+import { ControllerDocGenerator } from "./controller-docs";
 import { OpenApiEntry } from "../../../../api";
 const excludedMethods = [
   "constructor",
