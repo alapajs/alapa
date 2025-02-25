@@ -1,11 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as express from "express";
-import { ApiResponse } from "../../src/api/response/base";
-import { LoginResponse } from "../../src/security/auth/main";
-import { AuthData } from "../../src/security/auth/data";
+import { ApiResponse } from "../../dist/api/response/base";
+import { LoginResponse } from "../../dist/security/auth/main";
+import { AuthData } from "../../dist/security/auth/data";
 import session from "express-session";
-import { NavigatorChain } from "../../src/security/middlewares/navigate/interface";
+
+interface INavigator {
+  redirect: (url: string) => this;
+  back(): this;
+  back(type: string, message: string): this;
+  route(name: string): this;
+  route(name: string, ...params: (string | number | object)[]): this;
+  with: (type: string, message: string | string[]) => this;
+  withErrors: (message: string | string[]) => this;
+  withSuccess: (message: string | string[]) => this;
+  withInfo: (message: string | string[]) => this;
+  withWarn: (message: string | string[]) => this;
+}
+
 export interface SessionData {
   [key: string]: any;
   cookie: Cookie;
@@ -33,7 +46,6 @@ declare global {
       user: any;
       only: (...keys: string[]) => any;
       login: (user: any, remember: boolean = false) => Promise<LoginResponse>;
-      flash: any;
       flash(): { [key: string]: string[] };
       flash(message: string): string[];
       flash(type: string, message: string[] | string): number;
@@ -55,7 +67,7 @@ declare global {
     }
     interface Response {
       api<T>(response: ApiResponse<T>): any;
-      navigate: NavigatorChain;
+      navigate: INavigator;
     }
   }
 }

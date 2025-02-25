@@ -1,4 +1,4 @@
-export interface NavigatorChain {
+export interface INavigator {
   redirect: (url: string) => this;
   back(): this;
   back(type: string, message: string): this;

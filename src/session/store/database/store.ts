@@ -47,18 +47,25 @@ export class DatabaseSessionStore extends session.Store {
     callback?: (err?: any) => void
   ): Promise<void> {
     try {
-      const session = new SessionDatabase();
-      const data = JSON.stringify(sessionData);
-      session.id = sid;
-      session.data = Encryption.encrypt(data) ?? data;
-      session.expiredAt = sessionData.cookie.expires
+      const expiredAt = sessionData.cookie.expires
         ? new Date(sessionData.cookie.expires).getTime()
         : Date.now() +
           (sessionData.cookie.maxAge != undefined
             ? sessionData.cookie.maxAge
             : 0);
-
-      await session.save();
+      const data = JSON.stringify(sessionData);
+      const oldSession = await SessionDatabase.findOneBy({ id: sid });
+      if (oldSession) {
+        oldSession.data = data;
+        oldSession.expiredAt = expiredAt;
+        await oldSession.save();
+      } else {
+        const session = new SessionDatabase();
+        session.id = sid;
+        session.data = Encryption.encrypt(data) ?? data;
+        session.expiredAt = expiredAt;
+        await session.save();
+      }
       if (callback) callback(null);
     } catch (err) {
       if (callback) callback(err);
@@ -108,6 +115,13 @@ export class DatabaseSessionStore extends session.Store {
     callback?: (err?: any) => void
   ): Promise<void> {
     try {
+      const session = await SessionDatabase.findOneBy({ id: sid });
+      if (session) {
+        const expiredAt = Date.now() + (sessionData.cookie.maxAge || 86400000);
+        session.expiredAt = expiredAt;
+        await session.save();
+        if (callback) callback(null);
+      }
       await this.set(sid, sessionData, callback);
     } catch (err) {
       if (callback) callback(err);

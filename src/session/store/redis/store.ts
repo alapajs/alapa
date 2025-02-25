@@ -15,10 +15,14 @@ export class RedisSessionStore extends session.Store {
   options: AppSessionStoreStoreOptions;
   private redis: any = null;
   private repository: Repository;
+
   private async createConnection() {
+    if (this.redis) return; // Only create the connection if not already established
+
     const config = GlobalConfig!.session;
     const redisConfig = config!.redisConfig;
     let url = redisConfig?.url;
+
     if (!url) {
       let auth = "";
       if (redisConfig?.user && redisConfig.password) {
@@ -28,27 +32,26 @@ export class RedisSessionStore extends session.Store {
       const port = redisConfig?.port || 6379;
       url = `redis://${auth}${host}:${port}`;
     }
-    if (!this.redis) {
-      this.redis = createClient({
-        url: url,
-      });
-      this.redis.on("error", (err: any) => {
-        this.redis = null;
-        console.log("Redis Client Error", err);
-      });
-      await this.redis.connect();
-      this.repository = new Repository(SessionRedisSchemas, this.redis);
-    }
+
+    this.redis = createClient({ url });
+    this.redis.on("error", (err: any) => {
+      this.redis = null;
+      console.log("Redis Client Error", err);
+    });
+    await this.redis.connect();
+    this.repository = new Repository(SessionRedisSchemas, this.redis);
     this.createIndex();
   }
+
   async createIndex() {
     try {
       await this.repository.createIndex();
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
-      // Logger.error(e);
+      // Handle index creation errors if necessary
     }
   }
+
   constructor() {
     super();
     this.createConnection();
@@ -64,6 +67,7 @@ export class RedisSessionStore extends session.Store {
         .where("id")
         .equal(sid)
         .returnFirst();
+
       if (session) {
         if (this.isExpired(session.expiredAt)) {
           await session.remove();
@@ -94,16 +98,19 @@ export class RedisSessionStore extends session.Store {
     try {
       const data = JSON.stringify(sessionData);
       const encryptedData = Encryption.encrypt(data) ?? data;
-      const session: AnyObject = {};
-      session.id = sid;
-      session.data = encryptedData;
-      session.expiredAt = sessionData.cookie.expires
-        ? new Date(sessionData.cookie.expires).getTime()
-        : Date.now() +
-          (sessionData.cookie.maxAge != undefined
-            ? sessionData.cookie.maxAge
-            : 0);
-
+      const ids = await this.repository
+        .search()
+        .where("id")
+        .equal(sid)
+        .allIds();
+      await this.repository.remove(ids);
+      const session: AnyObject = {
+        id: sid,
+        data: encryptedData,
+        expiredAt: sessionData.cookie.expires
+          ? new Date(sessionData.cookie.expires).getTime()
+          : Date.now() + (sessionData.cookie.maxAge || 0),
+      };
       const savedSession = await this.repository.save(session);
       await this.repository.expireAt(
         savedSession[EntityId as any],
@@ -115,6 +122,7 @@ export class RedisSessionStore extends session.Store {
       if (callback) callback(err);
     }
   }
+
   public async destroy(
     sid: string,
     callback?: (err?: any) => void
@@ -131,8 +139,6 @@ export class RedisSessionStore extends session.Store {
       if (callback) callback(err);
     }
   }
-
-  // Optional methods
 
   public async length(
     callback: (err: any, length: number) => void
@@ -161,19 +167,22 @@ export class RedisSessionStore extends session.Store {
     callback?: (err?: any) => void
   ): Promise<void> {
     try {
-      await this.set(sid, sessionData, callback);
+      const expiredAt = Date.now() + (sessionData.cookie.maxAge || 86400000);
+      // Remove Redis operation temporarily and check if it still hangs
+      await this.repository.expireAt(sid, new Date(expiredAt));
+
+      if (callback) {
+        callback(null); // Ensure the callback is being called
+      }
     } catch (err) {
-      if (callback) callback(err);
+      if (callback) callback(err); // Ensure the callback is being called on error
     }
   }
 
   public async all(
     callback: (
       err: any,
-      obj?:
-        | session.SessionData[]
-        | { [sid: string]: session.SessionData }
-        | null
+      obj?: { [sid: string]: session.SessionData } | null
     ) => void
   ): Promise<void> {
     try {

@@ -25,7 +25,7 @@
     "type-generate": "tsc --project tsconfig-types.json",
     "build": "rimraf -rf dist && npm run tsc",
     "clean": "rimraf -rf dist",
-    "dev": "NODE_ENV=development nodemon --watch src --watch views, --watch typing -e \"*\" --delay 2.5 --exec 'npm run tsc'"
+    "dev": "NODE_ENV=development nodemon --watch src --watch views, --watch typing -e \"*\" --delay 2.5 --exec 'npm run clean && npm run tsc'"
   },
   "author": "Michael Otache Odeh",
   "license": "MIT",
