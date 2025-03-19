@@ -44,7 +44,7 @@ declare global {
       csrfToken: () => string;
       auth: AuthData;
       user: any;
-      only: (...keys: string[]) => any;
+      only: <T = { [key: string]: any }>(...keys: string[]) => T;
       login: (user: any, remember: boolean = false) => Promise<LoginResponse>;
       flash(): { [key: string]: string[] };
       flash(message: string): string[];

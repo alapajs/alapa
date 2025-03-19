@@ -196,6 +196,9 @@ export class ResourcefulRoute {
     this.docPrefix =
       this.controller.docPrefix || this.controllerClass.docPrefix;
     this.className = getClassName(this.controllerClass);
+    if (this.docPrefix == null) {
+      this.docPrefix = "api";
+    }
     this.controllerDoc = new ControllerDocGenerator({
       defaultTag: this.className,
       docPrefix: this.docPrefix,

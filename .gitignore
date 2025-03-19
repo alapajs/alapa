@@ -52,3 +52,4 @@ coverage/
 # Miscellaneous
 tmp/
 temp/
+.qodo

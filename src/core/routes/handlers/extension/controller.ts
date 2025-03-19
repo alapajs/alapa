@@ -11,6 +11,7 @@ import {
 import { HTTP_METHODS } from "../../../../shared";
 import { ControllerDocGenerator } from "./controller-docs";
 import { OpenApiEntry } from "../../../../api";
+import { GlobalConfig } from "../../../../shared/globals";
 const excludedMethods = [
   "constructor",
   "hasOwnProperty",
@@ -72,7 +73,12 @@ export class ControllerRoutes {
     this.options = options;
     this.className = getClassName(this.controllerClass);
     this.docPrefix =
-      this.controller.docPrefix || this.controllerClass.docPrefix;
+      this.controller.docPrefix ||
+      this.controllerClass.docPrefix ||
+      GlobalConfig?.api?.docs?.docPrefix;
+    if (this.docPrefix == null) {
+      this.docPrefix = "api";
+    }
     this.controllerDoc = new ControllerDocGenerator({
       defaultTag: this.className,
       docPrefix: this.docPrefix,
@@ -104,7 +110,8 @@ export class ControllerRoutes {
       const names = this.splitCamelCase(name);
       const verb = names[0].toLowerCase();
       if (!this.verbs.includes(verb)) continue;
-      const routeName = this.generateRouteName(names);
+      const routeName = this.generateRouteName(names, name);
+      console.log(routeName);
       const params = Reflect.getMetadata("params", controller, name) || [];
       const methodPath = this.getMethodPaths(names, params);
       const routePath = "/" + normalizeURLPath(`/${path}/${methodPath}`);
@@ -120,11 +127,19 @@ export class ControllerRoutes {
     return methodPath + this.buildParams(params);
   }
 
-  private generateRouteName(names: string[]): string {
-    const namePrefix =
-      this.options?.namePrefix || this.getPathPrefix(this.path) + ".";
+  private generateRouteName(names: string[], name: string): string {
+    let namePrefix =
+      this.options?.namePrefix || this.getPathPrefix(this.path) || "";
+    if (namePrefix && namePrefix.length > 0) {
+      namePrefix += ".";
+    }
+    let nameSuffix =
+      Reflect.getMetadata("route-name-suffix", this.controller, name) || "";
+    if (nameSuffix && nameSuffix.length > 0) {
+      nameSuffix = "." + nameSuffix;
+    }
 
-    return `${namePrefix}${names.slice(1).join(".")}`.toLowerCase();
+    return `${namePrefix}${names.slice(1).join(".")}${nameSuffix}`.toLowerCase();
   }
   private buildParams(params: string[]): string {
     if (!params.length) return "";

@@ -6,6 +6,11 @@ import { Logger } from "../utils";
 // Define types for HTTP methods and request options
 export type HttpClientMethods = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 export type HttpClientRequestOptions<D = any> = AxiosRequestConfig<D>;
+export interface IEnsureHttpClientSuccess {
+  (): boolean;
+  (keys: string[], value: string): boolean;
+  (key: string, value: string): boolean;
+}
 
 // Define the structure of the response from HttpClient
 export interface HttpClientResponse<R = any> {
@@ -13,6 +18,7 @@ export interface HttpClientResponse<R = any> {
   status: string;
   data: R;
   error?: any;
+  ensureSuccess: IEnsureHttpClientSuccess;
 }
 
 export class HttpClient {
@@ -44,9 +50,34 @@ export class HttpClient {
 
     try {
       const response: AxiosResponse<R> = await axios.request(options);
+      const ensureSuccess: IEnsureHttpClientSuccess = (
+        key?: string | string[],
+        value?: string
+      ) => {
+        if (key && value) {
+          if (typeof key === "string") {
+            if (
+              (response.data as any).data &&
+              (response.data as any).data[key] === value
+            ) {
+              return true;
+            }
+            return false;
+          }
+        }
+        console.log("Ensure Success", response.data);
+        if (response.data) {
+          if ((response.data as any).data) {
+            return (response.data as any).status === "success";
+          }
+        }
+        return false;
+      };
+
       return {
         code: response.status,
         status: response.statusText,
+        ensureSuccess: ensureSuccess,
         data: response.data,
       };
     } catch (error: any) {
@@ -71,6 +102,7 @@ export class HttpClient {
       return {
         code: statusCode,
         status: statusText,
+        ensureSuccess: () => false,
         data,
         error: error?.response?.data || error.message,
       };
