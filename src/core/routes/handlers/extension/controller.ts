@@ -12,6 +12,9 @@ import { HTTP_METHODS } from "../../../../shared";
 import { ControllerDocGenerator } from "./controller-docs";
 import { OpenApiEntry } from "../../../../api";
 import { GlobalConfig } from "../../../../shared/globals";
+import { Middleware } from "../../interface";
+import { empty } from "../../../../utils";
+// import { empty } from "../../../../utils";
 const excludedMethods = [
   "constructor",
   "hasOwnProperty",
@@ -111,13 +114,22 @@ export class ControllerRoutes {
       const verb = names[0].toLowerCase();
       if (!this.verbs.includes(verb)) continue;
       const routeName = this.generateRouteName(names, name);
-      console.log(routeName);
       const params = Reflect.getMetadata("params", controller, name) || [];
       const methodPath = this.getMethodPaths(names, params);
       const routePath = "/" + normalizeURLPath(`/${path}/${methodPath}`);
       this.generateDoc(routePath, name, verb);
+      const middleware = this.getMiddleware(name);
+      if (!empty(middleware)) {
+        route.use(routePath, ...middleware);
+      }
       route[verb](routePath, controller[name].bind(controller)).name(routeName);
     }
+  }
+  private getMiddleware(name: string): Middleware[] {
+    const allMiddlewares = this.options?.middlewareAll || [];
+    const middleware = this.options?.middleware || {};
+    const specificMiddleware = middleware[name] || [];
+    return [...specificMiddleware, ...allMiddlewares];
   }
   private getMethodPaths(names: string[], params: string[]) {
     let methodPath = names.slice(1).join("/").toLowerCase();

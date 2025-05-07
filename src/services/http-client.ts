@@ -65,7 +65,7 @@ export class HttpClient {
             return false;
           }
         }
-        console.log("Ensure Success", response.data);
+        // console.log("Ensure Success", response.data);
         if (response.data) {
           if ((response.data as any).data) {
             return (response.data as any).status === "success";

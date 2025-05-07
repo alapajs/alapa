@@ -1,5 +1,5 @@
 import path from "path";
-import { StorageDriver } from "./driver/abstract";
+import { FileData, StorageDriver } from "./driver/abstract";
 import { LocalStorageDriver } from "./driver/local";
 import { GlobalConfig } from "../shared/globals";
 
@@ -26,7 +26,11 @@ export class Storage {
   getFullURL(filePath: string): string {
     return `${this.baseURL}/${filePath}`;
   }
-  saveFile(filePath: string, key: string): Promise<boolean | string> {
-    return this.driver.saveFile(filePath, key);
+  saveFilePath(fileName: string, filePath: string): Promise<boolean | string> {
+    return this.driver.saveFile(fileName, filePath);
+  }
+
+  saveFile(fileName: string, fileData: FileData) {
+    return this.driver.saveFile(fileName, fileData);
   }
 }
