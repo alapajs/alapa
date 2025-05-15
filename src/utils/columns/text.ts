@@ -16,7 +16,6 @@ export function TextColumn(
     Column({
       nullable: true,
       type: type,
-      default: "",
       ...options,
     })(object, propertyName);
   };

@@ -115,7 +115,7 @@ export class ControllerRoutes {
       if (!this.verbs.includes(verb)) continue;
       const routeName = this.generateRouteName(names, name);
       const params = Reflect.getMetadata("params", controller, name) || [];
-      const methodPath = this.getMethodPaths(names, params);
+      const methodPath = this.getMethodPaths(names, params, name);
       const routePath = "/" + normalizeURLPath(`/${path}/${methodPath}`);
       this.generateDoc(routePath, name, verb);
       const middleware = this.getMiddleware(name);
@@ -131,22 +131,30 @@ export class ControllerRoutes {
     const specificMiddleware = middleware[name] || [];
     return [...specificMiddleware, ...allMiddlewares];
   }
-  private getMethodPaths(names: string[], params: string[]) {
-    let methodPath = names.slice(1).join("/").toLowerCase();
+  private getMethodPaths(
+    names: string[],
+    params: string[],
+    methodName: string
+  ) {
+    const separator =
+      Reflect.getMetadata("path-separator", this.controller, methodName) || "/";
+    let methodPath = names.slice(1).join(separator).toLowerCase();
     if (methodPath === "index") {
       methodPath = "";
     }
+    // console.log("methodPath", methodPath);
     return methodPath + this.buildParams(params);
   }
 
-  private generateRouteName(names: string[], name: string): string {
+  private generateRouteName(names: string[], methodName: string): string {
     let namePrefix =
       this.options?.namePrefix || this.getPathPrefix(this.path) || "";
     if (namePrefix && namePrefix.length > 0) {
       namePrefix += ".";
     }
     let nameSuffix =
-      Reflect.getMetadata("route-name-suffix", this.controller, name) || "";
+      Reflect.getMetadata("route-name-suffix", this.controller, methodName) ||
+      "";
     if (nameSuffix && nameSuffix.length > 0) {
       nameSuffix = "." + nameSuffix;
     }

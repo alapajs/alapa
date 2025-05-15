@@ -21,7 +21,7 @@ import { renderTemplate } from "./render-template";
 import { apiRoutes } from "../../core/kernel/activate-api-route";
 import { activateDocsRoute } from "../../api/docs-generator/route";
 import { normalizePath } from "./normalize-path";
-import { deleteFlash, flash } from "./flash";
+import { flash } from "./flash";
 export const activateGlobalMiddleware = async (
   app: Express,
   config: Configuration

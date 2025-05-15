@@ -105,12 +105,3 @@ export const flash = (req: Request, res: Response, next: NextFunction) => {
   req.flash = flashHandler.flash.bind(flashHandler);
   next();
 };
-
-export const deleteFlash = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  req.session.flash = {};
-  next();
-};
