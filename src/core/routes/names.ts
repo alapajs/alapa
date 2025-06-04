@@ -34,6 +34,11 @@ export const getRouteByName = (
       segment.startsWith(":")
     );
     if (paramPlaceholder) {
+      if (!param) {
+        throw new Error(
+          `Route '${name}' expects parameter '${paramPlaceholder.substring(1)}'`
+        );
+      }
       url = url.replace(paramPlaceholder, param.toString());
     }
   });

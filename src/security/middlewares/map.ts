@@ -5,7 +5,6 @@ import session from "express-session";
 import bodyParser from "body-parser";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const csrf = require("@dr.pogodin/csurf");
-import flash from "connect-flash";
 import { csrfErrorHandler } from "./csrf-error";
 import { sessionConfiguration } from "../../session/configuration";
 import { manageCookiesSession } from "./manage-cookie-session";
@@ -22,6 +21,7 @@ import { renderTemplate } from "./render-template";
 import { apiRoutes } from "../../core/kernel/activate-api-route";
 import { activateDocsRoute } from "../../api/docs-generator/route";
 import { normalizePath } from "./normalize-path";
+import { flash } from "./flash";
 export const activateGlobalMiddleware = async (
   app: Express,
   config: Configuration
@@ -41,7 +41,7 @@ export const activateGlobalMiddleware = async (
     cookieParser(),
     express.json(),
     manageCookiesSession,
-    flash(),
+    flash,
     apiRoutes(),
     csrf({ cookie: process.env.NODE_ENV === "development" }),
     templateContextMiddleware,
@@ -57,4 +57,5 @@ export const activateGlobalMiddleware = async (
   }
   activateDocsRoute(app);
   // app.all("*", );
+  // app.use(deleteFlash);
 };

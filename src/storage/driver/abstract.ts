@@ -6,11 +6,21 @@ export interface IStorageDriverError {
   filePath?: string; // Optional file path where the error occurred
   suggestedAction?: string; // Optional suggested action to resolve the error
 }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type FileData = any;
 
 export abstract class StorageDriver {
   abstract name: string;
   abstract absolutePath: string;
   abstract absoluteURL: string;
   abstract error: IStorageDriverError | null;
-  abstract saveFile(filePath: string, key: string): Promise<string | boolean>;
+  abstract saveFilePath(
+    filePath: string,
+    fileName: string
+  ): Promise<string | boolean>;
+
+  abstract saveFile(
+    fileName: string,
+    data: FileData
+  ): Promise<string | boolean>;
 }

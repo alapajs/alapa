@@ -13,7 +13,7 @@ import {
 import { IRouter } from "../../interface/router";
 import "reflect-metadata";
 import { container } from "tsyringe";
-import { ControllerDocGenerator } from "./controller-utils";
+import { ControllerDocGenerator } from "./controller-docs";
 import { OpenApiEntry } from "../../../../api";
 
 interface ResourcefulActions {
@@ -196,6 +196,9 @@ export class ResourcefulRoute {
     this.docPrefix =
       this.controller.docPrefix || this.controllerClass.docPrefix;
     this.className = getClassName(this.controllerClass);
+    if (this.docPrefix == null) {
+      this.docPrefix = "api";
+    }
     this.controllerDoc = new ControllerDocGenerator({
       defaultTag: this.className,
       docPrefix: this.docPrefix,

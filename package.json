@@ -1,6 +1,6 @@
 {
   "name": "alapa",
-  "version": "0.0.2-beta.0",
+  "version": "0.0.2-alpha.10",
   "description": "A cutting-edge web development framework designed to revolutionize the way developers build modern web applications.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -25,7 +25,7 @@
     "type-generate": "tsc --project tsconfig-types.json",
     "build": "rimraf -rf dist && npm run tsc",
     "clean": "rimraf -rf dist",
-    "dev": "NODE_ENV=development nodemon --watch src --watch views, --watch typing -e \"*\" --delay 2.5 --exec 'npm run tsc'"
+    "dev": "NODE_ENV=development nodemon --watch src --watch views, --watch typing -e \"*\" --delay 2.5 --exec 'npm run clean && npm run tsc'"
   },
   "author": "Michael Otache Odeh",
   "license": "MIT",

@@ -1,9 +1,11 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import fs from "fs";
-import { IStorageDriverError, StorageDriver } from "./abstract";
-import { Logger } from "../../utils";
+import { FileData, IStorageDriverError, StorageDriver } from "./abstract";
+import { Logger, randomMd5 } from "../../utils";
 import { S3Configuration } from "../../config/storage";
 import { GlobalConfig } from "../../shared/globals";
+import * as os from "os";
+import * as path from "path";
 
 export class S3Driver implements StorageDriver {
   error: IStorageDriverError | null;
@@ -25,9 +27,9 @@ export class S3Driver implements StorageDriver {
     this.absolutePath = url;
     this.absoluteURL = url;
   }
-  saveFile = async (
-    filePath: string,
-    key: string
+  saveFilePath = async (
+    fileName: string,
+    filePath: string
   ): Promise<boolean | string> => {
     // Initialize the S3 client
     const s3Client = new S3Client({
@@ -46,7 +48,7 @@ export class S3Driver implements StorageDriver {
       // Create the command to put the object in the S3 bucket
       const uploadParams = {
         Bucket: this.config?.bucket,
-        Key: key, // The key is the name of the file in the S3 bucket
+        Key: fileName, // The key is the name of the file in the S3 bucket
         Body: fileStream, // The file's contents
       };
 
@@ -54,12 +56,24 @@ export class S3Driver implements StorageDriver {
       const command = new PutObjectCommand(uploadParams);
 
       // Send the command to S3
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const data = await s3Client.send(command);
-      console.log(`File uploaded successfully: ${data.ETag}`);
-      return key;
+      // console.log(`File uploaded successfully: ${data.ETag}`);
+      return fileName;
     } catch (err) {
       Logger.error(`Error uploading file: ${err}`);
       return false;
     }
   };
+  saveFile(fileName: string, data: FileData): Promise<string | boolean> {
+    const filePath = path.join(os.tmpdir(), randomMd5(), fileName);
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(filePath, data);
+    const result = this.saveFilePath(fileName, filePath);
+    fs.unlink(filePath, () => {});
+    return result;
+  }
 }

@@ -9,3 +9,4 @@ export * from "./uploader";
 export * from "./media";
 export * from "./value-assertions";
 export * as dotenv from "dotenv";
+export * from "./file";

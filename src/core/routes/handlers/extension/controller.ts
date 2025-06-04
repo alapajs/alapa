@@ -9,8 +9,12 @@ import {
   normalizeURLPath,
 } from "../../../../utils/mics";
 import { HTTP_METHODS } from "../../../../shared";
-import { ControllerDocGenerator } from "./controller-utils";
+import { ControllerDocGenerator } from "./controller-docs";
 import { OpenApiEntry } from "../../../../api";
+import { GlobalConfig } from "../../../../shared/globals";
+import { Middleware } from "../../interface";
+import { empty } from "../../../../utils";
+// import { empty } from "../../../../utils";
 const excludedMethods = [
   "constructor",
   "hasOwnProperty",
@@ -72,7 +76,12 @@ export class ControllerRoutes {
     this.options = options;
     this.className = getClassName(this.controllerClass);
     this.docPrefix =
-      this.controller.docPrefix || this.controllerClass.docPrefix;
+      this.controller.docPrefix ||
+      this.controllerClass.docPrefix ||
+      GlobalConfig?.api?.docs?.docPrefix;
+    if (this.docPrefix == null) {
+      this.docPrefix = "api";
+    }
     this.controllerDoc = new ControllerDocGenerator({
       defaultTag: this.className,
       docPrefix: this.docPrefix,
@@ -104,27 +113,53 @@ export class ControllerRoutes {
       const names = this.splitCamelCase(name);
       const verb = names[0].toLowerCase();
       if (!this.verbs.includes(verb)) continue;
-      const routeName = this.generateRouteName(names);
+      const routeName = this.generateRouteName(names, name);
       const params = Reflect.getMetadata("params", controller, name) || [];
-      const methodPath = this.getMethodPaths(names, params);
+      const methodPath = this.getMethodPaths(names, params, name);
       const routePath = "/" + normalizeURLPath(`/${path}/${methodPath}`);
       this.generateDoc(routePath, name, verb);
+      const middleware = this.getMiddleware(name);
+      if (!empty(middleware)) {
+        route.use(routePath, ...middleware);
+      }
       route[verb](routePath, controller[name].bind(controller)).name(routeName);
     }
   }
-  private getMethodPaths(names: string[], params: string[]) {
-    let methodPath = names.slice(1).join("/").toLowerCase();
+  private getMiddleware(name: string): Middleware[] {
+    const allMiddlewares = this.options?.middlewareAll || [];
+    const middleware = this.options?.middleware || {};
+    const specificMiddleware = middleware[name] || [];
+    return [...specificMiddleware, ...allMiddlewares];
+  }
+  private getMethodPaths(
+    names: string[],
+    params: string[],
+    methodName: string
+  ) {
+    const separator =
+      Reflect.getMetadata("path-separator", this.controller, methodName) || "/";
+    let methodPath = names.slice(1).join(separator).toLowerCase();
     if (methodPath === "index") {
       methodPath = "";
     }
+    // console.log("methodPath", methodPath);
     return methodPath + this.buildParams(params);
   }
 
-  private generateRouteName(names: string[]): string {
-    const namePrefix =
-      this.options?.namePrefix || this.getPathPrefix(this.path) + ".";
+  private generateRouteName(names: string[], methodName: string): string {
+    let namePrefix =
+      this.options?.namePrefix || this.getPathPrefix(this.path) || "";
+    if (namePrefix && namePrefix.length > 0) {
+      namePrefix += ".";
+    }
+    let nameSuffix =
+      Reflect.getMetadata("route-name-suffix", this.controller, methodName) ||
+      "";
+    if (nameSuffix && nameSuffix.length > 0) {
+      nameSuffix = "." + nameSuffix;
+    }
 
-    return `${namePrefix}${names.slice(1).join(".")}`.toLowerCase();
+    return `${namePrefix}${names.slice(1).join(".")}${nameSuffix}`.toLowerCase();
   }
   private buildParams(params: string[]): string {
     if (!params.length) return "";

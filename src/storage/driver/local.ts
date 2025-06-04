@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { StorageDriver, IStorageDriverError } from "./abstract";
+import { StorageDriver, IStorageDriverError, FileData } from "./abstract";
 import * as fs from "fs";
 import * as path from "path";
 import { Logger } from "../../utils";
@@ -30,10 +30,20 @@ export class LocalStorageDriver implements StorageDriver {
 
   error: IStorageDriverError | null = null;
 
-  async saveFile(filePath: string, key: string): Promise<string | boolean> {
+  async saveFilePath(
+    fileName: string,
+    filePath: string
+  ): Promise<string | boolean> {
+    const targetPath = path.join(this.absolutePathPath, fileName);
+    const fileData: any = fs.readFileSync(filePath);
+    return this.saveFile(targetPath, fileData);
+  }
+  async saveFile(
+    fileName: string,
+    fileData: FileData
+  ): Promise<string | boolean> {
     try {
-      const targetPath = path.join(this.absolutePathPath, key);
-      const fileData: any = fs.readFileSync(filePath);
+      const targetPath = path.join(this.absolutePathPath, fileName);
 
       const dir = path.dirname(targetPath);
       if (!fs.existsSync(dir)) {
@@ -42,7 +52,7 @@ export class LocalStorageDriver implements StorageDriver {
 
       fs.writeFileSync(targetPath, fileData);
 
-      return key;
+      return fileName;
     } catch (err) {
       Logger.error(err);
       return false;

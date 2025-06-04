@@ -6,4 +6,5 @@ export interface LoggerConfiguration {
   format?: "json" | "text"; // Log format (e.g., JSON, plain text)
   maxFileSize?: string; // Maximum log file size before rotation (e.g., "10MB")
   maxFiles?: number; // Maximum number of rotated files to keep
+  requestLogType?: "basic" | "detailed" | "none" | "full" | "extended" | string; // Type of request logging
 }
