@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { io, Socket } from "socket.io-client";
+import { Logger } from "../../utils";
 let socket: Socket | undefined = undefined;
 const port: number = Number(process.env.DEV_SERVER_PORT || 5000);
+let refreshClientSocket: Socket | undefined = undefined;
 
 /**
  * The `joinRefreshSocket` function establishes a WebSocket connection
@@ -55,7 +57,7 @@ export const joinRefreshSocket = () => {
   });
 
   socket.on("refresh", (data) => {
-    console.log(data);
+    console.debug("🔁 Reloading browsers due to changes...");
     location.reload();
   });
 
@@ -72,31 +74,36 @@ function reconnect() {
 }
 
 export const refreshBrowsers = () => {
-  try {
-    const refreshClientSocket = io("http://localhost:" + port, {
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-    });
+  if (!refreshClientSocket || refreshClientSocket.disconnected) {
+    try {
+      refreshClientSocket = io("http://localhost:" + port, {
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+      });
+      // Remove previous listeners to avoid duplicate handlers
+      refreshClientSocket.off("connect");
+      refreshClientSocket.off("disconnect");
 
-    // Remove previous listeners to avoid duplicate handlers
-    refreshClientSocket.off("connect");
-    refreshClientSocket.off("disconnect");
+      refreshClientSocket.on("connect", () => {
+        refreshClientSocket?.emit("changes");
+        // setTimeout(() => {
+        //   refreshClientSocket.disconnect();
+        // }, 5000);
+      });
 
-    refreshClientSocket.on("connect", () => {
-      refreshClientSocket.emit("changes");
-      setTimeout(() => {
-        refreshClientSocket.disconnect();
-      }, 5000);
-    });
-
-    refreshClientSocket.on("disconnect", (reason, details) => {
-      // console.log(`Disconnected: ${reason} - ${details}`);
-    });
-  } catch (error) {
-    // console.error(
-    //   "Failed to connect to the refresh server on the server:",
-    //   error
-    // );
+      refreshClientSocket.on("disconnect", (reason, details) => {
+        // console.log(`Disconnected: ${reason} - ${details}`);
+        refreshClientSocket = undefined;
+      });
+    } catch (error) {
+      // console.error(
+      //   "Failed to connect to the refresh server on the server:",
+      //   error
+      // );
+    }
   }
+
+  if (!refreshClientSocket) return;
+  refreshClientSocket?.emit("changes");
 };
