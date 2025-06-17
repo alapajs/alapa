@@ -4,6 +4,9 @@ import { GlobalConfig } from "../shared/globals";
 import { SessionDatabase } from "../data/model";
 import { globalConfig } from "./global-config";
 import { DatabaseConfiguration } from "../config";
+import { GeneralSubscriber } from "../data/model-events/general";
+
+const defaultSubscribers = [GeneralSubscriber];
 
 let DatabaseConnection = new DataSource({
   type: "sqlite",
@@ -33,6 +36,19 @@ export async function updateDBConnection(
   } else {
     // If entities is not an array, initialize it with the new entity
     config.entities = [SessionDatabase];
+  }
+
+  if (Array.isArray(config.subscribers)) {
+    // Add or update entities as needed
+
+    for (const event of defaultSubscribers) {
+      if (!config.subscribers.includes(event)) {
+        config.subscribers?.push(event);
+      }
+    }
+  } else {
+    // If entities is not an array, initialize it with the new entity
+    config.subscribers = [...defaultSubscribers];
   }
 
   // Initialize the new connection
