@@ -13,6 +13,7 @@ export { SecurityConfiguration } from "./security";
 export { SessionConfiguration } from "./session";
 export { StorageConfiguration } from "./storage";
 export { TemplateEngineConfiguration } from "./template-engine";
+export { ModelConfiguration } from "./model";
 export * from "./auth";
 export * from "./main";
 export * from "./server";

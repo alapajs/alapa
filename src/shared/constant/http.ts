@@ -1,70 +1,22 @@
-export const SUCCESS: string = "success";
-export const ERROR: string = "error";
-export const WARNING: string = "warning";
-export const INFO: string = "info";
-export const DEBUG: string = "debug";
-export const ACTIVE: string = "active";
-
-export const enum LOG_LEVEL {
-  ERROR = 1,
-  WARNING = 2,
-  INFO = 3,
-  DEBUG = 4,
-  SUCCESS = 5,
-}
-
 export const enum STATUS {
   ERROR = "error",
   WARNING = "warning",
   INFO = "info",
   SUCCESS = "success",
 }
-const jsFiles = ["js"];
-const tsFiles = ["ts"];
-const getExt = (filename: string) => {
-  const parts = filename.split(".");
-  return parts[parts.length - 1];
-};
-const currentFile = __filename;
-
-export const RUNTIME_ENVIRONMENT = jsFiles.includes(getExt(currentFile))
-  ? "javascript"
-  : tsFiles.includes(getExt(currentFile))
-    ? "typescript"
-    : "unknown";
-
-export const SELF_ASSIGNED_ATTRIBUTES = [
-  "checked",
-  "disabled",
-  "readonly",
-  "required",
-  "autofocus",
-  "multiple",
-  "selected",
-  "hidden",
-  "autoplay",
-  "controls",
-  "loop",
-  "novalidate",
-  "reversed",
-  "open",
-  "scoped",
-  "async",
-  "defer",
-  "formnovalidate",
-  "ismap",
-  "draggable",
-  "spellcheck",
-  "contenteditable",
-  "translate",
-];
-
-export const EVN =
-  process.env.NODE_ENV == "production" ||
-  process.env.APP_ENV == "production" ||
-  process.env.DEBUG == "false"
-    ? "production"
-    : "development";
+export const enum HTTP_STATUS {
+  OK = 200,
+  CREATED = 201,
+  ACCEPTED = 202,
+  NO_CONTENT = 204,
+  BAD_REQUEST = 400,
+  UNAUTHORIZED = 401,
+  FORBIDDEN = 403,
+  NOT_FOUND = 404,
+  METHOD_NOT_ALLOWED = 405,
+  CONFLICT = 409,
+  INTERNAL_SERVER_ERROR = 500,
+}
 
 /**
  * HTTP_METHODS

@@ -10,6 +10,7 @@ import { EncryptionCongratulation } from "./encryption";
 import { JWTConfiguration } from "./jwt";
 import { LoggerConfiguration } from "./logger";
 import { MiddlewareConfiguration } from "./middleware";
+import { ModelConfiguration } from "./model";
 import { MonitoringConfiguration } from "./monitoring";
 import { QueueConfiguration } from "./queue";
 import { SecurityConfiguration } from "./security";
@@ -20,6 +21,7 @@ import { TemplateEngineConfiguration } from "./template-engine";
 
 export interface Configuration {
   server: ServerConfiguration;
+  model?: ModelConfiguration;
   templateEngine: TemplateEngineConfiguration;
   database: DatabaseConfiguration;
   logger: LoggerConfiguration;

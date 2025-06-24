@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import path from "path";
-import { LOG_LEVEL } from "../shared/constant";
+import { LOG_LEVEL } from "../shared/constant/general";
 import { logToFile } from "./mics";
 import { LogMessageType } from "./types";
 

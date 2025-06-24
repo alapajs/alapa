@@ -1,18 +1,18 @@
-import { EVN } from "../shared";
 import { GlobalConfig } from "../shared/globals";
 import { Buffer } from "node:buffer";
 import minifyHtml from "@minify-html/node";
 import { html } from "js-beautify";
 import { clearRegex } from "./regex/misc";
+import { ENV } from "../shared/constant";
 
 export const formatHtmlOutput = (template: string): string => {
   const templateEngineConfig = GlobalConfig.templateEngine;
   template = template.replace(clearRegex, "");
 
-  if (EVN == "production" && templateEngineConfig.minifyOutputOnProd === true) {
+  if (ENV == "production" && templateEngineConfig.minifyOutputOnProd === true) {
     template = minifyHtml.minify(Buffer.from(template), {}).toString();
   }
-  if (EVN == "development" && templateEngineConfig.formatOutPutOnDev === true) {
+  if (ENV == "development" && templateEngineConfig.formatOutPutOnDev === true) {
     template = html(template, {
       indent_size: 2, // Use 2 spaces for indentation
       indent_char: " ", // Use spaces for indentation

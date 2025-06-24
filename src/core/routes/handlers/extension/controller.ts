@@ -8,7 +8,7 @@ import {
   isClass,
   normalizeURLPath,
 } from "../../../../utils/mics";
-import { HTTP_METHODS } from "../../../../shared";
+import { HTTP_METHODS } from "../../../../shared/constant/http";
 import { ControllerDocGenerator } from "./controller-docs";
 import { OpenApiEntry } from "../../../../api";
 import { GlobalConfig } from "../../../../shared/globals";
