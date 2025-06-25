@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { EntityOptions, Entity } from "typeorm";
 import {
-  DECORATOR_METHODS_FOR_FORMATTED_KEY,
   EXCLUDE_FIELDS_KEY,
   FILLABLE_KEYS,
+  FUNCTIONS_FORMATTED_FIELDS_KEY,
   GUARD_KEYS,
   INCLUDE_FIELDS_KEY,
+  METHODS_FORMATTED_FIELDS_KEY,
 } from "./helper";
 import { FieldKeyCondition, FunctionKeys, NonFunctionKeys } from "./types";
 import { ModelUtils } from "./util";
@@ -60,7 +61,6 @@ export function GuardField<M = any>(test?: FieldKeyCondition<M>) {
     const guardFields = Reflect.getMetadata(GUARD_KEYS, target) ?? [];
     guardFields.push(value);
     ModelUtils.defineListMetadata(GUARD_KEYS, guardFields, target);
-    console.log(guardFields);
   };
 }
 
@@ -82,7 +82,7 @@ export function FillableField<M = any>(test?: FieldKeyCondition<M>) {
 // const methodFn = instance[methodName].bind(instance);
 // const result = methodFn();
 type FieldType<M, K> = K extends any ? NonFunctionKeys<M> : K;
-export function FormattedFieldByMethod<
+export function FormattedFieldMethod<
   M extends Model,
   K extends NonFunctionKeys<M>,
 >(field: FieldType<M, K>) {
@@ -93,17 +93,15 @@ export function FormattedFieldByMethod<
     descriptor: TypedPropertyDescriptor<() => M[K]>
   ) {
     const formattedFields =
-      Reflect.getMetadata(DECORATOR_METHODS_FOR_FORMATTED_KEY, target) ?? {};
+      Reflect.getMetadata(METHODS_FORMATTED_FIELDS_KEY, target) ?? {};
 
     formattedFields[field] = propertyKey;
 
-    Reflect.deleteMetadata(
-      DECORATOR_METHODS_FOR_FORMATTED_KEY,
+    Reflect.defineMetadata(
+      METHODS_FORMATTED_FIELDS_KEY,
       formattedFields,
       target
     );
-
-    console.log(formattedFields);
   };
 }
 
@@ -165,17 +163,13 @@ export function FormattedField<
   A extends FunctionKeys<M> = any,
 >(actionOrMethod: ActionType<M, K> | MethodNameType<M, K, A>) {
   return function (target: any, propertyKey: string | symbol) {
-    const formattedFields =
-      Reflect.getMetadata(DECORATOR_METHODS_FOR_FORMATTED_KEY, target) ?? {};
-
+    const KEY =
+      typeof actionOrMethod == "string"
+        ? METHODS_FORMATTED_FIELDS_KEY
+        : FUNCTIONS_FORMATTED_FIELDS_KEY;
+    const formattedFields = Reflect.getMetadata(KEY, target) ?? {};
     formattedFields[propertyKey] = actionOrMethod;
 
-    Reflect.defineMetadata(
-      DECORATOR_METHODS_FOR_FORMATTED_KEY,
-      formattedFields,
-      target
-    );
-
-    console.log("Registered formatted field:", formattedFields);
+    Reflect.defineMetadata(KEY, formattedFields, target);
   };
 }

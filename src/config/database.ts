@@ -14,6 +14,8 @@ import { DatabaseConnection } from "../database";
 
 export type DatabaseConfiguration = {
   connection: DatabaseConnection;
+  preventSilentlyDiscardingAttributes?: boolean;
+  removeNullValuesFromIncludesAExcludeFields?: boolean;
   /**
    * Connection name. If connection name is not given then it will be called "default".
    * Different connections must have different names.

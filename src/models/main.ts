@@ -11,8 +11,10 @@ import {
 import {
   EXCLUDE_FIELDS_KEY,
   FILLABLE_KEYS,
+  FUNCTIONS_FORMATTED_FIELDS_KEY,
   GUARD_KEYS,
   INCLUDE_FIELDS_KEY,
+  METHODS_FORMATTED_FIELDS_KEY,
   MODEL_UNIQUE_ID,
   ModelHelper,
   ORIGINAL_VALUE_KEY,
@@ -168,7 +170,9 @@ export abstract class Model extends BaseModel {
       for (const field of includeFields) {
         if (isFunction(this[field as keyof this])) continue;
         if (ModelHelper.skipIncludeExclude(field)) continue;
-        result[field as keyof this] = this[field as keyof this];
+        result[field as keyof this] = ModelHelper.toClient(
+          this[field as keyof this]
+        );
       }
     } else if (!empty(excludeFields)) {
       for (const key in this) {
@@ -179,15 +183,31 @@ export abstract class Model extends BaseModel {
         ) {
           continue;
         }
-        result[key] = this[key];
+        result[key] = ModelHelper.toClient(this[key]);
       }
     } else {
-      return this;
+      for (const key in this) {
+        result[key] = ModelHelper.toClient(this[key]);
+      }
     }
     return result;
   }
 
   toClient(options?: includeAndExcludeFieldsOptions<this>): Partial<this> {
+    return this.applyIncludeAndExcludeField(options);
+  }
+
+  toAPI(options?: includeAndExcludeFieldsOptions<this>): Partial<this> {
+    return this.applyIncludeAndExcludeField(options);
+  }
+
+  toJSON(options?: includeAndExcludeFieldsOptions<this>): Partial<this> {
+    return this.applyIncludeAndExcludeField(options);
+  }
+  sanitize(options?: includeAndExcludeFieldsOptions<this>): Partial<this> {
+    return this.applyIncludeAndExcludeField(options);
+  }
+  serialize(options?: includeAndExcludeFieldsOptions<this>): Partial<this> {
     return this.applyIncludeAndExcludeField(options);
   }
 
@@ -197,7 +217,7 @@ export abstract class Model extends BaseModel {
   async fill(attributes: Partial<this>, option?: ModelCreateOption) {
     const preventSilentlyDiscardingAttributes =
       option?.preventSilentlyDiscardingAttributes ??
-      GlobalConfig.model?.preventSilentlyDiscardingAttributes;
+      GlobalConfig.database?.preventSilentlyDiscardingAttributes;
     if (!ModelHelper.usingFillableAndGuard(this)) {
       if (preventSilentlyDiscardingAttributes) {
         throw new Error(
@@ -210,6 +230,11 @@ export abstract class Model extends BaseModel {
   }
 
   private buildFormattedFields() {
+    const functionFormattedFields =
+      Reflect.getMetadata(FUNCTIONS_FORMATTED_FIELDS_KEY, this) ?? {};
+    const methodsFormattedFields =
+      Reflect.getMetadata(METHODS_FORMATTED_FIELDS_KEY, this) ?? {};
+
     for (const key in this.formattedFields) {
       const value = this.formattedFields[key];
       if (typeof value === "function") {
@@ -217,6 +242,19 @@ export abstract class Model extends BaseModel {
       } else {
         this[key as keyof this] = value as any;
       }
+    }
+
+    for (const key in functionFormattedFields) {
+      const action = functionFormattedFields[key];
+      const result = action((this as any)[key]);
+      (this as any)[key] = result;
+    }
+
+    for (const key in methodsFormattedFields) {
+      const method = methodsFormattedFields[key];
+      const methodFn = (this as any)[method].bind(this);
+      const result = methodFn();
+      (this as any)[key] = result;
     }
   }
 

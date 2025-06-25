@@ -94,7 +94,7 @@ export class ModelUtils {
   ) {
     const preventSilentlyDiscardingAttributes =
       option?.preventSilentlyDiscardingAttributes ??
-      GlobalConfig.model?.preventSilentlyDiscardingAttributes;
+      GlobalConfig.database?.preventSilentlyDiscardingAttributes;
     if (!ModelHelper.usingFillableAndGuard(model)) {
       if (preventSilentlyDiscardingAttributes) {
         throw new Error(

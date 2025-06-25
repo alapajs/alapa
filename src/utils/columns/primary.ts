@@ -19,6 +19,8 @@ export function PrimaryColumn(
     | PrimaryGeneratedColumnIdentityOptions
 ) {
   return function (object: object, propertyName: string) {
+    if (!type) type = "increment";
+
     if (type === "increment") {
       // Use PrimaryGeneratedColumn with increment strategy
       PrimaryGeneratedColumn("increment", options)(object, propertyName);

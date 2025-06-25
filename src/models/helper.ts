@@ -10,9 +10,9 @@ export const EXCLUDE_FIELDS_KEY = Symbol("excludeFields");
 export const INCLUDE_FIELDS_KEY = Symbol("includeFields");
 export const REFLECT_META_MODEL_OBJECT = new Date(0);
 export const MODEL_UNIQUE_ID = Symbol("Model:Instance:UniqueID");
-export const DECORATOR_METHODS_FOR_FORMATTED_KEY = Symbol(
-  "decorator:method:formatted:fields"
-);
+export const FUNCTIONS_FORMATTED_FIELDS_KEY = Symbol("formattedFields");
+export const METHODS_FORMATTED_FIELDS_KEY = Symbol("method:formatted:fields");
+
 export class ModelHelper {
   static defaultHiddenFields: string[] = [
     "newEntity",
