@@ -12,7 +12,7 @@ import { EntitySubscriberInterface } from "typeorm";
  *
  * @example
  * ```ts
- * import { EventSubscriber, InsertEvent } from "alapa";
+ * import { EventSubscriber, InsertEvent, ModelSubscriberInterface } from "alapa";
  * import { User } from "../entities/User";
  *
  * @EventSubscriber()

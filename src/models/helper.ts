@@ -4,8 +4,8 @@ import { Model } from "./main";
 import "reflect-metadata";
 export const CHANGED_ATTRIBUTE_META_KEY = Symbol("changedAttributes");
 export const ORIGINAL_VALUE_KEY = Symbol("originalValuesChanged");
-export const FILLABLE_KEYS = Symbol("fillable");
-export const GUARD_KEYS = Symbol("guard");
+export const FILLABLE_KEYS = Symbol("fillableFields");
+export const GUARDED_KEYS = Symbol("guardedFields");
 export const EXCLUDE_FIELDS_KEY = Symbol("excludeFields");
 export const INCLUDE_FIELDS_KEY = Symbol("includeFields");
 export const REFLECT_META_MODEL_OBJECT = new Date(0);
@@ -60,7 +60,7 @@ export class ModelHelper {
 
   static usingFillableAndGuard(model: Model) {
     const fillable = Reflect.getMetadata(FILLABLE_KEYS, model) ?? [];
-    const guard = Reflect.getMetadata(GUARD_KEYS, model) ?? [];
+    const guard = Reflect.getMetadata(GUARDED_KEYS, model) ?? [];
     return !empty(fillable) || !empty(guard);
   }
 

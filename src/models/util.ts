@@ -5,7 +5,7 @@ import "reflect-metadata";
 import {
   CHANGED_ATTRIBUTE_META_KEY,
   FILLABLE_KEYS,
-  GUARD_KEYS,
+  GUARDED_KEYS,
   ModelHelper,
   ORIGINAL_VALUE_KEY,
   REFLECT_META_MODEL_OBJECT,
@@ -103,7 +103,7 @@ export class ModelUtils {
       }
     }
     const rawFillable = Reflect.getMetadata(FILLABLE_KEYS, model) ?? [];
-    const rawGuard = Reflect.getMetadata(GUARD_KEYS, model) ?? [];
+    const rawGuard = Reflect.getMetadata(GUARDED_KEYS, model) ?? [];
     const fillable = ModelHelper.getConditionalFieldKey(rawFillable, model);
     const guard = ModelHelper.getConditionalFieldKey(rawGuard, model);
 

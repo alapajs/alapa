@@ -35,14 +35,14 @@ export interface ModelCreateOption {
   preventSilentlyDiscardingAttributes?: boolean;
 }
 
-export type ModelGuardFields<M extends Model> = ConditionalFieldKey<M>;
+export type ModelGuardedFields<M extends Model> = ConditionalFieldKey<M>;
 export type ModelIncludeFields<M extends Model> = ConditionalFieldKey<M>;
 export type ModelFillableFields<M extends Model> = ConditionalFieldKey<M>;
 export type ModelExcludeFields<M extends Model> =
   | NonFunctionKeys<M>
   | Partial<Record<NonFunctionKeys<M>, FieldKeyCondition<M>>>;
 
-export type ModelGuardFieldsMethod<M> = ConditionalFieldKey<M>;
+export type ModelGuardedFieldsMethod<M> = ConditionalFieldKey<M>;
 export type ModelIncludeFieldsMethod<M> = ConditionalFieldKey<M>;
 export type ModelFillableFieldsMethod<M> = ConditionalFieldKey<M>;
 export type ModelExcludeFieldsMethod<M> =

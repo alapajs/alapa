@@ -12,7 +12,7 @@ import {
   EXCLUDE_FIELDS_KEY,
   FILLABLE_KEYS,
   FUNCTIONS_FORMATTED_FIELDS_KEY,
-  GUARD_KEYS,
+  GUARDED_KEYS,
   INCLUDE_FIELDS_KEY,
   METHODS_FORMATTED_FIELDS_KEY,
   MODEL_UNIQUE_ID,
@@ -54,8 +54,8 @@ export abstract class Model extends BaseModel {
     if (!empty(this.fillableFields)) {
       Reflect.defineMetadata(FILLABLE_KEYS, this.fillableFields, this);
     }
-    if (empty(this.guardFields)) {
-      Reflect.defineMetadata(GUARD_KEYS, this.guardFields, this);
+    if (empty(this.guardedFields)) {
+      Reflect.defineMetadata(GUARDED_KEYS, this.guardedFields, this);
     }
   }
 

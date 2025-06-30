@@ -6,15 +6,15 @@ import {
   ModelFillableFields,
   ModelFillableFieldsMethod,
   ModelFormattedField,
-  ModelGuardFields,
-  ModelGuardFieldsMethod,
+  ModelGuardedFields,
+  ModelGuardedFieldsMethod,
   ModelIncludeFields,
   ModelIncludeFieldsMethod,
 } from "./types";
 import {
   EXCLUDE_FIELDS_KEY,
   FILLABLE_KEYS,
-  GUARD_KEYS,
+  GUARDED_KEYS,
   INCLUDE_FIELDS_KEY,
 } from "./helper";
 import { ModelUtils } from "./util";
@@ -22,9 +22,10 @@ import { empty } from "../utils";
 
 export abstract class BaseModel extends BaseEntity {
   protected fillableFields: ModelFillableFields<any>[];
+  protected guardedFields: ModelGuardedFields<any>[];
   protected includeFields: ModelIncludeFields<any>[];
   protected excludeFields: ModelExcludeFields<any>[];
-  protected guardFields: ModelGuardFields<any>[];
+
   protected formattedFields: ModelFormattedField<any>;
 
   updateIncludeFields(
@@ -54,18 +55,18 @@ export abstract class BaseModel extends BaseEntity {
     ModelUtils.defineListMetadata(FILLABLE_KEYS, fillableFields, this);
   }
 
-  updateGuardFields(
-    fields: ModelGuardFieldsMethod<this>[],
+  updateGuardedFields(
+    fields: ModelGuardedFieldsMethod<this>[],
     override: boolean = false
   ) {
-    let guardFields = this.getMetadata(GUARD_KEYS) ?? [];
+    let guardedFields = this.getMetadata(GUARDED_KEYS) ?? [];
     if (override) {
-      guardFields = fields;
+      guardedFields = fields;
     } else if (!empty(fields)) {
-      guardFields = [...guardFields, ...fields];
+      guardedFields = [...guardedFields, ...fields];
     }
 
-    ModelUtils.defineListMetadata(GUARD_KEYS, guardFields, this);
+    ModelUtils.defineListMetadata(GUARDED_KEYS, guardedFields, this);
   }
 
   updateExcludeFields(
@@ -82,8 +83,8 @@ export abstract class BaseModel extends BaseEntity {
     ModelUtils.defineListMetadata(EXCLUDE_FIELDS_KEY, excludeFields, this);
   }
 
-  getGuardFields(): ModelIncludeFieldsMethod<this> {
-    return this.getMetadata(GUARD_KEYS) ?? [];
+  getGuardedFields(): ModelIncludeFieldsMethod<this> {
+    return this.getMetadata(GUARDED_KEYS) ?? [];
   }
 
   getFillableField(): ModelFillableFieldsMethod<this> {

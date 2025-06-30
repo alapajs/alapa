@@ -4,7 +4,7 @@ import {
   EXCLUDE_FIELDS_KEY,
   FILLABLE_KEYS,
   FUNCTIONS_FORMATTED_FIELDS_KEY,
-  GUARD_KEYS,
+  GUARDED_KEYS,
   INCLUDE_FIELDS_KEY,
   METHODS_FORMATTED_FIELDS_KEY,
 } from "./helper";
@@ -50,7 +50,7 @@ export function IncludeField<M = any>(test?: FieldKeyCondition<M>) {
   };
 }
 
-export function GuardField<M = any>(test?: FieldKeyCondition<M>) {
+export function GuardedField<M = any>(test?: FieldKeyCondition<M>) {
   return function (target: any, propertyKey: string) {
     let value: any = {};
     if (test) {
@@ -58,9 +58,9 @@ export function GuardField<M = any>(test?: FieldKeyCondition<M>) {
     } else {
       value = propertyKey;
     }
-    const guardFields = Reflect.getMetadata(GUARD_KEYS, target) ?? [];
-    guardFields.push(value);
-    ModelUtils.defineListMetadata(GUARD_KEYS, guardFields, target);
+    const guardedFields = Reflect.getMetadata(GUARDED_KEYS, target) ?? [];
+    guardedFields.push(value);
+    ModelUtils.defineListMetadata(GUARDED_KEYS, guardedFields, target);
   };
 }
 

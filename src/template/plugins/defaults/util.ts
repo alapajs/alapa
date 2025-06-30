@@ -10,7 +10,7 @@ export const miscPlugin: ITemplatePlugin[] = [
   },
 
   {
-    defaultName: "Utils",
+    defaultName: "ValueAssertionsUtils",
     author: "Alapajs",
     modulePath: path.join(utilsPath, "value-assertions.js"),
   },
