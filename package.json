@@ -15,8 +15,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:unit": "jest",
-    "build": "rimraf -rf dist && npm run tsc",
-    "clean": "rimraf -rf dist",
+    "build": "npm run clean && npm run tsc",
+    "clean": "rimraf dist out",
     "tsc": "tsc",
     "publish:alpha": "npm run build && npm publish --tag alpha",
     "publish:beta": "npm run build && npm publish --tag beta",
@@ -25,9 +25,10 @@
     "prerelease:beta": "npm version prerelease --preid=beta",
     "patch": "npm version patch",
     "major": "npm version major",
+    "copy-to-dist": "cpy 'out/**/*' dist --parents",
     "pack": "npm run build && npm pack",
     "type-generate": "tsc --project tsconfig-types.json",
-    "dev": "NODE_ENV=development nodemon --watch src --watch views, --watch typing -e \"*\" --delay 2.5 --exec 'npm run clean && npm run tsc'"
+    "dev": "nodemon --watch src --watch views, --watch typing -e \"*\" --delay 2.5 --exec \"npm run clean && npm run tsc && node copy-to-dist.js \""
   },
   "author": "Michael Otache Odeh",
   "license": "MIT",
@@ -73,7 +74,7 @@
     "swagger-ui-express": "^5.0.1",
     "temp-dir": "^3.0.0",
     "tsyringe": "^4.8.0",
-    "typeorm": "^0.3.20",
+    "typeorm": "^0.3.25",
     "typeorm-naming-strategies": "^4.1.0",
     "uuid": "^10.0.0",
     "zod": "^3.23.8"
@@ -102,6 +103,7 @@
     "@types/uuid": "^10.0.0",
     "@webpack-cli/generators": "^3.0.7",
     "connect-livereload": "^0.6.1",
+    "cpy-cli": "^5.0.0",
     "eslint": "^9.9.0",
     "eslint-plugin-ejs": "^0.0.2",
     "globals": "^15.9.0",

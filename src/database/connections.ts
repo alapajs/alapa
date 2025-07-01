@@ -1,10 +1,9 @@
 import { DataSource } from "typeorm";
-import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 import { GlobalConfig } from "../shared/globals";
 import { SessionDatabase } from "../data/model";
-import { globalConfig } from "./global-config";
 import { DatabaseConfiguration } from "../config";
 import { GeneralSubscriber } from "../data/model-events/general";
+import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 
 const defaultSubscribers = [GeneralSubscriber];
 
@@ -21,11 +20,16 @@ export async function updateDBConnection(
     await DatabaseConnection.destroy();
   }
   const databaseConfig = configuration ?? GlobalConfig.database;
-
+  const {
+    connection,
+    removeNullValuesFromIncludesAExcludeFields,
+    preventSilentlyDiscardingAttributes,
+    ...restConfig
+  } = databaseConfig;
   const config = {
-    ...globalConfig(databaseConfig),
-    ...databaseConfig.connection,
-  };
+    ...restConfig,
+    ...connection,
+  } as any;
 
   // Ensure that entities are handled correctly
   if (Array.isArray(config.entities)) {
@@ -53,8 +57,8 @@ export async function updateDBConnection(
 
   // Initialize the new connection
   DatabaseConnection = new DataSource({
-    ...config,
     namingStrategy: new SnakeNamingStrategy(),
+    ...config,
   });
 
   await DatabaseConnection.initialize();

@@ -21,5 +21,4 @@ export * from "./interface";
 // export * from "typeorm";
 export * from "./dev";
 export * from "./storage";
-export * from "bignumber.js";
 export default alapa;

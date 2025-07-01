@@ -1,4 +1,4 @@
-import { DataSourceOptions } from "./connection-options";
+import { DataSourceOptions } from "typeorm";
 
 export type DatabaseConnection = DataSourceOptions;
 
