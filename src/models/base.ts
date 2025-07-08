@@ -5,7 +5,7 @@ import {
   ModelExcludeFieldsMethod,
   ModelFillableFields,
   ModelFillableFieldsMethod,
-  ModelFormattedField,
+  ModelFormattedFields,
   ModelGuardedFields,
   ModelGuardedFieldsMethod,
   ModelIncludeFields,
@@ -26,7 +26,7 @@ export abstract class BaseModel extends BaseEntity {
   protected includeFields: ModelIncludeFields<any>[];
   protected excludeFields: ModelExcludeFields<any>[];
 
-  protected formattedFields: ModelFormattedField<any>;
+  protected formattedFields: ModelFormattedFields<any> = {};
 
   updateIncludeFields(
     fields: ModelIncludeFieldsMethod<this>[],
@@ -87,7 +87,7 @@ export abstract class BaseModel extends BaseEntity {
     return this.getMetadata(GUARDED_KEYS) ?? [];
   }
 
-  getFillableField(): ModelFillableFieldsMethod<this> {
+  getFillableFields(): ModelFillableFieldsMethod<this> {
     return this.getMetadata(FILLABLE_KEYS);
   }
 

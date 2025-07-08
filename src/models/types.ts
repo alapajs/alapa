@@ -17,7 +17,7 @@ export type FunctionKeys<T> = {
   [K in keyof T]: T[K] extends (...args: any[]) => any ? K : never;
 }[keyof T];
 
-export type ModelFormattedField<M> = Partial<{
+export type ModelFormattedFields<M> = Partial<{
   [K in NonFunctionKeys<M>]: M[K] | ((model: M) => M[K]);
 }>;
 
