@@ -5,8 +5,8 @@ import {
   AfterLoad,
   AfterUpdate,
   BaseEntity,
-  BeforeInsert,
-  BeforeUpdate,
+  // BeforeInsert,
+  // BeforeUpdate,
 } from "typeorm";
 import {
   EXCLUDE_FIELDS_KEY,
@@ -29,6 +29,7 @@ import {
   includeAndExcludeFieldsOptions,
   ModelCreateOption,
   ModelIncludeFieldsMethod,
+  NonFunctionKeys,
 } from "./types";
 import { BaseModel } from "./base";
 
@@ -84,15 +85,44 @@ export abstract class Model extends BaseModel {
     return [];
   }
 
-  getOriginalValues(): this {
+  getOriginalValues(): this;
+  getOriginalValues<M extends this, K extends NonFunctionKeys<M>>(
+    attribute: K
+  ): M[K];
+  getOriginalValues<M extends this, K extends NonFunctionKeys<M>>(
+    attributes: K[]
+  ): { [P in K]: M[P] };
+  getOriginalValues<M extends this, K extends NonFunctionKeys<M>>(
+    ...attributes: K[]
+  ): { [P in K]: M[P] };
+  getOriginalValues<K extends keyof this>(
+    ...attribute: K[]
+  ): this | this[K] | Pick<this, K> {
     const modelUniqueID = (this as any)[MODEL_UNIQUE_ID];
-    const originalValuesChanged =
+    let originalValuesChanged =
       Reflect.getOwnMetadata(
         ORIGINAL_VALUE_KEY,
         REFLECT_META_MODEL_OBJECT,
         modelUniqueID
       ) ?? {};
-    return { ...this, ...originalValuesChanged };
+    originalValuesChanged = { ...this, ...originalValuesChanged };
+    if (attribute.length == 1 && typeof attribute[0] == "string") {
+      return originalValuesChanged[attribute[0]];
+    }
+
+    if (Array.isArray(attribute) || Array.isArray(attribute[0])) {
+      let data: K[] = attribute;
+      if (Array.isArray(attribute[0])) {
+        data = attribute[0];
+      }
+      const values = {} as Pick<this, K>;
+      for (const attr of new Set(data)) {
+        values[attr] = originalValuesChanged[attr];
+      }
+      return values;
+    }
+
+    return originalValuesChanged;
   }
 
   private resetChanges() {
@@ -258,11 +288,11 @@ export abstract class Model extends BaseModel {
     }
   }
 
-  @BeforeInsert()
-  private async beforeInsert() {}
+  // @BeforeInsert()
+  // private async beforeInsert() {}
 
-  @BeforeUpdate()
-  private async beforeUpdate() {}
+  // @BeforeUpdate()
+  // private async beforeUpdate() {}
 
   @AfterLoad()
   private async afterLoad() {
