@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { io, Socket } from "socket.io-client";
-import { Logger } from "../../utils";
 let socket: Socket | undefined = undefined;
 const port: number = Number(process.env.DEV_SERVER_PORT || 5000);
 let refreshClientSocket: Socket | undefined = undefined;
@@ -103,7 +102,4 @@ export const refreshBrowsers = () => {
       // );
     }
   }
-
-  if (!refreshClientSocket) return;
-  refreshClientSocket?.emit("changes");
 };

@@ -3,7 +3,16 @@ import { GlobalConfig } from "../../shared/globals";
 import http from "http";
 import express, { Express } from "express";
 import { Logger } from "../../utils";
+import { refreshBrowsers } from "../../dev";
+import { ENV } from "../../shared";
+
 const app: Express = express();
+
+function refreshClient() {
+  if (ENV === "development") {
+    refreshBrowsers();
+  }
+}
 
 const server = http.createServer(app);
 
@@ -25,8 +34,6 @@ export async function startServer(): Promise<StartResponse> {
         if (port) {
           Logger.info(`Port ${port} is in use, trying a different port...`);
           port += 1;
-          // // Attempt to listen on a new port (you can specify your logic)
-          // server.listen(port + 1);
           try {
             setTimeout(async () => {
               const { host, port } = await startServer();
@@ -44,16 +51,6 @@ export async function startServer(): Promise<StartResponse> {
       console.log(`Server running on port ${port}`);
     }
   });
-  // Ensure that port is available
-  //// eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // process.on("uncaughtException", async (err: any) => {
-  //   if (err.code === "EADDRINUSE") {
-  //
-  //   } else {
-  //     Logger.error("Server error:", err);
-  //     process.exit(1);
-  //   }
-  // });
 
   const updatePort = (
     server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>
@@ -68,10 +65,11 @@ export async function startServer(): Promise<StartResponse> {
     return new Promise((resolve) => {
       server.listen(port, host, (err?: NodeJS.ErrnoException) => {
         if (err) {
-          // handlerPortError(err, port);
+          // handle error if needed
         } else {
           updatePort(server);
           Logger.info(`Server started at http://${host}:${port}`);
+          refreshClient(); // <-- Refresh browsers here
           resolve({ host, port, server, app });
         }
       });
@@ -82,10 +80,11 @@ export async function startServer(): Promise<StartResponse> {
     return new Promise((resolve) => {
       server.listen(port, (err?: NodeJS.ErrnoException) => {
         if (err) {
-          // handlerPortError(err, port);
+          // handle error if needed
         } else {
           Logger.info(`Server started at port ${port}`);
           updatePort(server);
+          refreshClient(); // <-- Refresh browsers here
           resolve({ host: undefined, port, server, app });
         }
       });
@@ -99,7 +98,8 @@ export async function startServer(): Promise<StartResponse> {
       } else {
         Logger.info(`Server started`);
         updatePort(server);
-        resolve({ host: undefined, port: port, server, app }); // Default host and port if none specified
+        refreshClient(); // <-- Refresh browsers here
+        resolve({ host: undefined, port: port, server, app });
       }
     });
   });
