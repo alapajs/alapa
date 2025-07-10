@@ -103,3 +103,25 @@ export const refreshBrowsers = () => {
     }
   }
 };
+
+export const connectToRefreshSocket: Promise<Socket | undefined> = new Promise(
+  (resolve) => {
+    try {
+      const client = io(`http://localhost:${port}`, {
+        reconnection: true,
+        reconnectionDelay: 1000,
+        transports: ["polling", "websocket"],
+      });
+
+      client.on("connect", () => {
+        resolve(client);
+      });
+
+      client.on("connect_error", (err) => {
+        resolve(undefined);
+      });
+    } catch (error) {
+      resolve(undefined);
+    }
+  }
+);
