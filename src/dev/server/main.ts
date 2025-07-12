@@ -50,17 +50,22 @@ export const startDevServer = () => {
 /**
  * Opens the browser if no clients are connected to the refresh room.
  */
-const openBrowserIfNoneConnected = (io: Server) => {
-  if (getRefreshClientCount(io) === 0) {
-    const port = process.env.PORT ?? "3000";
-    const command = getBrowserLaunchCommand(`http://localhost:${port}`);
-    if (isBrowserOpenable()) {
-      if (command == null) return;
-      exec(command);
-    }
-  }
-};
+let browserOpened = false;
 
+const openBrowserIfNoneConnected = (io: Server) => {
+  if (browserOpened) return;
+
+  setTimeout(() => {
+    if (getRefreshClientCount(io) === 0) {
+      const port = process.env.PORT ?? "3000";
+      const command = getBrowserLaunchCommand(`http://localhost:${port}`);
+      if (isBrowserOpenable() && command) {
+        exec(command);
+        browserOpened = true;
+      }
+    }
+  }, 2000);
+};
 /**
  * Returns the number of clients in the "refresh" room.
  */
