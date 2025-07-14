@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { EntityOptions, Entity } from "typeorm";
 import {
@@ -7,19 +8,48 @@ import {
   GUARDED_KEYS,
   INCLUDE_FIELDS_KEY,
   METHODS_FORMATTED_FIELDS_KEY,
+  MODEL_KEYS,
+  REFLECT_META_MODEL_OBJECT,
 } from "./helper";
 import { FieldKeyCondition, FunctionKeys, NonFunctionKeys } from "./types";
 import { ModelUtils } from "./util";
 import { Model } from "./main";
+// import { getClassName } from "../utils";
 
 export type TableModelOptions = EntityOptions;
+export function TableModel(options?: TableModelOptions): ClassDecorator;
+export function TableModel(
+  name?: string,
+  options?: TableModelOptions
+): ClassDecorator;
 
 /**
  * This decorator is used to mark classes that will be an entity (table or document depend on database type).
  * Database schema will be created for all classes decorated with it, and Repository can be retrieved and used for it.
  */
-export function TableModel(name?: string, options?: TableModelOptions) {
-  return Entity(name, options);
+export function TableModel(
+  nameOrOptions?: string | TableModelOptions,
+  maybeOptions?: TableModelOptions
+): ClassDecorator {
+  return function (target: Function) {
+    // Save the class metadata (or any custom logic)
+    const className = target.name;
+    Reflect.defineMetadata(
+      MODEL_KEYS,
+      target,
+      REFLECT_META_MODEL_OBJECT,
+      className
+    );
+
+    // Call the original @Entity decorator
+    const entityDecorator =
+      typeof nameOrOptions === "string"
+        ? Entity(nameOrOptions, maybeOptions)
+        : Entity(undefined, nameOrOptions);
+
+    // Apply @Entity to the class
+    entityDecorator(target);
+  };
 }
 
 export function ExcludeField<M = any>(test?: FieldKeyCondition<M>) {

@@ -21,4 +21,5 @@ export * from "./interface";
 // export * from "typeorm";
 export * from "./dev";
 export * from "./storage";
+export * as z from "zod";
 export default alapa;

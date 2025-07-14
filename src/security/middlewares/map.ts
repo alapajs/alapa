@@ -22,6 +22,7 @@ import { apiRoutes } from "../../core/kernel/activate-api-route";
 import { activateDocsRoute } from "../../api/docs-generator/route";
 import { normalizePath } from "./normalize-path";
 import { flash } from "./flash";
+import { validateMiddleWare } from "./validation";
 export const activateGlobalMiddleware = async (
   app: Express,
   config: Configuration
@@ -30,6 +31,7 @@ export const activateGlobalMiddleware = async (
     renderTemplate,
     normalizePath,
     changeResponses,
+    validateMiddleWare,
     generalMiddleware,
     bodyParser.urlencoded({ extended: false }),
     express.urlencoded({ extended: true }),

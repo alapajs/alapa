@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { EntityTarget, ObjectLiteral } from "typeorm";
+import DatabaseConnection from "../database/connections";
 import { empty } from "../utils";
 import { Model } from "./main";
 import "reflect-metadata";
@@ -12,7 +14,7 @@ export const REFLECT_META_MODEL_OBJECT = new Date(0);
 export const MODEL_UNIQUE_ID = Symbol("Model:Instance:UniqueID");
 export const FUNCTIONS_FORMATTED_FIELDS_KEY = Symbol("formattedFields");
 export const METHODS_FORMATTED_FIELDS_KEY = Symbol("method:formatted:fields");
-
+export const MODEL_KEYS = Symbol("model-key");
 export class ModelHelper {
   static defaultHiddenFields: string[] = [
     "newEntity",
@@ -83,6 +85,16 @@ export class ModelHelper {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       return model;
+    }
+  }
+
+  static getSafeRepo<T extends ObjectLiteral>(model: EntityTarget<T>) {
+    if (DatabaseConnection.options.type === "mongodb") {
+      return DatabaseConnection.getMongoRepository(model);
+      // Use MongoDB-specific operations here
+    } else {
+      return DatabaseConnection.getRepository(model);
+      // Use regular SQL-style repository
     }
   }
 }

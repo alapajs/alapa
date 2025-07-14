@@ -4,6 +4,7 @@ import * as express from "express";
 import { ApiResponse } from "../../dist/api/response/base";
 import { LoginResponse } from "../../dist/security/auth/main";
 import { AuthData } from "../../dist/security/auth/data";
+import { ValidationSchema } from "../../dist/utils/validation/main";
 import session from "express-session";
 
 interface INavigator {
@@ -48,9 +49,14 @@ declare global {
       login: (user: any, remember: boolean = false) => Promise<LoginResponse>;
       flash(): { [key: string]: string[] };
       flash(message: string): string[];
+      errors(): { [key: string]: string[] };
+      errors(key: string): string[];
       flash(type: string, message: string[] | string): number;
       flash(type: string, format: string, ...args: any[]): number;
       session: session.Session & Partial<SessionData>;
+      validate<S extends ValidationSchema>(
+        schema: S
+      ): Promise<{ [P in keyof S]: string[] }>;
 
       /**
        * This request's session ID.
