@@ -31,20 +31,30 @@ export class ModelHelper {
   ];
 
   static getConditionalFieldKey(rawKeys: any[], model: Model): string[] {
-    const keys: string[] = [];
-    for (const field of rawKeys) {
-      if (typeof field == "string") {
-        keys.push(field);
+    try {
+      if (empty(rawKeys)) {
+        return [];
       }
-      if (typeof field == "object") {
-        const [key, condition] = Object.entries(field)[0];
+      const keys: string[] = [];
 
-        if (typeof condition === "function" ? condition(model) : condition) {
-          keys.push(key);
+      for (const field of rawKeys) {
+        if (typeof field == "string") {
+          keys.push(field);
+        }
+        if (typeof field == "object") {
+          const [key, condition] = Object.entries(field)[0];
+
+          if (typeof condition === "function" ? condition(model) : condition) {
+            keys.push(key);
+          }
         }
       }
+      return keys;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) {
+      // console.log(e);
+      return [];
     }
-    return keys;
   }
 
   static deleteMetalsAfterLoad(modelUniqueId: string) {

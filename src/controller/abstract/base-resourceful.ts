@@ -55,6 +55,9 @@ import { BasicRequestHandler } from "../../core/routes";
  * It provides a skeleton for CRUD operations, and each method must be implemented by subclasses.
  */
 export abstract class BaseResourcefulController extends Controller {
+  docPrefix?: string;
+  namePrefix?: string;
+
   /**
    * Handles the request to list all resources.
    *

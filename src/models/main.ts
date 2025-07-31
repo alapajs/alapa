@@ -295,7 +295,7 @@ export abstract class Model extends BaseModel {
   // private async beforeUpdate() {}
 
   @AfterLoad()
-  private async afterLoad() {
+  private async _afterLoad() {
     this.updateFillableAndGuard();
     this.buildIncludeAndExcludeField();
     this.buildFormattedFields();
@@ -305,12 +305,12 @@ export abstract class Model extends BaseModel {
   }
 
   @AfterUpdate()
-  private async afterUpdate() {
+  private async _afterUpdate() {
     this.resetChanges();
   }
 
   @AfterInsert()
-  private async afterInsert() {
+  private async _afterInsert() {
     this.resetChanges();
   }
 }

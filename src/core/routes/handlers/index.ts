@@ -3,11 +3,18 @@ import { IRouter } from "../interface/router";
 import { RouterOptions } from "express";
 import { ResourcefulOptions } from "../interface/resourceful";
 import { ResourceRouteManager } from "./resource";
-import { ControllerClass, ControllerOptions } from "../interface/controller";
+import {
+  ControllerClass,
+  ControllerConstructor,
+  ControllerOptions,
+} from "../interface/controller";
 import { ControllerHandler } from "./controller";
 import { Middleware, RequestHandler } from "../interface/handler";
 import { RouterUtils } from "./utils";
 import { ViewHandler } from "./view";
+import { Controller } from "../../../controller";
+import { ApiResource, RestfulResource } from "../../../controller/abstract";
+
 export class Router implements IRouter {
   private resourceHandlers: ResourceRouteManager;
   private controllerHandler: ControllerHandler = new ControllerHandler();
@@ -90,21 +97,25 @@ export class Router implements IRouter {
   ): RouteChain {
     return this.resourceHandlers.resource(path, controller, option);
   }
+  controller(controller: ControllerConstructor<Controller>): RouteChain;
+  controller(
+    path: string,
+    controller: ControllerConstructor<Controller>
+  ): RouteChain;
 
   controller(
     path: string,
-    controller: ControllerClass,
-    option?: ControllerOptions
+    controller: ControllerConstructor<Controller>,
+    option: ControllerOptions
   ): RouteChain;
 
   // The second method overload
   controller(
-    controller: ControllerClass,
+    controller: ControllerConstructor<Controller>,
     option: ControllerOptions
   ): RouteChain;
 
   // The third method overload
-  controller(controller: ControllerClass): RouteChain;
 
   public controller(
     pathOrController: string | ControllerClass,
@@ -117,14 +128,35 @@ export class Router implements IRouter {
       option
     );
   }
+  public restfulResource(
+    path: string,
+    controller: ControllerConstructor<RestfulResource>
+  ): RouteChain;
 
   public restfulResource(
     path: string,
-    controller: ControllerClass,
+    controller: ControllerConstructor<RestfulResource>,
+    option: ResourcefulOptions
+  ): RouteChain;
+
+  public restfulResource(
+    path: string,
+    controller: ControllerConstructor<RestfulResource>,
     option?: ResourcefulOptions
   ): RouteChain {
     return this.resourceHandlers.restfulResource(path, controller, option);
   }
+
+  public apiResource(
+    path: string,
+    controller: ControllerConstructor<ApiResource>
+  ): RouteChain;
+
+  public apiResource(
+    path: string,
+    controller: ControllerConstructor<ApiResource>,
+    option: ResourcefulOptions
+  ): RouteChain;
 
   public apiResource(
     path: string,

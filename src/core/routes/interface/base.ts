@@ -2,6 +2,7 @@ import { RouteChain } from "./route-chain";
 import { ResourcefulOptions } from "../handlers/extension";
 import { ControllerClass, IControllerHandler } from "./controller";
 import { MethodHandlers } from "./handler-overloading";
+
 /**
  * BaseRouterInterface
  *
