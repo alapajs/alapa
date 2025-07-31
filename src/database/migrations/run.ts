@@ -2,8 +2,7 @@ import { runCommand } from "./run-cmd";
 
 export async function runMigrations() {
   // Start the process
-  const cmd =
-    "npx typeorm-ts-node-commonjs migration:run -d migration-runner/data-source.ts";
+  const cmd = "npx typeorm migration:run -d migration-runner/data-source.js";
 
   await runCommand(cmd);
 }
