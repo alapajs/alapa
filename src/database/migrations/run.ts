@@ -1,4 +1,4 @@
-import { runCommand } from "./run-cmd";
+import { runCommand } from "./cmd";
 
 export async function runMigrations() {
   // Start the process

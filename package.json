@@ -1,6 +1,6 @@
 {
   "name": "alapa",
-  "version": "0.0.2-alpha.17",
+  "version": "0.0.2-alpha.18",
   "description": "A cutting-edge web development framework designed to revolutionize the way developers build modern web applications.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -45,7 +45,6 @@
     "core-js": "^3.39.0",
     "cors": "^2.8.5",
     "dayjs": "^1.11.12",
-    "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-fileupload": "^1.5.2",
     "express-session": "^1.18.0",

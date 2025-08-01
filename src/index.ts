@@ -1,4 +1,3 @@
-import "dotenv/config";
 export * from "./core/routes";
 export * from "./core/";
 export * from "./session";

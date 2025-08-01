@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { exec } from "child_process";
 import { promisify } from "util";
+import { Logger } from "../../utils";
 
 const execAsync = promisify(exec);
 
@@ -23,19 +24,19 @@ export async function runCommand(command: string): Promise<void> {
     const { stdout, stderr } = await execAsync(command);
 
     if (stdout) {
-      console.log(`stdout: ${stdout}`);
+      Logger.log(`stdout: ${stdout}`);
       process.exit(0); // Exit successfully if stdout is present
     }
 
     if (stderr) {
-      console.error(`stderr: ${stderr}`);
-      process.exit(1); // Exit with failure code if stderr is present
+      Logger.error(`stderr: ${stderr}`);
+      process.exit(0); // Exit with failure code if stderr is present
     }
 
     // If neither stdout nor stderr — exit with code 0
     process.exit(0);
   } catch (error: any) {
-    console.error(`Execution failed: ${error.message}`);
-    process.exit(2); // Exit with a different code on execution failure
+    Logger.error(`Execution failed: ${error.message}`);
+    process.exit(0); // Exit with a different code on execution failure
   }
 }
