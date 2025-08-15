@@ -3,6 +3,7 @@ import path from "path";
 import { LOG_LEVEL } from "../shared/constant/general";
 import { logToFile } from "./mics";
 import { LogMessageType } from "./types";
+import { ENV } from "../shared";
 
 type LogSettings = {
   noFile?: boolean;
@@ -112,3 +113,45 @@ export class Logger {
     return new Error(message.join("\n"));
   }
 }
+
+/**
+ * Logs debug messages to the console **only** in development mode.
+ *
+ * This function is a wrapper around `Logger.debug(...)` and is intended to be used
+ * for logging useful debug information during development. It helps avoid cluttering
+ * production logs by automatically suppressing output when `ENV` is not set to `"development"`.
+ *
+ * ---
+ *
+ * ### Use Case:
+ * - Use `devLog()` for non-critical, verbose logs such as variable inspections,
+ *   flow tracking, API response traces, etc.
+ * - Ideal for temporary or development-specific diagnostics that shouldn't appear in production.
+ *
+ * ---
+ *
+ * ### Example:
+ *
+ * ```ts
+ * import { devLog } from "alapa";
+ *
+ * const user = { id: 42, name: "Alice" };
+ * devLog("Fetched user data:", user);
+ *
+ * // Output in development:
+ * // [DEBUG] Fetched user data: { id: 42, name: "Alice" }
+ *
+ * // Output in production:
+ * // (No output)
+ * ```
+ *
+ * ---
+ *
+ * @param {...any[]} message - One or more values to log (strings, objects, etc.)
+ * @returns {void}
+ */
+export const devLog = (...message: any[]): void => {
+  if (ENV === "development") {
+    Logger.debug(...message);
+  }
+};

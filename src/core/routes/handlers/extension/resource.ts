@@ -78,13 +78,12 @@ export class ResourcefulRoute {
       const methods = this.getMethods(action.method);
       this.generateDoc(name, methods[0]);
       for (const method of methods) {
-        if (middleware.before.length > 0) {
-          this.router.use(path, ...middleware.before);
-        }
-        const handler = (this.router as any)[method](path, controllerMethod);
-        if (middleware.after.length > 0) {
-          this.router.use(path, ...middleware.after);
-        }
+        const handler = (this.router as any)[method](
+          path,
+          ...middleware.before,
+          controllerMethod,
+          ...middleware.after
+        );
         this.addName(handler, name, method);
       }
     }

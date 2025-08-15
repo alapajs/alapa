@@ -13,8 +13,6 @@ import { ControllerDocGenerator } from "./controller-docs";
 import { OpenApiEntry } from "../../../../api";
 import { GlobalConfig } from "../../../../shared/globals";
 import { Middleware } from "../../interface";
-import { empty } from "../../../../utils";
-// import { empty } from "../../../../utils";
 const excludedMethods = [
   "constructor",
   "hasOwnProperty",
@@ -119,10 +117,11 @@ export class ControllerRoutes {
       const routePath = "/" + normalizeURLPath(`/${path}/${methodPath}`);
       this.generateDoc(routePath, name, verb);
       const middleware = this.getMiddleware(name);
-      if (!empty(middleware)) {
-        route.use(routePath, ...middleware);
-      }
-      route[verb](routePath, controller[name].bind(controller)).name(routeName);
+      route[verb](
+        routePath,
+        ...middleware,
+        controller[name].bind(controller)
+      ).name(routeName);
     }
   }
   private getMiddleware(name: string): Middleware[] {
