@@ -5,12 +5,13 @@ import {
   ResourcefulController,
   RestfulResource,
 } from "../../../controller/abstract";
+import { FunctionKeys } from "../../../models";
 import { Middleware } from "./handler";
 import { RouteChain } from "./route-chain";
 
-export interface ControllerOptions {
+export interface ControllerOptions<T = any> {
   middlewareAll?: Middleware[];
-  middleware?: { [methodName: string]: Middleware[] };
+  middleware?: Record<FunctionKeys<T>, Middleware[]>;
   namePrefix?: string;
   docPrefix?: string;
 }
@@ -65,7 +66,7 @@ export interface IControllerHandler {
   controller(
     path: string,
     controller: ControllerConstructor<Controller>,
-    option: ControllerOptions
+    option: ControllerOptions<Controller>
   ): RouteChain;
 
   /**
@@ -78,7 +79,7 @@ export interface IControllerHandler {
    */
   controller(
     controller: ControllerConstructor<Controller>,
-    option: ControllerOptions
+    option: ControllerOptions<Controller>
   ): RouteChain;
 
   /**

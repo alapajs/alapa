@@ -270,7 +270,7 @@ export class ResourcefulRoute {
       beforeMiddleware = [...actionMiddleware];
     }
     const decoratorMiddleware =
-      Reflect.getMetadata("middleware", this.controller, name) || [];
+      Reflect.getMetadata("middlewares", this.controller, name) || [];
 
     beforeMiddleware = [...beforeMiddleware, ...decoratorMiddleware];
     let afterMiddleware = (this.middlewares.after || []) as RequestHandler[];

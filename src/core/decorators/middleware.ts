@@ -23,11 +23,12 @@ export function Middlewares(handler: Middleware, ...rest: Middleware[]) {
         );
       }
     }
-
+    const decoratorMiddleware =
+      Reflect.getMetadata("middlewares", target, methodName) || [];
     // Define metadata if checks pass
     Reflect.defineMetadata(
       "middlewares",
-      [handler, ...rest],
+      [...decoratorMiddleware, handler, ...rest],
       target,
       methodName
     );

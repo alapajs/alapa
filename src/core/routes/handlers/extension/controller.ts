@@ -117,6 +117,7 @@ export class ControllerRoutes {
       const routePath = "/" + normalizeURLPath(`/${path}/${methodPath}`);
       this.generateDoc(routePath, name, verb);
       const middleware = this.getMiddleware(name);
+
       route[verb](
         routePath,
         ...middleware,
@@ -126,9 +127,11 @@ export class ControllerRoutes {
   }
   private getMiddleware(name: string): Middleware[] {
     const allMiddlewares = this.options?.middlewareAll || [];
+    const decoratorMiddleware =
+      Reflect.getMetadata("middlewares", this.controller, name) || [];
     const middleware = this.options?.middleware || {};
     const specificMiddleware = middleware[name] || [];
-    return [...specificMiddleware, ...allMiddlewares];
+    return [...decoratorMiddleware, ...specificMiddleware, ...allMiddlewares];
   }
   private getMethodPaths(
     names: string[],
