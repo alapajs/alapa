@@ -1,49 +1,24 @@
-import { GlobalConfig } from "../../shared/globals";
+import { JWTPayload } from "jose";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface JWTResponse {
   success: boolean;
   token: string;
-  isoDate?: string;
-  expiresAt: Date;
+  expiresAt: string;
 }
 export abstract class JWTService {
   abstract error: any;
-  abstract generateToken<P = any>(
-    payload: P,
-    expiresAt?: number
+  abstract generateToken(
+    payload: JWTPayload,
+    key?: string,
+    expiresAt?: string
   ): Promise<JWTResponse>;
-  abstract verifyToken<P = any>(token: string): Promise<P | boolean>;
-}
+  abstract verifyToken<P = JWTPayload>(
+    token: string,
+    key?: string
+  ): Promise<(P & JWTPayload) | boolean>;
 
-export function generateJWTExpiresDate(expiresAt?: number): {
-  milliseconds: number;
-  date: Date;
-  iso: string;
-  hours: number;
-  minutes: number;
-  seconds: number;
-} {
-  // Default to 60 minutes if expiresAt is not provided
-  const expirationTimeInMinutes = Number(
-    expiresAt || GlobalConfig.jwt?.expiresAt || process.env.JWT_EXPIRATION || 60
-  );
-
-  // Calculate milliseconds from minutes
-  const milliseconds = expirationTimeInMinutes * 60 * 1000;
-  const date = new Date(Date.now() + milliseconds);
-
-  // Calculate derived values
-  const hours = expirationTimeInMinutes / 60; // Convert minutes to hours
-  const minutes = expirationTimeInMinutes; // Minutes remain the same
-  const seconds = expirationTimeInMinutes * 60; // Convert minutes to seconds
-
-  return {
-    milliseconds,
-    date,
-    iso: date.toISOString(),
-    hours,
-    minutes,
-    seconds,
-  };
+  abstract decodeToken<P = JWTPayload>(
+    token: string
+  ): (P & JWTPayload) | boolean;
 }

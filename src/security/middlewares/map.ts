@@ -50,13 +50,20 @@ export const activateGlobalMiddleware = async (
     ServerContextMiddleware,
     csrfErrorHandler,
   ];
+  if (config.server.trustedProxies) {
+    app.enable("trust proxy");
+    if (config.server.trustedProxies === true) {
+      app.set("trust proxy", true);
+    } else if (Array.isArray(config.server.trustedProxies)) {
+      app.set("trust proxy", config.server.trustedProxies);
+    }
+  }
+
   app.all("*", requestLoggerMiddleware);
   middlewares.forEach((middleware) => {
     app.use(middleware);
   });
-  if (config.server.proxy === true) {
-    app.set("trust proxy", 1);
-  }
+
   activateDocsRoute(app);
   // app.all("*", );
   // app.use(deleteFlash);

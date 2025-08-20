@@ -8,6 +8,7 @@ import yaml from "yaml";
 import { Logger } from "./logger";
 import { SELF_ASSIGNED_ATTRIBUTES } from "../shared";
 import { AnyObject } from "../interface";
+import os from "os";
 export const randomMd5 = () => {
   return md5(Math.random().toString() + Date.now().toString());
 };
@@ -213,4 +214,32 @@ export function objectToHtmlAttributes(
       return ""; // Don't add attributes with undefined or null values
     })
     .join("");
+}
+
+/**
+ * Generates a unique fingerprint for the current system based on hardware and OS information.
+ *
+ * The fingerprint is derived by collecting the hostname, platform, architecture,
+ * CPU models, and network interfaces, and hashing the combined data using SHA-256.
+ *
+ * Useful for:
+ * - Licensing or activation
+ * - Machine identification
+ * - System-specific caching or telemetry
+ *
+ * @returns A SHA-256 hash string uniquely representing the current machine.
+ */
+export function getSystemFingerprint(): string {
+  const data = [
+    os.hostname(),
+    os.platform(),
+    os.arch(),
+    os
+      .cpus()
+      .map((cpu) => cpu.model)
+      .join(),
+    JSON.stringify(os.networkInterfaces()),
+  ].join("");
+
+  return crypto.createHash("sha256").update(data).digest("hex");
 }

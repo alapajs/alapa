@@ -29,7 +29,8 @@ export const startDevServer = () => {
   });
 
   io.on("connection", (socket) => {
-    const userAgent = socket.handshake.headers["user-agent"];
+    const headers = socket.handshake.headers;
+    const userAgent = headers["user-agent"];
     // Join the refresh room if not XMLHttpRequest from Node
     if (userAgent !== "node-XMLHttpRequest") {
       socket.join("refresh");

@@ -1,13 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import "reflect-metadata";
-import {
-  AfterInsert,
-  AfterLoad,
-  AfterUpdate,
-  BaseEntity,
-  // BeforeInsert,
-  // BeforeUpdate,
-} from "typeorm";
+import { AfterInsert, AfterLoad, AfterUpdate, BaseEntity } from "typeorm";
 import {
   EXCLUDE_FIELDS_KEY,
   FILLABLE_KEYS,
@@ -21,7 +14,7 @@ import {
   REFLECT_META_MODEL_OBJECT,
 } from "./helper";
 
-import { empty, getClassName, isFunction, randomMd5 } from "../utils";
+import { empty, getClassName, isFunction, Logger, randomMd5 } from "../utils";
 import { modelDirtyProxy } from "./proxy/dirty";
 import { GlobalConfig } from "../shared/globals";
 import { ModelUtils } from "./util";
@@ -175,15 +168,18 @@ export abstract class Model extends BaseModel {
   private applyIncludeAndExcludeField(
     options?: includeAndExcludeFieldsOptions<this>
   ) {
+    if (!this.id) {
+      return this;
+    }
     const rawIncludeFields =
       options?.includes ?? Reflect.getMetadata(INCLUDE_FIELDS_KEY, this) ?? [];
     const rawExcludeFields =
       options?.excludes ?? Reflect.getMetadata(EXCLUDE_FIELDS_KEY, this) ?? [];
 
     if (empty(rawExcludeFields) && empty(rawIncludeFields)) {
-      throw new Error(
+      Logger.warn(
         `Model (${getClassName(this)}) does not have includeFields or excludeFields 
-           attributes defined, you cannot use the toClient, toJSON, toAPI, sanitize,
+           attributes defined, you should not use the toClient, toJSON, toAPI, sanitize,
             and serialize methods without them.`.replace(/\n\s*/g, " ")
       );
     }

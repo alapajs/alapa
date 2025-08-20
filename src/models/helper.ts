@@ -90,10 +90,17 @@ export class ModelHelper {
   static toClient(model: any) {
     if (!(model instanceof Model)) return model;
     if (!(typeof model.toClient === "function")) return model;
+    const includes = model.getExcludeFields();
+    const excludes = model.getIncludeFields();
+    if (empty(includes) && empty(excludes)) {
+      return model;
+    }
     try {
-      return model.toClient();
+      // return model.toClient();
+      return model;
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
+      console.log(e);
       return model;
     }
   }

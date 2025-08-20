@@ -24,7 +24,7 @@ export interface ApiBaseAuthResponse {
   success: boolean;
   token?: string;
   user?: any;
-  expiresAt?: Date;
+  expiresAt?: string;
   error?: {
     message?: string;
     reasons?: string;

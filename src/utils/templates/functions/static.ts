@@ -1,4 +1,8 @@
 import { Request } from "express";
 export const getStaticUrl = (file: string, req: Request) => {
-  return `${req.protocol}://${req.get("host")}/${file}`;
+  let host = req.get("x-forwarded-host");
+  if (!host) {
+    host = req.get("host");
+  }
+  return `${req.protocol}://${host}/${file}`;
 };

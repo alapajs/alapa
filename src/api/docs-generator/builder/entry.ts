@@ -46,7 +46,7 @@ export class OpenApiEntry {
 
   static buildPath(path: string) {
     path = "/" + cleanPath(path);
-    const regex = /\/:([a-zA-Z0-9_]+)/g;
+    const regex = /\/:([a-zA-Z0-9_]+)\??/g;
     return path.replace(regex, "/{$1}");
   }
 
