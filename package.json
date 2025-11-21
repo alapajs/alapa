@@ -37,6 +37,7 @@
     "@dr.pogodin/csurf": "^1.13.0",
     "@minify-html/node": "^0.15.0",
     "@types/redis": "^4.0.10",
+    "@webpack-cli/generators": "^3.0.7",
     "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "bignumber.js": "^9.1.2",
@@ -50,6 +51,7 @@
     "express-basic-auth": "^1.2.1",
     "express-fileupload": "^1.5.2",
     "express-session": "^1.18.0",
+    "glob": "^13.0.0",
     "handlebars": "^4.7.8",
     "i": "^0.3.7",
     "jose": "^5.9.3",
@@ -58,9 +60,8 @@
     "lodash": "^4.17.21",
     "mediainfo.js": "^0.3.3",
     "mime-types": "^2.1.35",
-    "nodemailer": "^6.9.14",
+    "nodemailer": "^7.0.10",
     "normalize-url": "^8.0.1",
-    "npm": "^10.9.1",
     "path": "^0.12.7",
     "redis": "^4.7.1",
     "reflect-metadata": "^0.2.2",
@@ -74,6 +75,7 @@
     "typeorm": "^0.3.25",
     "typeorm-naming-strategies": "^4.1.0",
     "uuid": "^10.0.0",
+    "webpack": "^5.103.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -94,7 +96,6 @@
     "@types/swagger-ui-express": "^4.1.6",
     "@types/temp-dir": "^2.0.2",
     "@types/uuid": "^10.0.0",
-    "@webpack-cli/generators": "^3.0.7",
     "connect-livereload": "^0.6.1",
     "cpy-cli": "^5.0.0",
     "eslint": "^9.9.0",
@@ -105,7 +106,7 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.1.0",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^6.0.1"
   },
   "files": [
     "dist/",

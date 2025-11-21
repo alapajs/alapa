@@ -1,4 +1,4 @@
-import { IAuthenticatableFields } from "../security/auth/auth.model";
+import { IAuthenticatableFields } from "../security/auth/interface/auth-fields";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface AutConfiguration {

@@ -1,2 +1,2 @@
 export * from "./main";
-export * from "./auth.model";
+export * from "./interface";
