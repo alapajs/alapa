@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { renderFile } from "../../template/extension/render/main";
-import { GlobalConfig } from "../../shared/globals";
-import { AnyObject } from "../../interface";
+import { renderFile } from "../template/extension/render/main";
+import { GlobalConfig } from "../shared/globals";
+import { AnyObject } from "../interface";
 
 export const renderTemplate = (
   req: Request,

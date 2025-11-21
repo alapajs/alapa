@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { getRouteByName } from "../../core/routes/names";
-import { AnyObject } from "../../interface/object";
+import { getRouteByName } from "../core/routes/names";
+import { AnyObject } from "../interface/object";
 
 export const ServerContextMiddleware = (
   req: Request,

@@ -1,12 +1,12 @@
-import { md5, randomNumber } from "../../utils/mics";
-import { formatDate } from "../../utils/date";
-import { oldRequest } from "../../utils/templates";
+import { md5, randomNumber } from "../utils/mics";
+import { formatDate } from "../utils/date";
+import { oldRequest } from "../utils/templates";
 import { Request, Response, NextFunction } from "express";
-import { getStaticUrl } from "../../utils/templates/functions/static";
-import { Logger } from "../../utils";
-import { getRouteByName } from "../../core/routes";
-import { GlobalConfig } from "../../shared/globals";
-import { AnyObject } from "../../interface/object";
+import { getStaticUrl } from "../utils/templates/functions/static";
+import { Logger } from "../utils";
+import { getRouteByName } from "../core/routes";
+import { GlobalConfig } from "../shared/globals";
+import { AnyObject } from "../interface/object";
 
 export async function templateContextMiddleware(
   req: Request,

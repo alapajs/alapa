@@ -1,5 +1,2 @@
 import { DataSourceOptions } from "typeorm";
-
-export type DatabaseConnection = DataSourceOptions;
-
-export type DatabaseConnectionList = { [key: string]: DatabaseConnection };
+export type DatabaseConnectionList = { [key: string]: DataSourceOptions };

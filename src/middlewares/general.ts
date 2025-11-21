@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { NextFunction } from "../../core";
+import { NextFunction } from "../core";
 export const generalMiddleware = (
   req: Request,
   res: Response,

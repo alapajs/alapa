@@ -3,6 +3,7 @@
 import { APIConfiguration } from "./api";
 import { ApplicationCongratulation } from "./application";
 import { AutConfiguration } from "./auth";
+import { BrokerConfiguration } from "./broker";
 import { CacheConfiguration } from "./cache";
 import { DatabaseConfiguration } from "./database";
 import { EmailConfiguration } from "./email";
@@ -37,4 +38,5 @@ export interface Configuration {
   application: ApplicationCongratulation;
   api: APIConfiguration;
   encryption: EncryptionCongratulation;
+  broker?: BrokerConfiguration;
 }

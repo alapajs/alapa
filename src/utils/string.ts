@@ -1,4 +1,5 @@
 // Shuffle the characters in a string
+import { v4 } from "uuid";
 export const shuffle = function (data: string): string {
   const a = data.split("");
   const n = a.length;
@@ -67,4 +68,12 @@ export function isNumeric(text: string): boolean {
 // Convert a string to title case (first letter of each word capitalized)
 export function toTitleCase(text: string): string {
   return text.toLowerCase().replace(/\b(\w)/g, (match) => match.toUpperCase());
+}
+
+// Generate a random UUID (version 4)
+export function randomUUID(): string {
+  return v4();
+}
+export function uuidv4(): string {
+  return v4();
 }

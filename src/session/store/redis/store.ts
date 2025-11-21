@@ -1,60 +1,65 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import session from "express-session";
 import { Encryption } from "../../../security/misc/encryption";
-import { EntityId, Repository } from "redis-om";
-import { SessionRedisSchemas } from "./schema";
-import { createClient } from "redis";
-import { AnyObject } from "../../../interface/object";
+import { createClient, RedisClientType } from "redis";
 import { GlobalConfig } from "../../../shared/globals";
+import { toNumber } from "lodash";
 
 interface AppSessionStoreStoreOptions {
   req?: Request;
 }
 
+interface StoredSession {
+  id: string;
+  data: string; // Encrypted string
+  expiredAt: number; // Timestamp in ms
+}
+
 export class RedisSessionStore extends session.Store {
-  options: AppSessionStoreStoreOptions;
-  private redis: any = null;
-  private repository: Repository;
+  private client?: RedisClientType;
+  private readonly prefix =
+    process.env.REDIS_SESSION_KEY_PREFIX || "alapa:sess:";
 
-  private async createConnection() {
-    if (this.redis) return; // Only create the connection if not already established
+  constructor(private options: AppSessionStoreStoreOptions = {}) {
+    super();
+    this.createConnection();
+  }
 
-    const config = GlobalConfig!.session;
-    const redisConfig = config!.redisConfig;
+  private async createConnection(): Promise<void> {
+    if (this.client) return;
+
+    const config = GlobalConfig?.session;
+    const redisConfig = config?.redisConfig;
     let url = redisConfig?.url;
 
     if (!url) {
-      let auth = "";
-      if (redisConfig?.user && redisConfig.password) {
-        auth = `${redisConfig.user}:${redisConfig.password}@`;
-      }
+      const auth =
+        redisConfig?.user && redisConfig?.password
+          ? `${redisConfig.user}:${redisConfig.password}@`
+          : "";
       const host = redisConfig?.host ?? "localhost";
       const port = redisConfig?.port || 6379;
       url = `redis://${auth}${host}:${port}`;
     }
 
-    this.redis = createClient({ url });
-    this.redis.on("error", (err: any) => {
-      this.redis = null;
-      console.log("Redis Client Error", err);
+    this.client = createClient({
+      url,
+      database: toNumber(process.env.REDIS_SESSION_DD || 0),
     });
-    await this.redis.connect();
-    this.repository = new Repository(SessionRedisSchemas, this.redis);
-    this.createIndex();
+    this.client.on("error", (err) => {
+      console.error("Redis Client Error:", err);
+      this.client = undefined;
+    });
+
+    await this.client.connect();
   }
 
-  async createIndex() {
-    try {
-      await this.repository.createIndex();
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (e) {
-      // Handle index creation errors if necessary
-    }
+  private getKey(sid: string): string {
+    return `${this.prefix}${sid}`;
   }
 
-  constructor() {
-    super();
-    this.createConnection();
+  private isExpired(expiredAt: number): boolean {
+    return expiredAt < Date.now();
   }
 
   public async get(
@@ -62,32 +67,21 @@ export class RedisSessionStore extends session.Store {
     callback: (err: any, session?: session.SessionData | null) => void
   ): Promise<void> {
     try {
-      const session = await this.repository
-        .search()
-        .where("id")
-        .equal(sid)
-        .returnFirst();
+      const raw = await this.client?.get(this.getKey(sid));
+      if (!raw) return callback(null, null);
 
-      if (session) {
-        if (this.isExpired(session.expiredAt)) {
-          await session.remove();
-          callback(null, null);
-        } else {
-          callback(
-            null,
-            JSON.parse(Encryption.decrypt(session.data) ?? session.data)
-          );
-        }
-      } else {
-        callback(null, null);
+      const stored: StoredSession = JSON.parse(raw);
+
+      if (this.isExpired(stored.expiredAt)) {
+        await this.client?.del(this.getKey(sid));
+        return callback(null, null);
       }
+
+      const decrypted = Encryption.decrypt(stored.data) ?? stored.data;
+      callback(null, JSON.parse(decrypted));
     } catch (err) {
       callback(err);
     }
-  }
-
-  private isExpired(expiredAt: number): boolean {
-    return expiredAt < Date.now();
   }
 
   public async set(
@@ -98,28 +92,25 @@ export class RedisSessionStore extends session.Store {
     try {
       const data = JSON.stringify(sessionData);
       const encryptedData = Encryption.encrypt(data) ?? data;
-      const ids = await this.repository
-        .search()
-        .where("id")
-        .equal(sid)
-        .allIds();
-      await this.repository.remove(ids);
-      const session: AnyObject = {
+      const expiredAt = sessionData.cookie.expires
+        ? new Date(sessionData.cookie.expires).getTime()
+        : Date.now() + (sessionData.cookie.maxAge || 86400000);
+
+      const ttlSeconds = Math.floor((expiredAt - Date.now()) / 1000);
+
+      const stored: StoredSession = {
         id: sid,
         data: encryptedData,
-        expiredAt: sessionData.cookie.expires
-          ? new Date(sessionData.cookie.expires).getTime()
-          : Date.now() + (sessionData.cookie.maxAge || 0),
+        expiredAt,
       };
-      const savedSession = await this.repository.save(session);
-      await this.repository.expireAt(
-        savedSession[EntityId as any],
-        new Date(session.expiredAt)
-      );
 
-      if (callback) callback(null);
+      await this.client?.set(this.getKey(sid), JSON.stringify(stored), {
+        EX: ttlSeconds > 0 ? ttlSeconds : 86400,
+      });
+
+      callback?.(null);
     } catch (err) {
-      if (callback) callback(err);
+      callback?.(err);
     }
   }
 
@@ -128,15 +119,10 @@ export class RedisSessionStore extends session.Store {
     callback?: (err?: any) => void
   ): Promise<void> {
     try {
-      const ids = await this.repository
-        .search()
-        .where("id")
-        .equal(sid)
-        .allIds();
-      await this.repository.remove(ids);
-      if (callback) callback(null);
+      await this.client?.del(this.getKey(sid));
+      callback?.(null);
     } catch (err) {
-      if (callback) callback(err);
+      callback?.(err);
     }
   }
 
@@ -144,8 +130,8 @@ export class RedisSessionStore extends session.Store {
     callback: (err: any, length: number) => void
   ): Promise<void> {
     try {
-      const count = await this.repository.search().count();
-      callback(null, count);
+      const keys = await this.client?.keys(`${this.prefix}*`);
+      callback(null, keys?.length || 0);
     } catch (err) {
       callback(err, 0);
     }
@@ -153,11 +139,13 @@ export class RedisSessionStore extends session.Store {
 
   public async clear(callback?: (err?: any) => void): Promise<void> {
     try {
-      const ids = await this.repository.search().allIds();
-      await this.repository.remove(ids);
-      if (callback) callback(null);
+      const keys = await this.client?.keys(`${this.prefix}*`);
+      if (keys && keys.length > 0) {
+        await this.client?.del(keys);
+      }
+      callback?.(null);
     } catch (err) {
-      if (callback) callback(err);
+      callback?.(err);
     }
   }
 
@@ -167,15 +155,12 @@ export class RedisSessionStore extends session.Store {
     callback?: (err?: any) => void
   ): Promise<void> {
     try {
-      const expiredAt = Date.now() + (sessionData.cookie.maxAge || 86400000);
-      // Remove Redis operation temporarily and check if it still hangs
-      await this.repository.expireAt(sid, new Date(expiredAt));
-
-      if (callback) {
-        callback(null); // Ensure the callback is being called
-      }
+      const key = this.getKey(sid);
+      const ttl = Math.floor((sessionData.cookie.maxAge || 86400000) / 1000); // default 1 day
+      await this.client?.expire(key, ttl);
+      callback?.(null);
     } catch (err) {
-      if (callback) callback(err); // Ensure the callback is being called on error
+      callback?.(err);
     }
   }
 
@@ -186,13 +171,19 @@ export class RedisSessionStore extends session.Store {
     ) => void
   ): Promise<void> {
     try {
-      const sessions = await this.repository.search().return.all();
+      const keys = await this.client?.keys(`${this.prefix}*`);
+      if (!keys || keys.length === 0) return callback(null, null);
+
       const result: { [sid: string]: session.SessionData } = {};
-      sessions.forEach((session) => {
-        result[session.id] = JSON.parse(
-          Encryption.decrypt(session.data) ?? session.data
-        );
-      });
+      for (const key of keys) {
+        const raw = await this.client?.get(key);
+        if (!raw) continue;
+
+        const stored: StoredSession = JSON.parse(raw);
+        const decrypted = Encryption.decrypt(stored.data) ?? stored.data;
+        result[stored.id] = JSON.parse(decrypted);
+      }
+
       callback(null, result);
     } catch (err) {
       callback(err);

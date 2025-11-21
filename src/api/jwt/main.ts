@@ -42,7 +42,7 @@ export class JWT {
    *
    * @returns A JWTResponse object containing the signed token and expiration.
    */
-  static async generateToken<P = JWTPayload>(
+  static async sign<P = JWTPayload>(
     payload: P & JWTPayload,
     overrideKey?: string,
     expiresAt?: string
@@ -75,7 +75,7 @@ export class JWT {
    * @param overrideKey - Optional secret key to override the default verification key.
    * @returns The decoded JWT payload if valid, or `false` if verification fails.
    */
-  static async verifyToken<P = JWTPayload>(
+  static async verify<P = JWTPayload>(
     token: string,
     overrideKey?: string
   ): Promise<(P & JWTPayload) | false> {
@@ -101,7 +101,7 @@ export class JWT {
    * @param token - The JWT string to decode.
    * @returns The decoded JWT payload, or `false` if decoding fails.
    */
-  static decodeToken<P = JWTPayload>(token: string): (P & JWTPayload) | false {
+  static decode<P = JWTPayload>(token: string): (P & JWTPayload) | false {
     const jwtService = new JoseJWT();
     const result = jwtService.decodeToken<P & JWTPayload>(token);
     if (result === false) {

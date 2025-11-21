@@ -119,6 +119,7 @@ export interface SessionConfiguration {
     password?: string;
     user?: string;
     url?: string;
+    database?: number;
   };
   databaseConfig?: {
     tableName: string;

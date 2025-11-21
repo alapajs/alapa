@@ -2,13 +2,28 @@ import { GlobalConfig } from "../../shared/globals";
 import swaggerJsdoc, { OAS3Options } from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import fs from "fs";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { Logger } from "../../utils";
 import { generateOpenAPIFile } from "./main";
 import { Express } from "express";
+import basicAuth from "express-basic-auth";
+import { ENV } from "../../shared";
 
-const noDocumentation = (req: Request, res: Response) => {
-  return res.send("No documentation");
+const noDocumentation = (req: Request, res: Response, next: NextFunction) => {
+  res.send("No documentation");
+  next();
+};
+
+const forwardedPrefixSwagger = function (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const forwardedPrefix = req.headers["x-forwarded-prefix"];
+  if (forwardedPrefix) {
+    req.originalUrl = forwardedPrefix + req.url;
+  }
+  next();
 };
 
 const getApiDefinition = async () => {
@@ -16,48 +31,75 @@ const getApiDefinition = async () => {
   if (apiConfig?.sync === true) {
     await generateOpenAPIFile();
   }
-  let options: OAS3Options | undefined;
+  let definition: OAS3Options | undefined;
   if (apiConfig?.openApiOptions) {
-    options = apiConfig.openApiOptions;
+    definition = apiConfig.openApiOptions;
   } else if (apiConfig?.openapiDefinitionFile) {
     try {
-      const docFile = `${GlobalConfig.api.docs?.openapiDefinitionFile}`;
-      if (!fs.existsSync(docFile)) {
-        return undefined;
-      }
-      const swaggerDefinition = JSON.parse(fs.readFileSync(docFile, "utf8"));
-      options = {
+      const swaggerDefinition = JSON.parse(
+        fs.readFileSync(
+          `${GlobalConfig.api.docs?.openapiDefinitionFile}`,
+          "utf8"
+        )
+      );
+      definition = {
         definition: swaggerDefinition, // Changed import to require
         apis: [], //
       };
     } catch (error) {
-      Logger.error(`Error reading OpenAPI definition file: ${error}`);
-      return undefined;
+      if (apiConfig?.sync === false) {
+        Logger.error(error);
+      }
     }
   } else if (apiConfig?.openApiDefinitions) {
-    options = {
+    definition = {
       definition: apiConfig.openApiDefinitions,
       apis: [], //
     };
   }
 
-  return options;
+  return definition;
 };
 
 export const setupDocsRoute = async () => {
-  const options = await getApiDefinition();
-  if (options) {
+  const definition = await getApiDefinition();
+  if (definition) {
     docCleanup();
-    const swaggerSpec = swaggerJsdoc(options);
-    return [swaggerUi.serve, swaggerUi.setup(swaggerSpec)];
+    const options: any = {};
+    if (ENV === "development") {
+      options["customJs"] = [`http://localhost:${process.env.PORT}/js/app.js`];
+    }
+    definition;
+    const swaggerSpec = swaggerJsdoc(definition);
+    return [swaggerUi.serve, swaggerUi.setup(swaggerSpec, options)];
   }
   return [noDocumentation];
 };
 
 export const activateDocsRoute = async (app: Express) => {
-  const docPath = GlobalConfig.api.docs?.path || "/docs";
+  const docsConfig = GlobalConfig.api.docs;
+  const docPath = docsConfig?.path || "/docs";
   const routes = await setupDocsRoute();
-  app.use(docPath, ...routes);
+  const [serve, setup] = routes;
+  const BasicAuthEnabled = docsConfig?.basicAuthEnabled === true;
+  if (BasicAuthEnabled) {
+    const USER = docsConfig?.basicAuthUser || "user";
+    const PASS = docsConfig?.basicAuthPassword || "pass";
+    const docBasicAuth = basicAuth({
+      users: { [USER]: PASS },
+      challenge: true,
+    });
+
+    app.use(
+      docPath,
+      docBasicAuth, // auth ALWAYS first
+      serve
+    );
+
+    app.get(docPath, docBasicAuth, setup);
+  } else {
+    app.use(docPath, serve, setup);
+  }
 };
 
 function docCleanup() {

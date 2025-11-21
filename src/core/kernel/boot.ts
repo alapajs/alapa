@@ -1,6 +1,6 @@
 import { Express } from "express";
 import { Configuration } from "../../config";
-import { activateGlobalMiddleware } from "../../security/middlewares/map";
+import { activateGlobalMiddleware } from "../../middlewares/map";
 import { GlobalConfig, setGlobalConfig } from "../../shared/globals";
 import { Logger } from "../../utils";
 import { updateRouteList } from "../routes/handlers/list";

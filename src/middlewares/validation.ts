@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
-import { Validation } from "../../utils/validation/main";
+import { Validation } from "../utils/validation/main";
 // Middleware to override res.render
 export const validateMiddleWare = (
   req: Request,

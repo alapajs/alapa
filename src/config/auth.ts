@@ -1,7 +1,9 @@
+import { IAuthenticatableFields } from "../security/auth/auth.model";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface AutConfiguration {
-  resetTokenExpiresMinute?: number; // Expiry time for password reset tokens (in minutes)
-  authenticatableModel: any;
+  resetTokenExpiresMinute?: number;
+  authenticatableModel?: new () => IAuthenticatableFields;
   loginUrl?: string;
   dashboardUrl?: string;
 }

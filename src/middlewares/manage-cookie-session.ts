@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Response, Request } from "express";
-import { SessionDatabase } from "../../data/model";
-import { Encryption } from "../misc/encryption";
-import { Logger } from "../../utils";
+import { SessionDatabase } from "../data/model";
+import { Encryption } from "../security/misc/encryption";
+import { Logger } from "../utils";
 
 export const manageCookiesSession = async (
   req: Request,
@@ -32,11 +32,11 @@ export const manageCookiesSession = async (
       .catch((err: any) => Logger.error(err));
     const cookieExpires = new Date(60 * 60 * 60 * 24 * 360000 + Date.now()); //one year
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    res.cookie("alapa-session", Encryption.encrypt(req.sessionID)),
+    (res.cookie("alapa-session", Encryption.encrypt(req.sessionID)),
       {
         expires: cookieExpires,
         httpOnly: true,
-      };
+      });
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e: unknown) {
     // console.log(e);

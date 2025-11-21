@@ -1,3 +1,4 @@
+import { HTTP_STATUS } from "../../interface";
 import { BaseApiResponse } from "./base";
 
 /**
@@ -6,7 +7,7 @@ import { BaseApiResponse } from "./base";
  * @template T - The type of the data being returned in the response.
  */
 export interface ApiSuccessResponse<T = undefined> extends BaseApiResponse {
-  status: "success";
+  status: HTTP_STATUS.SUCCESS | "success" | "SUCCESS";
 
   /**
    * The main payload of the response, which can be an object of type T or null.
@@ -24,23 +25,39 @@ export interface ApiSuccessResponse<T = undefined> extends BaseApiResponse {
    */
   pagination?: {
     /**
+     * Total number of items available.
+     */
+
+    total?: number;
+
+    /**
      * Current page number.
      */
-    page: number;
+    page?: number;
 
     /**
      * Number of items per page.
      */
-    pageSize: number;
+    pageSize?: number;
 
     /**
      * Total number of pages available.
      */
-    totalPages: number;
+    totalPages?: number;
 
     /**
      * Total number of items available.
      */
-    totalItems: number;
+    totalItems?: number;
+
+    /**
+     * Maximum number of items allowed per page.
+     */
+    limit?: number;
+
+    /**
+     * Number of items to skip before starting to collect the result set.
+     */
+    offset?: number;
   };
 }

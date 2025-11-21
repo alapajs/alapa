@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { EntityTarget, ObjectLiteral } from "typeorm";
-import DatabaseConnection from "../database/connections";
+import { DatabaseConnection } from "../database/connections";
 import { empty } from "../utils";
 import { Model } from "./main";
 import "reflect-metadata";

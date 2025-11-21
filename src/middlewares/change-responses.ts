@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response, NextFunction } from "express";
-import { ApiResponse } from "../../api/response/base";
-import { Auth } from "../auth";
+import { ApiResponse, getStatusCode } from "../api/response/base";
+import { Auth } from "../security/auth";
 import { Navigator } from "./navigate/main";
-import { ModelHelper } from "../../models/helper";
+import { ModelHelper } from "../models/helper";
 // Middleware to override res.render
 export const changeResponses = (
   req: Request,
@@ -22,9 +22,10 @@ export const changeResponses = (
     if ((response as any).data) {
       (response as any).data = ModelHelper.toClient((response as any).data);
     }
-    return this.status(
-      response.status === "success" ? 200 : (response.code ?? 200)
-    ).json(response);
+    if (!response.code) {
+      response = { code: getStatusCode(response.status) ?? 200, ...response };
+    }
+    return this.status(response.code!).json(response);
   };
   req.only = (...keys: string[]) => {
     const data: any = {};

@@ -24,7 +24,7 @@ export async function generateOpenAPIFile(): Promise<void> {
       version: "1.0.0",
       servers: [
         {
-          url: "http://localhost:3000/api",
+          url: `http://localhost:${process.env.PORT || 3000}/api`,
           description: "Development Server server",
         },
       ],

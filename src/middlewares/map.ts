@@ -6,23 +6,26 @@ import bodyParser from "body-parser";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const csrf = require("@dr.pogodin/csurf");
 import { csrfErrorHandler } from "./csrf-error";
-import { sessionConfiguration } from "../../session/configuration";
+import { sessionConfiguration } from "../session/configuration";
 import { manageCookiesSession } from "./manage-cookie-session";
 import { requestLoggerMiddleware } from "./request-logger";
 import { ServerContextMiddleware } from "./server-context";
 import { changeMethod } from "./method";
 import { changeResponses } from "./change-responses";
-import { Configuration } from "../../config";
+import { Configuration } from "../config";
 import fileUpload from "express-fileupload";
-import { getTempDirectory } from "../../utils/get-temp-dir";
+import { getTempDirectory } from "../utils/get-temp-dir";
 import { generalMiddleware } from "./general";
 import cors from "cors";
 import { renderTemplate } from "./render-template";
-import { apiRoutes } from "../../core/kernel/activate-api-route";
-import { activateDocsRoute } from "../../api/docs-generator/route";
+import { apiRoutes } from "../core/kernel/activate-api-route";
+import { activateDocsRoute } from "../api/docs-generator/route";
 import { normalizePath } from "./normalize-path";
 import { flash } from "./flash";
 import { validateMiddleWare } from "./validation";
+import { notFound } from "./error";
+import { ENV } from "../shared";
+import { wellKnownPath, wellKnownRoute } from "../dev/well-know-route";
 export const activateGlobalMiddleware = async (
   app: Express,
   config: Configuration
@@ -44,8 +47,9 @@ export const activateGlobalMiddleware = async (
     express.json(),
     manageCookiesSession,
     flash,
+    requestLoggerMiddleware,
     apiRoutes(),
-    csrf({ cookie: process.env.NODE_ENV === "development" }),
+    csrf({ cookie: ENV === "development" }),
     templateContextMiddleware,
     ServerContextMiddleware,
     csrfErrorHandler,
@@ -59,12 +63,14 @@ export const activateGlobalMiddleware = async (
     }
   }
 
-  app.all("*", requestLoggerMiddleware);
+  // app.all("*", requestLoggerMiddleware);
   middlewares.forEach((middleware) => {
     app.use(middleware);
   });
-
-  activateDocsRoute(app);
-  // app.all("*", );
-  // app.use(deleteFlash);
+  if (ENV === "development") {
+    console.log("Development mode enabled");
+    app.get(wellKnownPath, wellKnownRoute);
+  }
+  await activateDocsRoute(app);
+  app.all("*", notFound);
 };

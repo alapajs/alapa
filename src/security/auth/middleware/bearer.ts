@@ -2,6 +2,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Logger } from "../../../utils";
 import { JWT } from "../../../api";
+import { HTTP_STATUS } from "../../../interface";
 
 export const bearerAuth = async (
   req: Request,
@@ -15,7 +16,7 @@ export const bearerAuth = async (
   ) {
     const token = req.headers.authorization.split(" ")[1];
     try {
-      const payload = await JWT.verifyToken(token);
+      const payload = await JWT.verify(token);
       // const checkAuth = await UserAuthController.verifyPayload(payload);
 
       if (payload) {
@@ -25,7 +26,7 @@ export const bearerAuth = async (
       } else {
         return res.api({
           code: 401,
-          status: "error",
+          status: HTTP_STATUS.UNAUTHORIZED,
           message: "Unauthorized: Bearer token is invalid",
         });
       }
@@ -33,14 +34,14 @@ export const bearerAuth = async (
       Logger.error(error);
       return res.api({
         code: 401,
-        status: "error",
+        status: HTTP_STATUS.ERROR,
         message: "Unauthorized: Invalid or expired token",
       });
     }
   } else {
     return res.api({
       code: 401,
-      status: "error",
+      status: "success",
       message:
         "Unauthorized: Bearer Authentication is required for this operation",
     });

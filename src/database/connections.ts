@@ -9,7 +9,7 @@ import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 
 const defaultSubscribers = [GeneralSubscriber];
 
-let DatabaseConnection = new DataSource({
+export let DatabaseConnection = new DataSource({
   type: "sqlite",
   database: "test.db",
 });
@@ -63,9 +63,9 @@ export async function updateDBConnection(
     ...config,
   });
 
-  await DatabaseConnection.initialize();
+  DatabaseConnection = await DatabaseConnection.initialize();
   return DatabaseConnection;
   // console.log("Database connection updated and initialized.");
 }
 
-export default DatabaseConnection;
+// export default DatabaseConnection;

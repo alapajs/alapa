@@ -4,9 +4,10 @@ import { GlobalConfig } from "../../shared/globals";
 import * as crypto from "crypto";
 import { Request, Response } from "express";
 import { HashPassword } from "../hashing";
-import { AuthenticatableModel } from "../../data";
 import { Logger } from "../../utils";
 import { JWT } from "../../api";
+import { Model } from "../../models";
+import { DatabaseConnection } from "../../database";
 
 export interface LoginResponse {
   success: boolean;
@@ -47,7 +48,7 @@ export class Auth {
   ): Promise<ApiBaseAuthResponse> {
     const attempt = await this.attempt(username, password);
     if (attempt.success) {
-      const jwt = await JWT.generateToken({
+      const jwt = await JWT.sign({
         username,
         password,
       });
@@ -68,9 +69,10 @@ export class Auth {
   }
 
   private static async getUserFromDB(username: string) {
-    const authModel = new GlobalConfig.auth.authenticatableModel();
-    if (authModel instanceof AuthenticatableModel) {
-      const user = await GlobalConfig.auth.authenticatableModel
+    const authModel = GlobalConfig.auth.authenticatableModel;
+    if (!authModel) return null;
+    if (authModel instanceof Model) {
+      const user = await DatabaseConnection.getRepository(authModel as any)
         .createQueryBuilder("user")
         .where(
           "user.email = :username OR user.phoneNumber = :username OR user.id = :username OR user.username = :username",
@@ -154,7 +156,7 @@ export class Auth {
     password: string,
     ...when: WhenCallback[]
   ): Promise<AttemptResponse<U>> {
-    const user = await this.getUserFromDB(username);
+    const user = (await this.getUserFromDB(username)) as any;
     if (!user) {
       return {
         success: false,
@@ -165,7 +167,7 @@ export class Auth {
     for (const fun of when) {
       const callback = await fun(user);
       if (callback.success === false) {
-        return callback;
+        return callback as any;
       }
     }
     if (!password) {

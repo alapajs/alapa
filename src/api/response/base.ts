@@ -1,43 +1,19 @@
+import {
+  HTTP_STATUS_CODE,
+  HTTP_STATUS,
+  HttpStatusValue,
+} from "../../interface/http";
 import { ApiErrorResponse } from "./error";
+import { OtherApiResponse } from "./other";
 import { ApiSuccessResponse } from "./success";
-
-export type ApiResponseStatus =
-  | "success"
-  | "error"
-  | "not_found"
-  | "forbidden"
-  | "unauthorized"
-  | "invalid_request"
-  | "conflict"
-  | "processing"
-  | "accepted"
-  | "timeout"
-  | "service_unavailable"
-  | "bad_gateway"
-  | "unprocessable_entity"
-  | "method_not_allowed"
-  | "not_implemented"
-  | "too_many_requests"
-  | "moved_permanently"
-  | "moved_temporarily"
-  | "suspended"
-  | "not_authorized"
-  | "account_locked"
-  | "session_expired"
-  | "resource_created"
-  | "resource_updated"
-  | "resource_deleted"
-  | "data_conflict"
-  | "data_validation_failed"
-  | "payment_required"
-  | "feature_not_available"
-  | "dependency_error";
-
-export interface BaseApiResponse {
+type HttpStatusKey = keyof typeof HTTP_STATUS;
+type HttpResponseStatus = HTTP_STATUS | HttpStatusKey | HttpStatusValue;
+export interface BaseApiResponse<T = any> {
+  code?: number;
   /**
    * Indicates the status of the response.
    */
-  status: ApiResponseStatus;
+  status: HttpResponseStatus;
   /**
    * A user-friendly message providing additional information about the response.
    */
@@ -51,4 +27,9 @@ export interface BaseApiResponse {
  */
 export type ApiResponse<T = undefined> =
   | ApiErrorResponse
-  | ApiSuccessResponse<T>;
+  | ApiSuccessResponse<T>
+  | OtherApiResponse<T>;
+
+export function getStatusCode(status: string) {
+  return (HTTP_STATUS_CODE as any)[status.toUpperCase()];
+}

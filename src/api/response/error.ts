@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { HTTP_STATUS } from "../../interface";
 import { BaseApiResponse } from "./base";
 
 export interface ApiErrorResponse extends BaseApiResponse {
+  status: HTTP_STATUS.ERROR | "error";
+
   /**
    * Optional custom code for additional context about the response.
    * This can be used to provide more granular information than HTTP status codes.

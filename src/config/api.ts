@@ -9,6 +9,9 @@ export interface APIConfiguration {
     openApiOptions?: OAS3Options;
     openApiDefinitions?: OAS3Definition;
     openapiDefinitionFile?: string;
+    basicAuthEnabled?: boolean;
+    basicAuthUser?: string;
+    basicAuthPassword?: string;
   };
 
   rateLimit?: {
