@@ -43,7 +43,7 @@ export class ControllerRoutes {
     route: IRouter,
     path: string | ControllerClass,
     controllerClass?: ControllerClass,
-    options?: ControllerOptions
+    options?: ControllerOptions,
   ) {
     this.buildData(route, path, controllerClass, options);
     this.getMethods();
@@ -54,7 +54,7 @@ export class ControllerRoutes {
     route: IRouter,
     path: string | ControllerClass,
     controllerClass?: ControllerClass,
-    options?: ControllerOptions
+    options?: ControllerOptions,
   ) {
     if (typeof path === "string") {
       this.path = normalizeURLPath(path);
@@ -109,19 +109,26 @@ export class ControllerRoutes {
     for (const name of methods) {
       if (!this.isRouteMethodFormat(name)) continue;
       const names = this.splitCamelCase(name);
-      const verb = names[0].toLowerCase();
+      const httpVerb = Reflect.getMetadata("http-verb", controller, name);
+
+      let verb = names[0].toLowerCase();
+      if (httpVerb) {
+        verb = httpVerb.method;
+      }
       if (!this.verbs.includes(verb)) continue;
       const routeName = this.generateRouteName(names, name);
       const params = Reflect.getMetadata("params", controller, name) || [];
       const methodPath = this.getMethodPaths(names, params, name);
-      const routePath = "/" + normalizeURLPath(`/${path}/${methodPath}`);
+      let routePath = "/" + normalizeURLPath(`/${path}/${methodPath}`);
+      if (httpVerb) {
+        routePath = "/" + normalizeURLPath(`/${httpVerb.path}/${methodPath}`);
+      }
       this.generateDoc(routePath, name, verb);
       const middleware = this.getMiddleware(name);
-
       route[verb](
         routePath,
         ...middleware,
-        controller[name].bind(controller)
+        controller[name].bind(controller),
       ).name(routeName);
     }
   }
@@ -136,7 +143,7 @@ export class ControllerRoutes {
   private getMethodPaths(
     names: string[],
     params: string[],
-    methodName: string
+    methodName: string,
   ) {
     const separator =
       Reflect.getMetadata("path-separator", this.controller, methodName) || "/";

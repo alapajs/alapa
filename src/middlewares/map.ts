@@ -68,7 +68,6 @@ export const activateGlobalMiddleware = async (
     app.use(middleware);
   });
   if (ENV === "development") {
-    console.log("Development mode enabled");
     app.get(wellKnownPath, wellKnownRoute);
   }
   await activateDocsRoute(app);

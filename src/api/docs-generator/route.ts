@@ -66,9 +66,6 @@ export const setupDocsRoute = async () => {
   if (definition) {
     docCleanup();
     const options: any = {};
-    if (ENV === "development") {
-      options["customJs"] = [`http://localhost:${process.env.PORT}/js/app.js`];
-    }
     definition;
     const swaggerSpec = swaggerJsdoc(definition);
     return [swaggerUi.serve, swaggerUi.setup(swaggerSpec, options)];
@@ -90,11 +87,7 @@ export const activateDocsRoute = async (app: Express) => {
       challenge: true,
     });
 
-    app.use(
-      docPath,
-      docBasicAuth, // auth ALWAYS first
-      serve
-    );
+    app.use(docPath, docBasicAuth, serve);
 
     app.get(docPath, docBasicAuth, setup);
   } else {
