@@ -6,19 +6,19 @@ import { AnyObject } from "../interface";
 export const renderTemplate = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   res.render = (view: string, options?: AnyObject) => {
     const templateEngineFileExtension =
       GlobalConfig.templateEngine.fileExtensions;
     //  console.log(viewList);
     try {
-      const commonFileExtension = ["html"];
+      const commonFileExtension = ["ala"];
       if (Array.isArray(templateEngineFileExtension)) {
         commonFileExtension.push(...templateEngineFileExtension);
       } else {
         commonFileExtension.push(
-          ...(templateEngineFileExtension || "").split(",")
+          ...(templateEngineFileExtension || "").split(","),
         );
       }
       const viewList = view.split(".");

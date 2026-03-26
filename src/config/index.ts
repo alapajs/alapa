@@ -14,6 +14,7 @@ export { SessionConfiguration } from "./session";
 export { StorageConfiguration } from "./storage";
 export { TemplateEngineConfiguration } from "./template-engine";
 export { BrokerConfiguration } from "./broker";
+export { SchedulerCongratulation } from "./scheduler";
 export * from "./auth";
 export * from "./main";
 export * from "./server";

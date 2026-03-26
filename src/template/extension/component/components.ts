@@ -55,7 +55,7 @@ export class ComponentModules {
     const defaultComponents = Array.from(contents.matchAll(moduleRegex(true)));
     if (defaultComponents.length > 1) {
       Logger.error(
-        `${defaultComponents.length} components are defined in ${filePath}`
+        `${defaultComponents.length} components are defined in ${filePath}`,
       );
       return;
     }
@@ -64,7 +64,7 @@ export class ComponentModules {
   private handleDefaultModule(
     defaultModule: string,
     alias: string,
-    moduleContents: string
+    moduleContents: string,
   ) {
     if (defaultModule === "*" || defaultModule === "") {
       this.parseModules(moduleContents, "all", alias);
@@ -77,7 +77,7 @@ export class ComponentModules {
     contents: string,
     regex: RegExp | "all" | "default" = "all",
     alias?: StringObject | string,
-    components?: string[] | string
+    components?: string[] | string,
   ) {
     if (typeof components === "string") components = [components];
 
@@ -89,13 +89,13 @@ export class ComponentModules {
       definedModulesSearch,
       componentList,
       isDefault,
-      allAlias
+      allAlias,
     );
   }
 
   private initializeFlags(
     regex: RegExp | "all" | "default",
-    alias?: StringObject | string
+    alias?: StringObject | string,
   ): [boolean, string] {
     const isDefault = regex === "default";
     const allAlias = typeof alias === "string" && regex === "all" ? alias : "";
@@ -104,7 +104,7 @@ export class ComponentModules {
 
   private determineRegex(
     regex: RegExp | "all" | "default",
-    components?: string[]
+    components?: string[],
   ) {
     if (!components) components = [];
     if (regex === "all" || regex === undefined) return moduleRegex("all");
@@ -116,7 +116,7 @@ export class ComponentModules {
     definedModulesSearch: IterableIterator<RegExpMatchArray>,
     componentList: List<string>,
     isDefault: boolean,
-    allAlias: string
+    allAlias: string,
   ) {
     let foundLength = 0;
 
@@ -162,7 +162,7 @@ export class ComponentModules {
   private logErrors(
     foundLength: number,
     componentList: List<string>,
-    isDefault: boolean
+    isDefault: boolean,
   ) {
     if (foundLength === 0) {
       const errorMessage = isDefault
@@ -175,7 +175,7 @@ export class ComponentModules {
       Logger.error(
         `${componentList.join(", ")} ${
           componentList.length > 1 ? "components are" : "component is"
-        } not found`
+        } not found`,
       );
     }
   }

@@ -20,23 +20,42 @@ import { StorageConfiguration } from "./storage";
 import { TemplateEngineConfiguration } from "./template-engine";
 
 export interface Configuration {
+  /** Server configuration */
   server: ServerConfiguration;
+  /** Template engine configuration */
   templateEngine: TemplateEngineConfiguration;
+  /** Database configuration */
   database: DatabaseConfiguration;
+  /** Logger configuration */
   logger: LoggerConfiguration;
+  /** Email configuration */
   email?: EmailConfiguration;
+  /** JWT configuration */
   jwt?: JWTConfiguration;
+  /** Session configuration */
   session?: SessionConfiguration;
+  /** Security configuration */
   security?: SecurityConfiguration;
+  /** Cache configuration */
   cache?: CacheConfiguration;
+  /** Queue configuration */
   queue?: QueueConfiguration;
+  /** Monitoring configuration */
   monitoring?: MonitoringConfiguration;
+  /** Middleware configuration */
   middleware: MiddlewareConfiguration;
+  /** Storage configuration */
   storage?: StorageConfiguration;
+  /** Scheduler configuration */
   scheduler?: CacheConfiguration;
+  /** Auth configuration */
   auth: AutConfiguration;
+  /** Application configuration */
   application: ApplicationCongratulation;
+  /** API configuration */
   api: APIConfiguration;
+  /** Encryption configuration */
   encryption: EncryptionCongratulation;
+  /** Broker configuration */
   broker?: BrokerConfiguration;
 }

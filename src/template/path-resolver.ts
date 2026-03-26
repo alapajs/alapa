@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { GlobalConfig } from "../shared/globals";
+import { DEFAULT_TEMPLATE_ENGINE_CONFIG } from "./constant";
 export class PathResolver {
   static rootDir: string = "";
 
@@ -8,7 +9,7 @@ export class PathResolver {
     this.updateRoot("views");
     filePath = this.replaceSeparator(this.normalizePath(filePath));
     const dir = this.removeRootDir(
-      this.replaceSeparator(this.dirname(options?.currentPath || ""))
+      this.replaceSeparator(this.dirname(options?.currentPath || "")),
     );
     if (filePath.startsWith("/") && !this.hasRoot(filePath)) {
       return path.resolve(this.rootDir, filePath.slice(1));
@@ -50,8 +51,8 @@ export class PathResolver {
   protected static updateRoot(defaultExtension: string): void {
     this.rootDir = this.replaceSeparator(
       this.removeSlashFromTheEnd(
-        path.resolve(GlobalConfig.templateEngine.viewDir || defaultExtension)
-      )
+        path.resolve(GlobalConfig.templateEngine.viewDir || defaultExtension),
+      ),
     );
   }
   protected static removeRootDir(filePath: string): string {
@@ -66,7 +67,7 @@ export class PathResolver {
 
   protected static addExtension(filePath: string, ext?: string): string {
     if (ext == null || ext.length == 0) {
-      ext = "html";
+      ext = DEFAULT_TEMPLATE_ENGINE_CONFIG.defaultExtension;
     } else if (!this.validExtension(ext)) {
       throw new Error(`Invalid extension: ${ext}`);
     }
@@ -101,7 +102,9 @@ export class PathResolver {
   protected static validExtension(ext: string): boolean {
     if (ext.trim().length == 0) return false;
     ext = this.removeEXTDot(ext);
-    const commonFileExtension = ["html"];
+    const commonFileExtension = [
+      ...DEFAULT_TEMPLATE_ENGINE_CONFIG.fileExtensions,
+    ];
     const extensions: string | string[] | undefined =
       GlobalConfig.templateEngine.fileExtensions;
 

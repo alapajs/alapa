@@ -1,8 +1,10 @@
 export interface MiddlewareConfiguration {
-  global?: string[]; // Global middleware to apply on every request
+  /** Global middleware to apply on every request */
+  global?: string[];
+  /** Middleware specific to routes */
   routeSpecific?: {
-    // Middleware specific to routes
     [route: string]: string[];
   };
-  csrfProtection?: boolean; // Enable or disable CSRF protection
+  /** Enable or disable CSRF protection */
+  csrfProtection?: boolean;
 }

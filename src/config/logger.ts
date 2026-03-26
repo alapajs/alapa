@@ -1,10 +1,17 @@
 // Logger settings
 export interface LoggerConfiguration {
-  level: "info" | "error" | "warn" | "debug"; // Logging level
-  output?: "console" | "file"; // Log output destination
-  filePath?: string; // File path for logs if output is set to file
-  format?: "json" | "text"; // Log format (e.g., JSON, plain text)
-  maxFileSize?: string; // Maximum log file size before rotation (e.g., "10MB")
-  maxFiles?: number; // Maximum number of rotated files to keep
-  requestLogType?: "basic" | "detailed" | "none" | "full" | "extended" | string; // Type of request logging
+  /** Logging level */
+  level: "info" | "error" | "warn" | "debug";
+  /** Log output destination */
+  output?: "console" | "file";
+  /** File path for logs if output is set to file */
+  filePath?: string;
+  /** Log format (e.g., JSON, plain text) */
+  format?: "json" | "text";
+  /** Maximum log file size before rotation (e.g., "10MB") */
+  maxFileSize?: string;
+  /** Maximum number of rotated files to keep */
+  maxFiles?: number;
+  /** Type of request logging */
+  requestLogType?: "basic" | "detailed" | "none" | "full" | "extended" | string;
 }

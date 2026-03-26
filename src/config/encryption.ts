@@ -1,6 +1,8 @@
 export interface EncryptionCongratulation {
-  // Encryption settings
-  appEncryptionKey?: string; // Key for application-level encryption
-  appEncryptionAlgorithm?: "aes-256-cbc"; // Encryption algorithm
-  appEncryptionIV?: string; // Initialization vector for encryptio
+  /** Key for application-level encryption */
+  appEncryptionKey?: string;
+  /** Encryption algorithm */
+  appEncryptionAlgorithm?: "aes-256-cbc";
+  /** Initialization vector for encryption */
+  appEncryptionIV?: string;
 }

@@ -1,23 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AnyObject } from "../interface/object";
 import { GlobalConfig } from "../shared/globals";
+import { DEFAULT_TEMPLATE_ENGINE_CONFIG } from "./constant";
 import { renderFile } from "./extension/render/main"; // Assuming this function exists
 
 export function alapaEngine(
   view: string,
   options?: AnyObject | { (err: Error, html: string): void },
-  callback?: (err: Error | null, html: string) => void
+  callback?: (err: Error | null, html: string) => void,
 ): void {
   //  console.log(viewList);
   try {
     const templateEngineFileExtension =
       GlobalConfig.templateEngine.fileExtensions;
-    const commonFileExtension = ["html"];
+    const commonFileExtension = [
+      ...DEFAULT_TEMPLATE_ENGINE_CONFIG.fileExtensions,
+    ];
     if (Array.isArray(templateEngineFileExtension)) {
       commonFileExtension.push(...templateEngineFileExtension);
     } else {
       commonFileExtension.push(
-        ...(templateEngineFileExtension || "").split(",")
+        ...(templateEngineFileExtension || "").split(","),
       );
     }
     const viewList = view.split(".");

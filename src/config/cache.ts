@@ -1,17 +1,25 @@
 export interface CacheConfiguration {
-  driver?: "memory" | "redis" | "memcached"; // Caching driver
-  ttl?: number; // Time-to-live for cache items
+  /** Caching driver */
+  driver?: "memory" | "redis" | "memcached";
+  /** Time-to-live for cache items */
+  ttl?: number;
+  /** Redis-specific caching configuration */
   redisConfig?: {
-    // Redis-specific caching configuration
+    /** Redis host */
     host: string;
+    /** Redis port */
     port: number;
+    /** Redis password */
     password?: string;
   };
+  /** Memcached-specific caching configuration */
   memcachedConfig?: {
-    // Memcached-specific caching configuration
+    /** Memcached servers */
     servers: string[];
+    /** Memcached options */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     options?: any;
   };
-  clearOnStartup?: boolean; // Clear cache on server startup
+  /** Clear cache on server startup */
+  clearOnStartup?: boolean;
 }

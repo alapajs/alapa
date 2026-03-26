@@ -1,8 +1,11 @@
 export interface SchedulerCongratulation {
-  timezone?: string; // Timezone for scheduled tasks
+  /** Timezone for scheduled tasks */
+  timezone?: string;
+  /** List of cron jobs */
   cronJobs?: {
-    // List of cron jobs
-    [name: string]: string; // Cron job name and schedule (e.g., "backup" : "0 0 * * *")
+    /** Cron job name and schedule (e.g., "backup" : "0 0 * * *") */
+    [name: string]: string;
   };
-  maxConcurrency?: number; // Maximum concurrent jobs
+  /** Maximum concurrent jobs */
+  maxConcurrency?: number;
 }

@@ -69,7 +69,7 @@
         // Replace UNIX paths
         text = text.replace(unixPathPattern, (match) => {
           return `<a href="#" onclick="openFileInEditor('${escapeRegExp(
-            match
+            match,
           )}')" class="path">${match}</a>`;
         });
 
@@ -88,7 +88,7 @@
       document.addEventListener("DOMContentLoaded", () => {
         const errorMessageElement = document.querySelector("pre");
         errorMessageElement.innerHTML = replacePathsWithLinks(
-          errorMessageElement.textContent
+          errorMessageElement.textContent,
         );
       });
       function openFileInEditor(filePath) {
@@ -103,7 +103,7 @@
         xhttp.open("POST", "{{ host }}/open-file-in-editor", true);
         xhttp.setRequestHeader(
           "Content-Type",
-          "application/json;charset=UTF-8"
+          "application/json;charset=UTF-8",
         );
 
         // Send data as JSON
