@@ -21,4 +21,5 @@ export * from "./interface";
 export * from "./dev";
 export * from "./storage";
 export * as z from "zod";
+export * from "./middlewares";
 export default alapa;

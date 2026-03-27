@@ -15,7 +15,7 @@ import { changeResponses } from "./change-responses";
 import { Configuration } from "../config";
 import fileUpload from "express-fileupload";
 import { getTempDirectory } from "../utils/get-temp-dir";
-import { generalMiddleware } from "./general";
+import { buildGeneralMiddleware, generalMiddleware } from "./general";
 import cors from "cors";
 import { renderTemplate } from "./render-template";
 import { apiRoutes } from "../core/kernel/activate-api-route";
@@ -26,16 +26,22 @@ import { validateMiddleWare } from "./validation";
 import { notFound } from "./error";
 import { ENV } from "../shared";
 import { wellKnownPath, wellKnownRoute } from "../dev/well-know-route";
+import { GlobalConfig } from "../shared/globals";
+import { buildRateLimit } from "./rate-limit/build";
 export const activateGlobalMiddleware = async (
   app: Express,
-  config: Configuration
+  config: Configuration,
 ) => {
+  const rateLimitMiddleware = buildRateLimit(config.rateLimit);
+  const userGeneralMiddlewares = buildGeneralMiddleware(config.middleware);
   const middlewares = [
-    renderTemplate,
     normalizePath,
+    ...rateLimitMiddleware,
+    renderTemplate,
     changeResponses,
     validateMiddleWare,
     generalMiddleware,
+    ...userGeneralMiddlewares,
     bodyParser.urlencoded({ extended: false }),
     express.urlencoded({ extended: true }),
     express.static(config.templateEngine.staticFilesPath ?? "static"),
@@ -54,16 +60,20 @@ export const activateGlobalMiddleware = async (
     ServerContextMiddleware,
     csrfErrorHandler,
   ];
-  if (config.server.trustedProxies) {
-    app.enable("trust proxy");
-    if (config.server.trustedProxies === true) {
-      app.set("trust proxy", true);
-    } else if (Array.isArray(config.server.trustedProxies)) {
-      app.set("trust proxy", config.server.trustedProxies);
-    }
+
+  app.enable("trust proxy");
+  if (config.server.trustedProxies === true) {
+    app.set("trust proxy", true);
+  } else if (typeof config.server.trustedProxies === "number") {
+    app.set("trust proxy", config.server.trustedProxies);
+  } else if (typeof config.server.trustedProxies === "string") {
+    app.set("trust proxy", config.server.trustedProxies);
+  } else if (Array.isArray(config.server.trustedProxies)) {
+    app.set("trust proxy", config.server.trustedProxies);
   }
 
   // app.all("*", requestLoggerMiddleware);
+
   middlewares.forEach((middleware) => {
     app.use(middleware);
   });

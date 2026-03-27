@@ -15,6 +15,7 @@ export { StorageConfiguration } from "./storage";
 export { TemplateEngineConfiguration } from "./template-engine";
 export { BrokerConfiguration } from "./broker";
 export { SchedulerCongratulation } from "./scheduler";
+export { RateLimitConfiguration } from "./rate-limit";
 export * from "./auth";
 export * from "./main";
 export * from "./server";

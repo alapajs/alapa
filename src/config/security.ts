@@ -11,15 +11,6 @@ export interface SecurityConfiguration {
   contentSecurityPolicy?: string;
   /** Enable or disable HTTP Strict Transport Security (HSTS) */
   hsts?: boolean;
-  /** Additional rate limiting for security */
-  rateLimit?: {
-    /** Time window in milliseconds */
-    windowMs: number;
-    /** Maximum number of requests in the window */
-    max: number;
-    /** IPs to whitelist from rate limiting */
-    whitelist?: string[];
-  };
   /** URL normalization configuration */
   url?: {
     /** Enable or disable URL normalization */

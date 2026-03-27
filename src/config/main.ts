@@ -13,6 +13,7 @@ import { LoggerConfiguration } from "./logger";
 import { MiddlewareConfiguration } from "./middleware";
 import { MonitoringConfiguration } from "./monitoring";
 import { QueueConfiguration } from "./queue";
+import { RateLimitConfiguration } from "./rate-limit";
 import { SecurityConfiguration } from "./security";
 import { ServerConfiguration } from "./server";
 import { SessionConfiguration } from "./session";
@@ -58,4 +59,6 @@ export interface Configuration {
   encryption: EncryptionCongratulation;
   /** Broker configuration */
   broker?: BrokerConfiguration;
+
+  rateLimit?: RateLimitConfiguration;
 }
