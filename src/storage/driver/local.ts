@@ -1,0 +1,61 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { StorageDriver, IStorageDriverError, FileData } from "./abstract";
+import * as fs from "fs";
+import * as path from "path";
+import { Logger } from "../../utils";
+import { StorageConfiguration } from "../../config";
+import { GlobalConfig } from "../../shared/globals";
+
+export class LocalStorageDriver implements StorageDriver {
+  name: string;
+  absolutePathPath: string;
+  absoluteURL: string;
+  private config?: StorageConfiguration;
+  private staticFilePath: string;
+
+  constructor(absolutePathPath?: string, absoluteURL?: string) {
+    this.name = "local";
+    this.config = GlobalConfig?.storage;
+    this.staticFilePath =
+      GlobalConfig?.templateEngine?.staticFilesPath || "static";
+    this.absolutePathPath = this.config?.local?.path || "uploads";
+    this.absolutePathPath =
+      absolutePathPath || path.join(this.staticFilePath, this.absolutePathPath);
+    this.absoluteURL =
+      absoluteURL ||
+      this.config?.local?.url ||
+      `http://localhost:${process.env.PORT || 3000}`;
+  }
+  absolutePath: string;
+
+  error: IStorageDriverError | null = null;
+
+  async saveFilePath(
+    fileName: string,
+    filePath: string
+  ): Promise<string | boolean> {
+    const targetPath = path.join(this.absolutePathPath, fileName);
+    const fileData: any = fs.readFileSync(filePath);
+    return this.saveFile(targetPath, fileData);
+  }
+  async saveFile(
+    fileName: string,
+    fileData: FileData
+  ): Promise<string | boolean> {
+    try {
+      const targetPath = path.join(this.absolutePathPath, fileName);
+
+      const dir = path.dirname(targetPath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+
+      fs.writeFileSync(targetPath, fileData);
+
+      return fileName;
+    } catch (err) {
+      Logger.error(err);
+      return false;
+    }
+  }
+}

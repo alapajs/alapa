@@ -1,0 +1,79 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import * as express from "express";
+import { ApiResponse } from "../../dist/api/response/base";
+import { LoginResponse } from "../../dist/security/auth/main";
+import { AuthData } from "../../dist/security/auth/data";
+import { ValidationSchema } from "../../dist/utils/validation/main";
+import session from "express-session";
+
+interface INavigator {
+  redirect: (url: string) => this;
+  back(): this;
+  back(type: string, message: string): this;
+  route(name: string): this;
+  route(name: string, ...params: (string | number | object)[]): this;
+  with: (type: string, message: string | string[]) => this;
+  withErrors: (message: string | string[]) => this;
+  withSuccess: (message: string | string[]) => this;
+  withInfo: (message: string | string[]) => this;
+  withWarn: (message: string | string[]) => this;
+}
+
+export interface SessionData {
+  [key: string]: any;
+  cookie: Cookie;
+  userId: string;
+  user: any;
+  loginToken: string;
+}
+declare global {
+  namespace Express {
+    interface Request {
+      authenticated: boolean;
+      files?: {
+        [fieldName: string]:
+          | Express.Multer.File
+          | Express.Multer.File[]
+          | undefined;
+      };
+      getRoute: (
+        name: string,
+        ...param: (string | number | object)[]
+      ) => string;
+      getUrl: (name: string, ...param: (string | number | object)[]) => string;
+      csrfToken: () => string;
+      auth: AuthData;
+      user: any;
+      only: <T = { [key: string]: any }>(...keys: string[]) => T;
+      login: (user: any, remember: boolean = false) => Promise<LoginResponse>;
+      flash(): { [key: string]: string[] };
+      flash(message: string): string[];
+      errors(): { [key: string]: string[] };
+      errors(key: string): string[];
+      flash(type: string, message: string[] | string): number;
+      flash(type: string, format: string, ...args: any[]): number;
+      session: session.Session & Partial<SessionData>;
+      validate<S extends ValidationSchema>(
+        schema: S
+      ): Promise<{ [P in keyof S]: string[] }>;
+
+      /**
+       * This request's session ID.
+       * Even though this property isn't marked as optional, it won't exist until you use the `express-session` middleware
+       */
+      sessionID: string;
+
+      /**
+       * The Store in use.
+       * Even though this property isn't marked as optional, it won't exist until you use the `express-session` middleware
+       * The function `generate` is added by express-session
+       */
+      sessionStore: SessionStore;
+    }
+    interface Response {
+      api<T>(response: ApiResponse<T>): any;
+      navigate: INavigator;
+    }
+  }
+}
